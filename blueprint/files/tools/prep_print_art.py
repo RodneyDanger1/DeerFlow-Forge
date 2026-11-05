@@ -341,6 +341,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             f"source upscaled {upscale:.2f}x (gate {args.max_upscale}x): glow art tolerates this, fine line art will not. "
             "Regenerate the source at a higher resolution for crisp linework."
         )
+    print_safe = upscale <= args.max_upscale
+    verdict = "accepted" if print_safe else "refused_for_print"
     previews: list[str] = []
     if args.preview_dir:
         preview_dir = Path(args.preview_dir)
@@ -353,7 +355,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
             previews.append(str(path))
 
     report = {
+        # `ok` means the transform produced a file. `print_safe`/`verdict` are
+        # the print-quality decision; callers must not treat `ok` as a pass.
         "ok": True,
+        "print_safe": bool(print_safe),
+        "verdict": verdict,
         "input": str(source),
         "output": str(args.output),
         "mode": args.mode,
@@ -432,7 +438,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"REFUSED {error.code}: {error.message}", file=sys.stderr)
         print(f"  how_to_fix: {error.how_to_fix}", file=sys.stderr)
         return 2
-    print(json.dumps({key: report[key] for key in ("ok", "mode", "canvas_px", "dpi", "coverage", "upscale_factor", "warnings")}, indent=2))
+    print(json.dumps({key: report[key] for key in ("ok", "print_safe", "verdict", "mode", "canvas_px", "dpi", "coverage", "upscale_factor", "warnings")}, indent=2))
     return 0
 
 

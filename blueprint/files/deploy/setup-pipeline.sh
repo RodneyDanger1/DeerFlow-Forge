@@ -85,7 +85,14 @@ else
   "$ROOT/.venv/bin/pip" install --disable-pip-version-check -r "$ROOT/requirements-test.txt"
 fi
 
-for tool in vectorcraft-cli photocraft-cli designcraft-cli effectcraft-cli filmcraft-cli; do
+# Installed engines use pinned absolute launchers. Missing engines get a loud
+# named refusal; never a fake binary and never a silent PATH fallback.
+for tool in vectorcraft-cli photocraft-cli; do
+  if [[ ! -e "$ROOT/bin/$tool" ]]; then
+    install -m 0755 "$ROOT/deploy/craft-launchers/$tool" "$ROOT/bin/$tool"
+  fi
+done
+for tool in designcraft-cli effectcraft-cli filmcraft-cli; do
   if [[ ! -e "$ROOT/bin/$tool" ]]; then
     install -m 0755 "$ROOT/deploy/craft-bin/$tool" "$ROOT/bin/$tool"
   fi

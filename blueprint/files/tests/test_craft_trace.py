@@ -74,6 +74,16 @@ def test_isolated_speck_fails() -> None:
     assert report["checks"]["edge_specks"]["pass"] is False
 
 
+def test_empty_retype_request_fails_text_gate() -> None:
+    """A retype flag with zero boxes is not evidence that text was retyped."""
+    with tempfile.TemporaryDirectory() as name:
+        tmp = Path(name)
+        source, final, overlay, _spec, mapping, svg = _case(tmp)
+        report = verify(source, final, (2400, 2400), 300, svg, [], mapping, overlay)
+    assert report["passed"] is False
+    assert report["checks"]["retyped_text_present"]["pass"] is False
+
+
 def test_research_tool_imports_without_removed_api() -> None:
     module = importlib.import_module("tools.artcraft")
     assert hasattr(module, "flatten_layers")

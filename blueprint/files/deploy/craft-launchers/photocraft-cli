@@ -1,0 +1,9 @@
+#!/bin/sh
+# Pinned absolute launcher: PhotoCraft 0.20.2 (Phase 0 GAP-BIN repair).
+set -eu
+BIN="/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli"
+if [ ! -x "$BIN" ]; then
+  echo "E_TOOL_NOT_INSTALLED photocraft ($BIN not executable)" >&2
+  exit 127
+fi
+exec "$BIN" "$@"

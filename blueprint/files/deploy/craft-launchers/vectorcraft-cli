@@ -1,0 +1,10 @@
+#!/bin/sh
+# Pinned absolute launcher: VectorCraft 0.21.1 (Phase 0 GAP-BIN repair).
+# Do not resolve a different version from PATH; a version drift must be explicit.
+set -eu
+BIN="/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli"
+if [ ! -x "$BIN" ]; then
+  echo "E_TOOL_NOT_INSTALLED vectorcraft ($BIN not executable)" >&2
+  exit 127
+fi
+exec "$BIN" "$@"

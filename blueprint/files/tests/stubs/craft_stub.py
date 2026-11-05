@@ -70,7 +70,24 @@ def main():
                 sys.stdout.write(f"WARNING: slow tile {i}\n")
 
     if tool == "vectorcraft-cli":
-        assert sys.argv[1] == "trace", "vectorcraft-cli needs the 'trace' subcommand"
+        if sys.argv[1:2] == ["run"]:
+            # Measured 0.21.1 contract: run --in F --cmd ... --export OUT [...]
+            need(a, "--in")
+            exports = a.get("--export", [])
+            if not exports:
+                print("ERROR: vectorcraft-cli run requires --export", file=sys.stderr)
+                sys.exit(64)
+            for export in exports:
+                p = Path(export)
+                p.parent.mkdir(parents=True, exist_ok=True)
+                if p.suffix.lower() == ".svg":
+                    p.write_text("<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'/>")
+                elif p.suffix.lower() == ".pdf":
+                    p.write_bytes(PDF)
+                else:
+                    p.write_bytes(b"unsupported")
+            return
+        assert sys.argv[1] == "trace", "vectorcraft-cli needs 'run' (or legacy 'trace')"
         code = int(os.environ.get("STUB_VECTOR_EXIT", "0"))
         if code:
             print("ERROR: trace failed: path simplification diverged", file=sys.stderr)
@@ -79,6 +96,12 @@ def main():
         Path(need(a, "--svg-out")).write_text("<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10'/>")
         Path(need(a, "--pdf-out")).write_bytes(PDF)
     elif tool == "photocraft-cli":
+        if sys.argv[1:2] == ["run"]:
+            # Measured 0.20.2 contract: run FILE --cmd ... --out FILE
+            out = Path(need(a, "--out"))
+            out.parent.mkdir(parents=True, exist_ok=True)
+            art(out)
+            return
         out_dir = Path(need(a, "--out-dir"))
         need(a, "--input")
         if a.get("--trim-alpha", ["false"])[0] == "true":

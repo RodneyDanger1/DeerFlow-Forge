@@ -1,3 +1,4 @@
 #!/bin/sh
-echo "designcraft-cli: vendor binary not installed. Replace this file and rebuild pod-craft-runner." >&2
+# Named refusal for an app that is not installed. Never fabricate output.
+echo "E_TOOL_NOT_INSTALLED designcraft (DesignCraft is not installed on this host)" >&2
 exit 127

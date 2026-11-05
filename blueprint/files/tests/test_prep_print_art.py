@@ -134,6 +134,8 @@ def test_low_resolution_source_raises_an_upscale_warning(tmp_path: Path) -> None
     assert code == 0
     report = json.loads(report_path.read_text(encoding="utf-8"))
     assert report["upscale_factor"] > 2.5
+    assert report["print_safe"] is False
+    assert report["verdict"] == "refused_for_print"
     assert any("upscaled" in warning for warning in report["warnings"])
 
 

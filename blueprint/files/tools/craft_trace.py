@@ -28,6 +28,7 @@ Usage (inside /opt/pod-pipeline):
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 import subprocess
@@ -81,7 +82,7 @@ def cutout_and_erase_text(args: argparse.Namespace, temp: Path) -> tuple[Path, I
         sys.executable, "-m", "tools.prep_print_art",
         "--input", str(Path(args.input).resolve()), "--output", str(cutout),
         "--width-px", str(width), "--height-px", str(height), "--dpi", "300",
-        "--mode", "white", "--clean-rim", "--min-component", "60",
+        "--mode", args.prep_mode, "--clean-rim", "--min-component", "60",
         "--edge-clean-px", "26", "--edge-clean-lum", "140",
         "--margin-px", "0", "--print-width-in", f"{width / 300:.6f}",
         "--report-json", str(report_path),
@@ -209,32 +210,37 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
     edge_density = strong_edges / float(alpha.sum() or 1)
     corner_ok = bool(not any(bool(alpha[y, x]) for y, x in ((2, 2), (2, width - 3), (height - 3, 2), (height - 3, width - 3))))
     text_ok = True
-    if spec and mapping:
-        bbox = mapping["bbox"]
-        canvas_w, canvas_h = mapping["canvas"]
-        offset_x, offset_y = mapping["offset"]
-        prep_scale = mapping["scale"]
-        art_scale = final_art.width / canvas_w
-        overlay_alpha = np.asarray(overlay.getchannel("A"), dtype=np.uint8) > 127 if overlay is not None else None
-        for item in spec:
-            if not item.get("text"):
-                continue
-            x0, y0, x1, y1 = [int(value) for value in item["box"]]
-            box = [
-                round((offset_x + (x0 - bbox[0]) * prep_scale) * art_scale),
-                round((offset_y + (y0 - bbox[1]) * prep_scale) * art_scale),
-                round((offset_x + (x1 - bbox[0]) * prep_scale) * art_scale),
-                round((offset_y + (y1 - bbox[1]) * prep_scale) * art_scale),
-            ]
-            bx0, bx1 = max(0, box[0]), min(width, box[2])
-            by0, by1 = max(0, box[1]), min(height, box[3])
-            if bx1 <= bx0 or by1 <= by0 or int(alpha[by0:by1, bx0:bx1].sum()) < 2000:
-                text_ok = False
-                continue
-            # The retyped overlay must actually cover the box; art showing through
-            # (ghost AI text or a mountain edge) is not evidence of a retype.
-            if overlay_alpha is None or int(overlay_alpha[by0:by1, bx0:bx1].sum()) < 2000:
-                text_ok = False
+    if spec is not None:
+        if not spec or mapping is None:
+            # A retype request with zero boxes, or without a mapping, is not
+            # evidence that text was retyped. The old gate passed vacuously.
+            text_ok = False
+        else:
+            bbox = mapping["bbox"]
+            canvas_w, canvas_h = mapping["canvas"]
+            offset_x, offset_y = mapping["offset"]
+            prep_scale = mapping["scale"]
+            art_scale = final_art.width / canvas_w
+            overlay_alpha = np.asarray(overlay.getchannel("A"), dtype=np.uint8) > 127 if overlay is not None else None
+            for item in spec:
+                if not item.get("text"):
+                    continue
+                x0, y0, x1, y1 = [int(value) for value in item["box"]]
+                box = [
+                    round((offset_x + (x0 - bbox[0]) * prep_scale) * art_scale),
+                    round((offset_y + (y0 - bbox[1]) * prep_scale) * art_scale),
+                    round((offset_x + (x1 - bbox[0]) * prep_scale) * art_scale),
+                    round((offset_y + (y1 - bbox[1]) * prep_scale) * art_scale),
+                ]
+                bx0, bx1 = max(0, box[0]), min(width, box[2])
+                by0, by1 = max(0, box[1]), min(height, box[3])
+                if bx1 <= bx0 or by1 <= by0 or int(alpha[by0:by1, bx0:bx1].sum()) < 2000:
+                    text_ok = False
+                    continue
+                # The retyped overlay must actually cover the box; art showing through
+                # (ghost AI text or a mountain edge) is not evidence of a retype.
+                if overlay_alpha is None or int(overlay_alpha[by0:by1, bx0:bx1].sum()) < 2000:
+                    text_ok = False
     checks = {
         "white_residual_ratio": {"value": float(round(float(near_white.sum()) / max(1, int(alpha.sum())), 5)),
                                  "pass": bool(float(near_white.sum()) / max(1, int(alpha.sum())) <= 0.002)},
@@ -275,6 +281,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--noise", type=float, default=16)
     parser.add_argument("--palette", default="limited")
     parser.add_argument("--mode", default="color")
+    parser.add_argument("--prep-mode", choices=("white", "alpha", "white-flood", "glow", "lineart", "none"),
+                        default="white", help="Cutout mode for the input; alpha preserves an existing alpha channel")
     parser.add_argument("--saturation", type=float, default=1.12)
     parser.add_argument("--brightness", type=float, default=1.03)
     parser.add_argument("--sharpen", type=float, default=30)
@@ -341,7 +349,6 @@ def main(argv: list[str] | None = None) -> int:
             art = colour.convert("RGBA")
             art.putalpha(transparency)
             master = compose_canvas(art, canvas_w, canvas_h)
-            master.save(args.output, dpi=(args.dpi, args.dpi))
 
             previews: list[str] = []
             if args.preview_dir:
@@ -359,12 +366,24 @@ def main(argv: list[str] | None = None) -> int:
                 previews.append(str(crop_path))
 
             report = verify(original, art, (canvas_w, canvas_h), args.dpi, svg_path, spec, mapping, overlay)
+            output_path = Path(args.output)
+            output_sha256: str | None = None
+            if report["passed"]:
+                # P3: only a passing artifact becomes the output. A failed gate
+                # must not leave a shippable file behind.
+                output_path.parent.mkdir(parents=True, exist_ok=True)
+                pending = output_path.with_name(output_path.stem + ".pending" + output_path.suffix)
+                master.save(pending, dpi=(args.dpi, args.dpi))
+                pending.replace(output_path)
+                output_sha256 = hashlib.sha256(output_path.read_bytes()).hexdigest()
             result = {
                 "ok": bool(report["passed"]),
                 "pipeline": "craft_trace",
                 "vectorcraft": vectorcraft,
                 "svg": str(svg_path),
-                "output": str(args.output),
+                "output": str(output_path),
+                "saved": bool(report["passed"]),
+                "output_sha256": output_sha256,
                 "canvas_px": [int(canvas_w), int(canvas_h)],
                 "dpi": int(args.dpi),
                 "art_px": [int(art.width), int(art.height)],

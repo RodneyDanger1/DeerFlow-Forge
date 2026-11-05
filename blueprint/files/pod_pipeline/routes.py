@@ -25,10 +25,13 @@ DEFAULT_CFG: dict[str, dict[str, Any]] = {
     "apparel": {
         "regions": ["front"],
         "max_px": [4200, 4800],            # 14x16 in @ 300 dpi
+        "trim_width_px": 4200,
+        "trim_height_px": 4800,
     },
     "knitwear": {
         "regions": ["front"],
         "palette_limit": 6,                 # factory yarn colors: hard maximum
+        "trace_colors": 6,                  # trace palette must not exceed the factory cap
         "knit_grid": "",                    # REQUIRED: factory 'COLSxROWS'; deliberately no default
     },
     "accessories": {
@@ -49,6 +52,25 @@ DEFAULT_CFG: dict[str, dict[str, Any]] = {
 }
 
 
+# Trace settings shared by every product route. Values come from the exercised
+# craft_trace.py defaults; per-product overrides may replace them.
+TRACE_DEFAULTS: dict[str, Any] = {
+    "trace_mode": "color",
+    "trace_palette": "limited",
+    "trace_colors": 12,
+    "trace_paths": 65,
+    "trace_corners": 45,
+    "trace_noise": 16,
+}
+
+TRACE_PARAMS = (
+    '{{"params":{{"mode":"{cfg[trace_mode]}","palette":"{cfg[trace_palette]}",'
+    '"colors":{cfg[trace_colors]},"paths":{cfg[trace_paths]},"corners":{cfg[trace_corners]},'
+    '"noise":{cfg[trace_noise]},"ignoreWhite":true,"method":"abutting","fills":true,'
+    '"strokes":false,"shapes":false,"autoGrouping":false,"gradients":false}}}}'
+)
+
+
 @dataclass(frozen=True)
 class Step:
     name: str
@@ -62,7 +84,6 @@ class Step:
 @dataclass(frozen=True)
 class Route:
     product_type: str
-    trace_extra: tuple[str, ...]
     steps: tuple[Step, ...]
     final: str                                   # template: the artifact this category produces
     upload: str | None                           # template: file sent to Fourthwall media library (None = skip)
@@ -71,25 +92,32 @@ class Route:
 
 # --------------------------------------------------------------------------- stage 0 (shared)
 def trace_step(route: Route) -> Step:
-    """VectorCraft trace. ASSUMPTION: the spec gives no vectorcraft-cli command line; this contract is invented."""
+    """VectorCraft image trace, measured against vectorcraft-cli 0.21.1."""
     return Step(
         name="vector_trace",
         module="vectorcraft",
-        argv=("vectorcraft-cli", "trace", "--input", "{src}",
-              "--svg-out", "{work}/traced.svg", "--pdf-out", "{work}/traced.pdf", *route.trace_extra),
+        argv=("vectorcraft-cli", "run", "--in", "{src}",
+              "--cmd", "select.all",
+              "--cmd", "imageTrace.make", "--params", TRACE_PARAMS,
+              "--cmd", "imageTrace.expand",
+              "--export", "{work}/traced.svg",
+              "--export", "{work}/traced.pdf"),
         outputs=("{work}/traced.svg", "{work}/traced.pdf"),
     )
 
 
 def raster_fallback_step() -> Step:
-    """Tier-1 fallback when the vector trace exits with code 1: high-DPI raster path, no tracing.
-    ASSUMPTION: PhotoCraft writes its result as a PNG inside --out-dir."""
+    """Tier-1 fallback when the vector trace exits 1: PhotoCraft resample, no tracing.
+    Contract measured against photocraft-cli 0.20.2."""
     return Step(
         name="raster_fallback",
         module="photocraft",
-        argv=("photocraft-cli", "--input", "{src}", "--trim-alpha", "false",
-              "--target-dpi", "{fallback_dpi}", "--color-profile", "srgb", "--out-dir", "{work}/raster/"),
-        outputs=("{work}/raster/*.png",),
+        argv=("photocraft-cli", "run", "{src}",
+              "--cmd", "image.imageSize",
+              "--params", '{{"resolution":{fallback_dpi},"resample":"lanczos"}}',
+              "--cmd", "edit.convertToProfile", "--params", '{{"profile":"srgb"}}',
+              "--out", "{work}/raster.png"),
+        outputs=("{work}/raster.png",),
     )
 
 
@@ -97,15 +125,17 @@ def raster_fallback_step() -> Step:
 def _routes() -> dict[str, Route]:
     apparel = Route(
         product_type="apparel",
-        trace_extra=(),
         steps=(
             Step("photocraft_trim", "photocraft",
-                 # spec lists --target-dpi/--color-profile/--dimensions as agent instructions, not on the
-                 # reference command line; they are merged here. Output name 'trimmed.png' comes from the spec.
-                 ("photocraft-cli", "--input", "{art}", "--trim-alpha", "true",
-                  "--target-dpi", "300", "--color-profile", "srgb", "--dimensions", "14x16in",
-                  "--out-dir", "{work}/apparel/"),
-                 ("{work}/apparel/trimmed.png",)),
+                 # Measured against photocraft-cli 0.20.2: run FILE --cmd ... --out.
+                 ("photocraft-cli", "run", "{art}",
+                  "--cmd", "image.trim", "--params", '{{"basedOn":"transparent"}}',
+                  "--cmd", "image.imageSize",
+                  "--params", '{{"width":{cfg[trim_width_px]},"height":{cfg[trim_height_px]},'
+                              '"resolution":300,"resample":"lanczos"}}',
+                  "--cmd", "edit.convertToProfile", "--params", '{{"profile":"srgb"}}',
+                  "--out", "{work}/trimmed.png"),
+                 ("{work}/trimmed.png",)),
             Step("effectcraft_distress", "effectcraft",
                  ("effectcraft-cli", "--input", "{work}/apparel/trimmed.png",
                   "--filter", "vintage_screen_300", "--output", "{build}/apparel_final.png"),
@@ -117,7 +147,6 @@ def _routes() -> dict[str, Route]:
     )
     knitwear = Route(
         product_type="knitwear",
-        trace_extra=("--palette-limit", "{cfg[palette_limit]}"),   # ASSUMPTION: flag name on vectorcraft-cli
         steps=(
             Step("designcraft_stitch_matrix", "designcraft",
                  # ASSUMPTION: '--input {art}' added; the spec's reference line has no input argument.
@@ -133,7 +162,6 @@ def _routes() -> dict[str, Route]:
     )
     accessories = Route(
         product_type="accessories",
-        trace_extra=(),
         steps=(
             Step("designcraft_template", "designcraft",
                  ("designcraft-cli", "--template", "{cfg[template]}", "--layer", "artwork", "--embed", "{art}",
@@ -148,7 +176,6 @@ def _routes() -> dict[str, Route]:
     )
     odd_3d = Route(
         product_type="odd_3d",
-        trace_extra=(),
         steps=(
             Step("designcraft_wrap_tile", "designcraft",
                  ("designcraft-cli", "--mode", "wrap_tile", "--bleed", "{cfg[bleed_in]}", "--input", "{art}",
@@ -166,7 +193,6 @@ def _routes() -> dict[str, Route]:
     )
     stationery = Route(
         product_type="stationery",
-        trace_extra=(),
         steps=(
             Step("designcraft_cover", "designcraft",
                  # ASSUMPTION: '--embed {art}' added so artwork reaches the template; '--variable-data order_id'
@@ -196,7 +222,12 @@ ROUTES: dict[str, Route] = _routes()
 def merged_cfg(product_type: str, overrides: dict[str, dict[str, Any]]) -> dict[str, Any]:
     if product_type not in ROUTES:
         raise ConfigError(f"unknown product_type {product_type!r}; expected one of {', '.join(PRODUCT_TYPES)}")
-    return {**DEFAULT_CFG.get(product_type, {}), **overrides.get(product_type, {})}
+    merged = {**TRACE_DEFAULTS, **DEFAULT_CFG.get(product_type, {}), **overrides.get(product_type, {})}
+    # The factory's palette cap is the trace colour cap for knitwear unless the
+    # operator explicitly overrides trace_colors.
+    if product_type == "knitwear" and "trace_colors" not in overrides.get(product_type, {}):
+        merged["trace_colors"] = int(merged.get("palette_limit", TRACE_DEFAULTS["trace_colors"]))
+    return merged
 
 
 def render(template: str, variables: dict[str, Any], *, where: str) -> str:

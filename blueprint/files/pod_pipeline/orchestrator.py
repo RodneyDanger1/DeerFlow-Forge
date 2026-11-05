@@ -9,6 +9,7 @@ import asyncio
 import datetime as dt
 import hashlib
 import logging
+import os
 import shutil
 import traceback
 import uuid
@@ -127,7 +128,47 @@ async def _execute(ctx: RunCtx) -> Path:
     final = Path(render(ctx.route.final, ctx.vars, where="route.final"))
     if not final.is_file():
         raise PipelineError(f"route finished but final artifact is missing: {final}")
+    # P5: the source must not change after ingest. A changed source makes the
+    # artifact's provenance untrustworthy, even when the output looks fine.
+    await asyncio.to_thread(_assert_source_unchanged, src_path, ctx.run["sha256"])
     return final
+
+
+def tool_path(settings: Settings, argv: list[str]) -> Path:
+    """Return the executable path a step will use, without invoking it."""
+    return Path(argv[0]) if "/" in argv[0] else Path(settings.bin_dir) / argv[0]
+
+
+def preflight_tool(settings: Settings, step: Step, argv: list[str]) -> None:
+    """Fail fast, before a job row or spawn, when the app is absent."""
+    command = argv[0] if argv else ""
+    if not command:
+        raise PipelineError(f"E_COMMAND_EMPTY {step.module} ({step.name} has no executable)")
+    binary = tool_path(settings, argv)
+    if not (binary.is_file() and os.access(binary, os.X_OK)):
+        raise PipelineError(
+            f"E_TOOL_NOT_INSTALLED {step.module} ({command} not executable in {settings.bin_dir})"
+        )
+
+
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        while chunk := fh.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _assert_source_unchanged(src: Path, expected_sha256: str) -> None:
+    if not src.is_file():
+        raise PipelineError(f"source disappeared during the run: {src}", quarantine=True)
+    actual = _sha256_file(src)
+    if actual != expected_sha256:
+        raise PipelineError(
+            f"{src.name} changed during the run (sha256 before={expected_sha256[:16]} after={actual[:16]}); "
+            "refusing to publish",
+            quarantine=True,
+        )
 
 
 def _stage_input(src: Path, dst: Path, expected_sha: str) -> None:
@@ -168,6 +209,7 @@ async def _run_step(ctx: RunCtx, step: Step, *, index: int | None = None, tier: 
     s = ctx.settings
     idx = index if index is not None else ctx.next_index()
     argv = render_argv(step, ctx.vars)
+    preflight_tool(s, step, argv)
     timeout = step.timeout_s or s.step_timeout_s
     last_err: PipelineError | None = None
     for attempt in range(1, s.max_attempts + 1):
