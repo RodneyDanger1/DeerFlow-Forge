@@ -1,0 +1,126 @@
+You are a Principal AI Automation Architect and Systems Engineer specializing in Model Context Protocol (MCP) tooling, headless desktop design automation, and asynchronous microservice design.
+
+Your task is to convert the high-level multi-app print-on-demand, marketing, and web store synchronization pipeline described below into a 100% codeable, production-ready system architecture blueprint and VPS deployment playbook.
+
+---
+
+### SECTION 1: SYSTEM PIPELINE & APPS ENGINE
+The orchestrator (DeerFlow 2.2 driven by DeepSeek V4.1-Flash) must coordinate headless background binaries of the following applications to ingest, process, trace, format, package, deploy, and promote assets natively.
+
+#### 1. INGESTION & CORE PROCESSING ENGINE (VectorCraft)
+- Ingests raw raster inputs from local directories or webhooks.
+- Invokes native headless vector tracing and coordinate normalization via the VectorCraft local MCP server.
+- Outputs infinitely scalable SVG and production-ready high-DPI PDF source vectors.
+
+#### 2. RASTER OPTIMIZATION & SMART COMPOSITING ENGINE (PhotoCraft)
+- Handles color space profiles, channel separation, transparent margin calculations, and smart background extraction layers.
+
+#### 3. GRID LAYOUT & TYPOGRAPHIC ENGINE (DesignCraft)
+- Automates multi-asset compilation, grid alignment arrays, localized brand labels, pack-slip insertions, and typography scaling.
+
+#### 4. VISUAL EFFECT FILTER GENERATOR (EffectCraft)
+- Programmatically layers matrix transformations, texture overlays, distressing macros, and physical material simulations.
+
+#### 5. AUTOMATED MOTION MARKETING ENGINE (FilmCraft)
+- Houses dynamic 3D timelines, keyframe asset interpolation, video canvas scaling, audio sync bridges, and multi-platform media rendering.
+
+---
+
+### SECTION 2: FOURTHWALL PRODUCT MATRIX & APP ROUTING
+The agent must remember, store, and execute the following configuration arrays, routing parameters, and execution instructions for specific Fourthwall catalog categories:
+
+#### A. APPAREL (Shaka Wear Tees, Shaka Wear Hoodies, Bella+Canvas Shorts)
+- Primary App Focus: PhotoCraft & EffectCraft
+- Programmatic Action: 
+  1. Extract color channels from SVG; enforce strict sRGB target matrices.
+  2. PhotoCraft applies alpha-mask canvas trimming to clear unutilized transparent margins.
+  3. EffectCraft applies a procedural "distressed halftone vintage screenprint" overlay onto the asset.
+- AI Agent Execution Instructions: 
+  - Execute headless call with arguments: `--target-dpi 300 --color-profile srgb --dimensions 14x16in`.
+  - Pass final media binary to Fourthwall Media Library API endpoint `/open-api/v1.0/media`.
+- Headless API/CLI Driving Reference:
+  `photocraft-cli --input [svg_source] --trim-alpha true --out-dir /tmp/apparel/`
+  `effectcraft-cli --input /tmp/apparel/trimmed.png --filter "vintage_screen_300" --output /opt/pod-pipeline/build/apparel_final.png`
+
+#### B. CUSTOM KNITWEAR (Knit Crewnecks, Knit Cardigans, Knit Vests)
+- Primary App Focus: DesignCraft & VectorCraft
+- Programmatic Action: 
+  1. VectorCraft isolates and reduces colors down to a strict maximum palette of 4-6 distinct safe factory yarn colors.
+  2. DesignCraft converts continuous geometric paths into discrete pixel-to-stitch spatial coordinate grids.
+  3. Formats matrix outputs into uncompressed, row-by-row indexed BMP arrays ensuring hard edge boundaries.
+- AI Agent Execution Instructions:
+  - Enforce absolute grid alignment arrays. Throw an exception loop if any pixel contains aliased gradient transparency (must be 100% opaque thread colors).
+  - Scale file array dimensions to mirror the exact factory row-and-stitch count parameters.
+- Headless API/CLI Driving Reference:
+  `designcraft-cli --mode "stitch_matrix" --palette-limit 6 --grid-scale [factory_template_spec] --output /opt/pod-pipeline/build/knitwear_final.bmp`
+
+#### C. ACCESSORIES & ACCESSORY TEMPLATES (AS Colour Caps, Crossbody Bags, Under Armour Backpacks)
+- Primary App Focus: DesignCraft
+- Programmatic Action:
+  1. Downloads specific multi-layered PDF/SVG template bounds from Fourthwall's product matrix schemas.
+  2. Dynamically calculates and centers the design within safe graphic printable zones.
+  3. Auto-generates matching physical text parameters (e.g., custom interior brand tags or product care instructions).
+- AI Agent Execution Instructions:
+  - Track safe zone margins via object bounding boxes (`bbox`). 
+  - Auto-adjust tracking and kerning metrics if typography length exceeds the accessory canvas boundary limits.
+- Headless API/CLI Driving Reference:
+  `designcraft-cli --template "fourthwall_crossbody_v1" --layer "artwork" --embed [source_svg] --layer "care_label" --text "100% Polyester" --output /opt/pod-pipeline/build/accessory_final.pdf`
+
+#### D. ODD/3D TEMPLATES (Sublimation Socks, Arctic Zone Tumblers)
+- Primary App Focus: DesignCraft & EffectCraft
+- Programmatic Action:
+  1. DesignCraft builds an automated tiling macro array to wrap artwork seamlessly around non-standard printable items.
+  2. EffectCraft calculates 3D texture mapping deformations to preview distortion anomalies on cylindrical/tapered surfaces before exporting.
+- AI Agent Execution Instructions:
+  - Generate full bleed layouts (`--bleed 0.25in`) for sublimation sock assets to guarantee 100% heel-to-toe ink coverage.
+  - Apply radial coordinates adjustments to tumbler graphics to compensate for taper distortion.
+- Headless API/CLI Driving Reference:
+  `designcraft-cli --mode "wrap_tile" --bleed 0.25 --input [source_svg] --output /tmp/odd/tiled.pdf`
+  `effectcraft-cli --cylinder-taper --input /tmp/odd/tiled.pdf --output /opt/pod-pipeline/build/odd_final.pdf`
+
+#### E. STATIONERY & PROMOTIONS (Karst Bound Notebooks, Custom Branded Packing Slips)
+- Primary App Focus: DesignCraft & FilmCraft
+- Programmatic Action:
+  1. DesignCraft locks layouts down to a hyper-precise 300+ DPI CMYK print canvas matrix for vector covers.
+  2. Upon database confirmation of a user purchase, DesignCraft builds a highly customized Packing Slip PDF containing store loyalty vouchers or discount codes.
+  3. FilmCraft runs an automated multi-track video timeline, placing the cover asset into motion mockup promotional reels.
+- AI Agent Execution Instructions:
+  - Trigger compilation scripts automatically using a system cron loop or database trigger arrays.
+  - Compile the 5-second motion reel video at 1080x1920 (9:16 aspect ratio) for short-form social feeds.
+- Headless API/CLI Driving Reference:
+  `designcraft-cli --input "notebook_cover_template" --variable-data "order_id" --output /opt/pod-pipeline/build/print_ready_stationery.pdf`
+  `filmcraft-cli --template "reel_promo_9_16" --asset-layer "product_front" --input /opt/pod-pipeline/build/print_ready_stationery.pdf --render-preset "tiktok_1080p" --output /opt/pod-pipeline/build/promo_reel.mp4`
+
+---
+
+### SECTION 3: SYSTEM CORE & DEPLOYMENT ARCHITECTURE
+
+#### 1. File System Layout
+Provide a complete directory tree for a clean Linux VPS deployment mapped under `/opt/pod-pipeline/` separating configs, logs, local sandboxes, and application build directories.
+
+#### 2. PostgreSQL Relational Database Schema
+Provide the complete DDL SQL script to execute on an isolated PostgreSQL database. The schema must enforce strict relational constraints, indexing on lookup strings, and handle the following structural metrics:
+- `users_saas_accounts`: Tracks global tenant tokens, integrated website sync domains, and authenticated system API credentials.
+- `ingested_assets`: Stores tracking rows for raw inputs, source dimensions, derived color spaces, and original trace state boundaries.
+- `processing_jobs`: Tracks processing execution history across individual Craft modules, recording start times, end times, allocated process PIDs, and diagnostic exit codes.
+- `fourthwall_products`: Maps specific local asset IDs to live Fourthwall metadata, tracking unique `media_id` results, active store product variants, SKU mappings, and publishing states (e.g., `draft`, `processing`, `active`, `failed`).
+- `agent_sync_logs`: Tracks bidirectional website communications, recording webhook transactions, payload payloads, and execution history.
+
+#### 3. Model Context Protocol (MCP) Server Integration Spec
+Provide a complete Node.js/Python MCP Server declaration snippet that allows remote agents or external terminal harnesses to communicate directly with the local pipeline via JSON-RPC. The server must expose these explicit tools:
+- `list_pending_assets()`: Queries the PostgreSQL instance for files stuck in the ingestion directory.
+- `trigger_pipeline_job(asset_id, product_type)`: Spins up an isolated async child process loop to run the target asset through the Craft application suite.
+- `get_fourthwall_status(product_id)`: Fetches real-time publishing responses, validation arrays, or live store endpoints from Fourthwall.
+
+#### 4. Code Scaffold & Orchestrator Boilerplate
+Provide a functional, fully typed async Python orchestrator script using `asyncio` and `subprocess` to trigger local headless CLI binaries. It must feature explicit async disk flushing loops (`os.fsync`) to guarantee assets are completely serialized before streaming to external networks.
+
+#### 5. Sandbox Constraints & Fault Management
+- Detail isolation guidelines using strict Docker container boundary properties (`--memory="2g" --cpus="1.5"`) alongside host execution priorities via `nice` profiles to prevent background image processing from starving the live web application server.
+- Intercept massive multi-megabyte log files using local streaming regex filters, keeping error payloads small to maximize DeepSeek V4.1 context economy.
+- Define multi-tiered fallback workflows (e.g., if a vector trace step returns exit code `1`, trigger a high-DPI raster fallback array automatically).
+
+#### 6. Automated Shell Deployment Playbook
+Use code with caution.
+Provide a single, executable bash script (setup-pipeline.sh) that builds user permissions, installs core system tool dependencies (ImageMagick, Docker, python3-pip), sets global environment variables, and spins up microservice containers cleanly.
+Maintain an elite, programmatic, and engineering-first approach. Avoid high-level conceptual summaries. Deliver concrete code frameworks, robust infrastructure boundaries, and copy-pasteable configuration files.

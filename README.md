@@ -1,0 +1,89 @@
+# DeerFlow Forge
+
+An architecture console and deployable reference package for a **print-on-demand
+asset pipeline**: ingest → vector trace → raster/composite → grid + typography →
+effects → motion, orchestrated by **DeerFlow 2.2** (DeepSeek V4.1-Flash) and
+synced to a **Fourthwall** storefront.
+
+The repository has two halves:
+
+| Path | What it is |
+|---|---|
+| `src/`, `public/`, `scripts/`, `server/` | The **console** — a TanStack Start + Vite + React 19 app that renders the blueprint: board, routes, sandbox, playbook, and source browser. |
+| `blueprint/files/` | The **deployable package** — Python `pod_pipeline`, Postgres schema, Docker Compose, systemd units, MCP bridge, craft CLI shims, and stub tests. |
+| `attachments/` | The original provided pipeline modules the blueprint was fitted to (`config.py`, `db.py`, `fourthwall.py`, `orchestrator.py`, `routes.py`, `runner.py`, `worker.py`, `validators.py`, `logfilter.py`, `ingest.py`, `craft_stub.py`, `conftest.py`). |
+| `migrations/` | SQL migrations applied by `npm run build` when `DATABASE_URL` is set. |
+| `.grok/references/` | Workspace contract captured from the original sandbox — kept for traceability. |
+
+## Console
+
+```bash
+npm ci
+npm run dev        # http://localhost:8080
+```
+
+Gates (all green on Windows 11 / Node 26):
+
+```bash
+npm run typecheck  # tsc --noEmit
+npm run lint       # eslint .
+npm run test       # scripts/**/*.test.mjs + src/lib tests
+npm run build      # vite build, then db:migrate (skips without DATABASE_URL)
+```
+
+The console is a **pure viewer**: `src/lib/blueprint/sources.ts` imports the
+pipeline files with Vite's `?raw`, so the built app has no runtime filesystem
+dependency. That makes it cheap to host anywhere Node runs.
+
+## Pipeline (VPS)
+
+`blueprint/files/` is the deployable unit. Required configuration lives in
+`blueprint/files/config/pipeline.env.example`:
+
+| Variable | Meaning |
+|---|---|
+| `DATABASE_URL`, `POD_DB_PASS` | Postgres connection (Compose file provisions `postgres:16`) |
+| `POD_CREDENTIAL_KEY` | At-rest credential encryption key |
+| `FW_API_USER`, `FW_API_SECRET` | Fourthwall Open API credentials |
+| `POD_USE_DOCKER`, `POD_DOCKER_IMAGE` | Run craft steps in the sandboxed runner image |
+| `POD_MCP_HOST`, `POD_MCP_PORT` | MCP server bind address (default `127.0.0.1:8765`) |
+
+Deploy:
+
+```bash
+cd blueprint/files/deploy
+./setup-pipeline.sh          # validates env, applies schema, installs units
+docker compose up -d postgres
+```
+
+### Craft binaries
+
+`deploy/craft-bin/*-cli` are **placeholders** that exit 127 with a message. They
+stand in for five vendor headless binaries (VectorCraft, PhotoCraft, DesignCraft,
+EffectCraft, FilmCraft). Replace each file with the real executable (or point the
+pipeline at `POD_USE_DOCKER=1` and a `pod-craft-runner` image). Until then the
+pipeline starts and reports "vendor binary not installed" per step — it does not
+fabricate output.
+
+## MCP integration with DeerFlow
+
+`deploy/mcp-stdio.mjs` bridges DeerFlow's stdio MCP transport to the pipeline's
+HTTP MCP server. It exposes three tools:
+
+- `list_pending_assets`
+- `trigger_pipeline_job`
+- `get_fourthwall_status`
+
+Run the pipeline MCP server on the VPS, then register it in DeerFlow's
+`extensions_config.json` as an MCP server (`type: "http"`, url
+`http://host.docker.internal:8765/`) or use the stdio bridge inside the container.
+
+## Status
+
+Verified on Windows 11 / Node 26.7.0: typecheck, lint, 197 unit tests, and the
+production build all pass. Windows-specific fixes in this tree: the Vite
+env-wrapper resolves npm `.cmd` shims, the test script globs correctly under
+`cmd`, and symlink-dependent tests skip when Developer Mode is unavailable.
+
+Known gaps before real pipeline traffic: vendor craft binaries, Fourthwall
+credentials, and a Postgres instance. See `blueprint/files/config/pipeline.env.example`.

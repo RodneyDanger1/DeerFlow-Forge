@@ -1,0 +1,31 @@
+{
+  "apparel": {
+    "fourthwall_template_id": "REPLACE_WITH_TEMPLATE_ID",
+    "regions": ["front"],
+    "profit_margin": 0.4
+  },
+  "knitwear": {
+    "fourthwall_template_id": "REPLACE_WITH_TEMPLATE_ID",
+    "regions": ["front"],
+    "palette_limit": 6,
+    "knit_grid": "112x140"
+  },
+  "accessories": {
+    "fourthwall_template_id": "REPLACE_WITH_TEMPLATE_ID",
+    "regions": ["front"],
+    "template": "fourthwall_crossbody_v1",
+    "care_text": "100% Polyester"
+  },
+  "odd_3d": {
+    "fourthwall_template_id": "REPLACE_WITH_TEMPLATE_ID",
+    "regions": ["front"],
+    "bleed_in": "0.25"
+  },
+  "stationery": {
+    "fourthwall_template_id": "REPLACE_WITH_TEMPLATE_ID",
+    "regions": ["front"],
+    "cover_template": "notebook_cover_template",
+    "reel_template": "reel_promo_9_16",
+    "reel_preset": "tiktok_1080p"
+  }
+}

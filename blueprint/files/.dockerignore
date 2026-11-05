@@ -1,0 +1,7 @@
+.venv
+sandbox
+build
+logs
+data
+**/__pycache__
+*.pyc

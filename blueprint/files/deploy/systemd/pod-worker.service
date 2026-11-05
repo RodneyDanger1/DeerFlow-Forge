@@ -1,0 +1,14 @@
+[Unit]
+Description=Drain DeerFlow pod pipeline runs
+After=docker.service pod-mcp.service
+Wants=docker.service
+
+[Service]
+Type=oneshot
+User=pod
+Group=pod
+SupplementaryGroups=docker
+WorkingDirectory=/opt/pod-pipeline
+EnvironmentFile=/opt/pod-pipeline/config/pipeline.env
+ExecStart=/opt/pod-pipeline/.venv/bin/python -m pod_pipeline.worker --drain --scan
+NoNewPrivileges=true

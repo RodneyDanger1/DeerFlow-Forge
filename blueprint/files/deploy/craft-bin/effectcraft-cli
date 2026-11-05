@@ -1,0 +1,3 @@
+#!/bin/sh
+echo "effectcraft-cli: vendor binary not installed. Replace this file and rebuild pod-craft-runner." >&2
+exit 127

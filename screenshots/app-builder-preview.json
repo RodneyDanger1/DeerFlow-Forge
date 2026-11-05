@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:8080/",
+  "viewports": {
+    "desktop": {
+      "width": 1280,
+      "height": 800,
+      "status": 200,
+      "title": "DeerFlow Forge",
+      "hasCanvas": false,
+      "bodyTextLen": 2734,
+      "bodyTextHash": "7a3ac826f84d4b085dc0ec70a4f8e6c4836116e41c89923027fd9731e13fca1c",
+      "bodyTextPrefix": "DEERFLOW Forge pod_pipeline Fourthwall Open API · DeepSeek V4.1-",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview.png"
+    },
+    "mobile": {
+      "width": 390,
+      "height": 844,
+      "status": 200,
+      "title": "DeerFlow Forge",
+      "hasCanvas": false,
+      "bodyTextLen": 2679,
+      "bodyTextHash": "67fc933204f006e9583173730d99b0855cd3ed969f58c341299e62a87757eee7",
+      "bodyTextPrefix": "DEERFLOW Forge Board Routes Sandbox Playbook Sources One asset, ",
+      "horizontalOverflow": false,
+      "consoleErrors": [],
+      "pageErrors": [],
+      "screenshot": "/workspace/screenshots/app-builder-preview-mobile.png"
+    }
+  },
+  "brandWarnings": [],
+  "authWarnings": [],
+  "verdictFile": "/workspace/screenshots/app-builder-preview.json"
+}

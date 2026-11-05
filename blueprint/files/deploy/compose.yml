@@ -1,0 +1,24 @@
+name: pod-pipeline
+services:
+  postgres:
+    image: postgres:16
+    container_name: pod-postgres
+    environment:
+      POSTGRES_USER: pod_app
+      POSTGRES_PASSWORD: ${POD_DB_PASS}
+      POSTGRES_DB: pod
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    mem_limit: 1g
+    cpus: 0.75
+    shm_size: 128mb
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pod_app -d pod"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+volumes:
+  pgdata:

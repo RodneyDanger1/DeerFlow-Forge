@@ -1,0 +1,18 @@
+[Unit]
+Description=DeerFlow pod pipeline MCP
+After=docker.service network-online.target
+Wants=docker.service network-online.target
+
+[Service]
+User=pod
+Group=pod
+SupplementaryGroups=docker
+WorkingDirectory=/opt/pod-pipeline
+EnvironmentFile=/opt/pod-pipeline/config/pipeline.env
+ExecStart=/opt/pod-pipeline/.venv/bin/python -m pod_pipeline.mcp_server --http
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target
