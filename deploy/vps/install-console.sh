@@ -27,6 +27,13 @@ if [[ ! -f "$REPO/package.json" || ! -f "$REPO/scripts/build-vps.mjs" ]]; then
   echo "expected the repo at $REPO (clone it there first)" >&2
   exit 1
 fi
+
+# The tree is handed to the unprivileged service user below, so root-run git
+# later sees a different owner and refuses the checkout ("dubious ownership").
+# Register the deploy path once; idempotent across re-runs.
+if ! git config --system --get-all safe.directory 2>/dev/null | grep -qx "$REPO"; then
+  git config --system --add safe.directory "$REPO"
+fi
 if ! command -v curl >/dev/null 2>&1; then
   apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
 fi
