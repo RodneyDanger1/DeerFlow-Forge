@@ -74,7 +74,9 @@ const CATALOGUE_NOTE = "/srv/vaults/storefront/30-reference/fourthwall/FOURTHWAL
 const CATALOGUE_SNAPSHOT = "/opt/pod-pipeline/config/fourthwall-product-templates.json";
 const TEMPLATE_DETAILS = "/opt/pod-pipeline/config/fourthwall-template-details.json";
 const ART_SOP = "/srv/vaults/storefront/10-sops/art-to-print-prep.md";
+const ART_LEARNING = "/srv/vaults/storefront/30-reference/art-learning/00-ART-LEARNING-INDEX.md";
 const ART_TOOL = "tools/prep_print_art.py";
+const VECTOR_TOOL = "tools/vectorize_art.py";
 
 /**
  * Art-to-print procedure, generalised from the first production run.
@@ -82,12 +84,13 @@ const ART_TOOL = "tools/prep_print_art.py";
  * refuses empty/full-frame masks instead of trusting them blind.
  */
 const ART_STEPS = [
-  "Pick the mask mode from the art: glow (colourful subject on dark), lineart --invert (ink on light), white (white ground, keep enclosed whites) or alpha (input already cut out).",
+  "Pick the mask mode from the art: glow (colourful subject on dark), lineart --invert (ink on light), white (remove every neutral white, keep cream lettering) or alpha (input already cut out).",
   "Take geometry from the provider: areas come from config/fourthwall-template-details.json (areaGeometry has inches, pixels and DPI per region).",
-  "Run tools/prep_print_art.py: measured mask, crop, optional bloom, centre on a 300 DPI canvas, previews on black and white, JSON report.",
+  "Run tools/prep_print_art.py: measured mask, rim/speck/edge-fleck cleanup, crop, saturation and unsharp restore, 300 DPI canvas, previews, JSON report.",
+  "Flat art: run tools/vectorize_art.py (binary alpha -> magenta key -> vtracer -> rsvg at print pixels). Textured/painterly art: do not auto-trace, use a high-res raster or regenerate.",
   "Check the gates in the report: coverage 0.005–0.62, non-empty bbox, upscale warning above 2.5x, canvas matches the provider area.",
   "Check the provider's artwork rules for the method: PNG/JPG only, DTG solid shapes, embroidery minimums (see traps).",
-  "Upload through the storefront's own Fourthwall client, create hidden, publish with a separate state change, then run the catalogue sync. Order a sample before calling it print-verified.",
+  "Upload hidden, publish with a separate state change, hide older versions, wait for the storefront cache, sync, then verify /shop and every product page. Order a sample before calling it print-verified.",
 ];
 
 export function PlaybookView({ onOpen }: { onOpen: (path: string) => void }) {
@@ -193,8 +196,16 @@ set -a; . config/pipeline.env; set +a
             <dd className="font-mono break-all">{ART_SOP}</dd>
           </div>
           <div>
-            <dt className="font-mono text-muted">tool + template geometry</dt>
-            <dd className="font-mono break-all">{ART_TOOL} · {TEMPLATE_DETAILS}</dd>
+            <dt className="font-mono text-muted">tools + template geometry</dt>
+            <dd className="font-mono break-all">{ART_TOOL} · {VECTOR_TOOL} · {TEMPLATE_DETAILS}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-muted">full knowledge base (vault)</dt>
+            <dd className="font-mono break-all">{ART_LEARNING}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-muted">agent instructions</dt>
+            <dd className="font-mono break-all">30-reference/art-learning/05-IMAGINEER-INSTRUCTIONS.md</dd>
           </div>
         </dl>
         <p className="max-w-3xl text-xs text-pretty text-muted">

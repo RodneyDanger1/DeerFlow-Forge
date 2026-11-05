@@ -38,18 +38,24 @@ except ImportError:  # pragma: no cover - reported, never hidden
 KEY_COLOR = (255, 0, 255)
 
 
-def flatten_on_key(cutout: Path, target: Path, colors: int) -> Path:
-    """Composite the transparent cutout on a magenta key, then quantise.
+def flatten_on_key(cutout: Path, target: Path, colors: int, binary_alpha: bool, alpha_threshold: int) -> Path:
+    """Composite the transparent cutout on a magenta key, then optionally quantise.
 
     vtracer flattens RGBA to a background colour, which reinstates the white
     border we just removed. A colour that never appears in the art is used as the
     key instead; the matching SVG paths are dropped afterwards so the render is
-    genuinely transparent. Quantising first stops paper texture being traced as
-    hundreds of noise layers.
+    genuinely transparent.
+
+    The important detail learned in testing: trace from a HARD alpha edge. Any
+    half-transparent cutout pixel becomes a blend between art and key, which the
+    tracer turns into a pink rim. Binarising alpha first removes those pixels, so
+    the traced outline is clean.
     """
     art = Image.open(cutout).convert("RGBA")
     canvas = Image.new("RGBA", art.size, (*KEY_COLOR, 255))
-    canvas.alpha_composite(art)
+    alpha = art.getchannel("A")
+    mask = alpha.point(lambda value: 255 if value >= alpha_threshold else 0) if binary_alpha else alpha
+    canvas.paste(art.convert("RGB"), (0, 0), mask)
     rgb = canvas.convert("RGB")
     if colors > 0:
         rgb = rgb.quantize(colors=colors, method=Image.MEDIANCUT, dither=Image.Dither.NONE).convert("RGB")
@@ -57,7 +63,7 @@ def flatten_on_key(cutout: Path, target: Path, colors: int) -> Path:
     return target
 
 
-def strip_key_fills(svg_path: Path, tolerance: int = 200) -> int:
+def strip_key_fills(svg_path: Path, tolerance: int = 120) -> int:
     """Replace key-coloured fills with none, so the SVG has real transparency."""
     text = svg_path.read_text(encoding="utf-8")
     removed = 0
@@ -144,6 +150,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--cutout", choices=("auto", "white", "none"), default="auto")
     parser.add_argument("--min-component", type=int, default=40)
     parser.add_argument("--quantize-colors", type=int, default=0, help="Pre-quantise before tracing (0 keeps full colour)")
+    parser.add_argument("--palette", dest="quantize_colors", type=int, help="Alias for --quantize-colors")
+    parser.add_argument("--binary-alpha", action="store_true", default=True, help="Trace from a hard alpha edge (removes key-blend rims)")
+    parser.add_argument("--no-binary-alpha", dest="binary_alpha", action="store_false")
+    parser.add_argument("--alpha-threshold", type=int, default=128)
     parser.add_argument("--art-min-component", type=int, default=200, help="Drop specks smaller than this in the rendered art")
     parser.add_argument("--filter-speckle", type=int, default=8)
     parser.add_argument("--color-precision", type=int, default=6)
@@ -161,7 +171,7 @@ def main(argv: list[str] | None = None) -> int:
         canvas_w, canvas_h, geometry_source = geometry(args)
         with tempfile.TemporaryDirectory() as temp:
             cutout = cutout_source(args, Path(temp))
-            keyed = flatten_on_key(cutout, Path(temp) / "keyed.png", args.quantize_colors)
+            keyed = flatten_on_key(cutout, Path(temp) / "keyed.png", args.quantize_colors, args.binary_alpha, args.alpha_threshold)
             svg_path = Path(args.svg)
             svg_path.parent.mkdir(parents=True, exist_ok=True)
             vtracer.convert_image_to_svg_py(

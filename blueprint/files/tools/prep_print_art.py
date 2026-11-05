@@ -153,6 +153,19 @@ def white_key_alpha(src: Image.Image, args: argparse.Namespace) -> Image.Image:
         # grey rims. Threshold hard, erode one pixel, then re-soften the edge.
         mask = mask.point(lambda v: 0 if v < 128 else 255)
         mask = mask.filter(ImageFilter.MinFilter(3))
+    if args.edge_clean_px > 0:
+        # Light paper flecks cling to the outer silhouette. Remove light pixels that
+        # sit close to the transparent exterior, leaving interior cream lettering.
+        transparent = mask.point(lambda v: 255 if v < 16 else 0)
+        near_background = transparent.filter(ImageFilter.MaxFilter(args.edge_clean_px * 2 + 1))
+        luminance = src.convert("L")
+        mask_px = mask.load()
+        near_px = near_background.load()
+        lum_px = luminance.load()
+        for y in range(height):
+            for x in range(width):
+                if near_px[x, y] > 0 and lum_px[x, y] > args.edge_clean_lum and mask_px[x, y] > 0:
+                    mask_px[x, y] = 0
     return mask.filter(ImageFilter.GaussianBlur(args.feather))
 
 
@@ -221,6 +234,8 @@ def build_alpha(src: Image.Image, args: argparse.Namespace) -> Image.Image:
                 alpha = 1.0
             out[x, y] = 0 if alpha < args.alpha_floor else int(round(alpha * 255))
     mask = mask.filter(ImageFilter.MedianFilter(args.median))
+    if args.min_component > 0:
+        mask = drop_small_components(mask, args.min_component)
     if args.feather > 0:
         mask = mask.filter(ImageFilter.GaussianBlur(args.feather))
     return mask
@@ -313,6 +328,11 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     scaled = art.resize((usable, max(1, round(art.height * usable / art.width))), Image.LANCZOS)
     master = Image.new("RGBA", (width_px, height_px), (0, 0, 0, 0))
     master.alpha_composite(scaled, ((width_px - scaled.width) // 2, (height_px - scaled.height) // 2))
+    if args.sharpen > 0:
+        alpha = master.getchannel("A")
+        sharpened = master.convert("RGB").filter(ImageFilter.UnsharpMask(radius=2, percent=int(args.sharpen), threshold=2))
+        master = sharpened.convert("RGBA")
+        master.putalpha(alpha)
     master.save(args.output, dpi=(args.dpi, args.dpi))
 
     warnings: list[str] = []
@@ -380,6 +400,8 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--clean-rim", action="store_true", default=True, help="white mode: drop semi-transparent white rim pixels")
     parser.add_argument("--no-clean-rim", dest="clean_rim", action="store_false")
     parser.add_argument("--min-component", type=int, default=24, help="white mode: drop isolated specks smaller than this many pixels")
+    parser.add_argument("--edge-clean-px", type=int, default=0, help="white mode: radius near transparent exterior to strip light flecks")
+    parser.add_argument("--edge-clean-lum", type=int, default=150, help="white mode: luminance above which near-edge pixels are removed")
     parser.add_argument("--print-width-in", type=float, help="Physical print width in inches (defaults to the full provider area)")
     parser.add_argument("--lum-floor", type=float, default=95.0)
     parser.add_argument("--lum-div", type=float, default=80.0)
@@ -393,6 +415,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--brightness", type=float, default=1.0)
     parser.add_argument("--saturation", type=float, default=1.0)
     parser.add_argument("--bloom", type=float, default=0.0)
+    parser.add_argument("--sharpen", type=float, default=0.0, help="Unsharp-mask percent after scaling (restores edge definition)")
     parser.add_argument("--preview-dir")
     parser.add_argument("--report-json")
     parser.add_argument("--min-coverage", type=float, default=DEFAULT_GATES["min_coverage"])
