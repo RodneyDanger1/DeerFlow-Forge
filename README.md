@@ -179,11 +179,25 @@ the client's framing (newline-delimited or Content-Length).
 
 ## Status
 
-Verified on Windows 11 / Node 26.7.0: typecheck, lint, 204 JS tests (202 pass,
-2 skipped), the Vercel build, the `node-server` build, a Chrome visual pass over
-all five sections at desktop and phone widths, and 24 pure Python tests.
-Integration tests (PostgreSQL + stubs + mocked Fourthwall) run where a test
-database is reachable.
+Verified on Windows 11 / Node 26.7.0 and on the deployed VPS:
+
+- Console: typecheck, lint, 207 JS tests (205 pass, 2 skipped), Vercel build,
+  `node-server` build, and a Chrome visual pass over all five sections at
+  desktop and phone widths against **the VPS build over an SSH tunnel** (0
+  console errors, 0 failed requests, 0 horizontal overflow).
+- Pipeline: 31 tests on the VPS against containerised PostgreSQL (27 pure, 4
+  integration using the documented `craft_stub.py` double and a mocked
+  Fourthwall transport).
+- Live end-to-end on the VPS: `trigger_pipeline_job` → detached worker → trace,
+  trim, effect steps all exit 0 → `apparel_final.png` written → product row
+  `draft` with `last_error: "no Fourthwall credentials configured"` (honest
+  refusal, no fake publish). The run is `succeeded`, the asset `processed`.
+- DeerFlow integration: DeerFlow's own `langchain_mcp_adapters` client loads the
+  three Forge tools from `http://172.17.0.1:8765/` and successfully calls
+  `list_pending_assets`.
+- Boot: `deerflow-forge-console.service`, `pod-mcp.service`, `pod-worker.timer`
+  and `docker.service` are all `enabled`; Postgres and nginx restart policies
+  are `unless-stopped`.
 
 Windows-specific fixes in this tree: the Vite env-wrapper resolves npm `.cmd`
 shims, the build script re-invokes npm through `npm_execpath`, the test script
@@ -192,5 +206,8 @@ Mode is unavailable.
 
 Known gaps before real pipeline traffic: vendor craft binaries (the shipped
 `craft-bin/*-cli` files exit 127 by design), Fourthwall credentials, and the
-`fourthwall_template_id` values in `config/products.json`.
+`fourthwall_template_id` values in `config/products.json`. Until those exist the
+pipeline refuses at the publish step with a named error rather than pretending
+to publish.
+
 
