@@ -72,6 +72,22 @@ const FOURTHWALL_ROUTES: ReadonlyArray<{
 
 const CATALOGUE_NOTE = "/srv/vaults/storefront/30-reference/fourthwall/FOURTHWALL PRODUCTS AND INFO.md";
 const CATALOGUE_SNAPSHOT = "/opt/pod-pipeline/config/fourthwall-product-templates.json";
+const TEMPLATE_DETAILS = "/opt/pod-pipeline/config/fourthwall-template-details.json";
+const ART_SOP = "/srv/vaults/storefront/10-sops/art-to-print-prep.md";
+const ART_TOOL = "tools/prep_print_art.py";
+
+/**
+ * Art-to-print procedure, generalised from the first production run.
+ * Thresholds shown are starting defaults; the tool measures the image and
+ * refuses empty/full-frame masks instead of trusting them blind.
+ */
+const ART_STEPS = [
+  "Pick the mask mode from the art: glow (colourful subject on dark), lineart --invert (ink on light) or none (deliberate full bleed).",
+  "Take geometry from the provider: areas come from config/fourthwall-template-details.json (areaGeometry has inches, pixels and DPI per region).",
+  "Run tools/prep_print_art.py: measured mask, crop, optional bloom, centre on a 300 DPI canvas, previews on black and white, JSON report.",
+  "Check the gates in the report: coverage 0.005–0.62, non-empty bbox, upscale warning above 2.5x, canvas matches the provider area.",
+  "Upload through the storefront's own Fourthwall client, create hidden, publish with a separate state change, then run the catalogue sync.",
+];
 
 export function PlaybookView({ onOpen }: { onOpen: (path: string) => void }) {
   const setup = sourceByPath("deploy/setup-pipeline.sh");
@@ -142,6 +158,48 @@ export function PlaybookView({ onOpen }: { onOpen: (path: string) => void }) {
           Create products hidden (<span className="font-mono">publishOnCreate:false</span>) and publish with a separate state
           change. The shop&apos;s rate limits are shared with the storefront&apos;s Imagineer agent: 5 product creates per minute,
           20 upload URLs per minute.
+        </p>
+      </section>
+      <section className="flex flex-col gap-3 border-t border-fg/10 pt-6">
+        <div>
+          <h3 className="text-lg font-medium">Art-to-print prep</h3>
+          <p className="mt-1 max-w-3xl text-sm text-pretty text-muted">
+            Raster art → provider-ready print master, with measured masks and hard gates instead of magic numbers. The full
+            procedure, traps and worked example live in the vault SOP below.
+          </p>
+        </div>
+        <ol className="flex flex-col gap-2">
+          {ART_STEPS.map((step, index) => (
+            <li key={step} className="grid grid-cols-[2rem_1fr] gap-3">
+              <span className="font-mono text-xs text-brass tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+              <p className="text-sm text-pretty">{step}</p>
+            </li>
+          ))}
+        </ol>
+        <pre className="overflow-x-auto border border-fg/10 p-3 font-mono text-xs leading-relaxed">{`cd /opt/pod-pipeline
+set -a; . config/pipeline.env; set +a
+.venv/bin/python -m tools.fetch_fourthwall_details
+.venv/bin/python -m tools.prep_print_art \\
+  --input data/ai-uploads/art.jpg \\
+  --template pro_e4677535402b4eeb81 --area front_large --dpi 300 \\
+  --mode glow --brightness 1.18 --saturation 1.25 --bloom 6 \\
+  --output data/ai-uploads/print_master.png \\
+  --report-json data/ai-uploads/print_master.report.json \\
+  --preview-dir data/ai-uploads/previews`}</pre>
+        <dl className="grid gap-2 text-xs sm:grid-cols-2">
+          <div>
+            <dt className="font-mono text-muted">procedure / traps (vault)</dt>
+            <dd className="font-mono break-all">{ART_SOP}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-muted">tool + template geometry</dt>
+            <dd className="font-mono break-all">{ART_TOOL} · {TEMPLATE_DETAILS}</dd>
+          </div>
+        </dl>
+        <p className="max-w-3xl text-xs text-pretty text-muted">
+          Traps encoded in the SOP: provider mockups are decorative and never prove print scale; potrace flattens glow into a
+          silhouette so PNG at 300 DPI is the print artifact; transparent padding shrinks the design; licensed wordmarks must not
+          be sold.
         </p>
       </section>
       <div className="flex flex-wrap gap-2">
