@@ -53,6 +53,9 @@ Skills are grouped by the job they finish, not by tool. The stable families are:
 | Brand system | Logo variants, palette, type, print rules, templates | `brand-system` |
 | Marketing art | Paid social stills, website banners | `ad-creative`, `web-banner` |
 | Meta tooling | Install, validate and route skills | `skill-installer`, `skills-index` |
+| Command knowledge | Map any job/menu to exact ids, full indexes, tips, recipes | `artcraft-command-atlas`, `artcraft-command-catalog` |
+| Vector editing | Geometry, type, layers/artboards/symbols, colour/styles, export, SVG | `artcraft-path-geometry`, `artcraft-typography-outlines`, `artcraft-layers-artboards-symbols`, `artcraft-color-swatches-styles`, `artcraft-document-export-formats`, `artcraft-svg-production` |
+| PhotoCraft production | Selections/masks, adjustments/filters, batch automation | `artcraft-selections-masks`, `artcraft-photocraft-adjustments-filters`, `artcraft-batch-automation` |
 
 New skills appear in the generated index as they are added; treat the table above as
 orientation, not as the roster. Runtime roots may also contain skills that are not

@@ -201,6 +201,8 @@ below 150 px per print inch; unlicensed asset; tool unavailable.
 Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
 parameter; call a screen render print proof.
 
+Deeper trace/SVG commands: **artcraft-command-atlas** (`vc-trace-addon.md`) and **artcraft-svg-production**.
+
 ## Sources & verification
 
 - **VERIFIED:** `select.all` mandatory; nested trace params; `imageTrace.make`/`expand` JSON shapes;

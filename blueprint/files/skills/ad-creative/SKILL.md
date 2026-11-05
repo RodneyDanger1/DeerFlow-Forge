@@ -179,6 +179,8 @@ below 150 px per print inch; unlicensed asset; tool unavailable.
 Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
 parameter; call a screen render print proof.
 
+Palette/type/command mapping: **artcraft-command-atlas**, **brand-system**, **artcraft-typography-outlines**.
+
 ## Sources & verification
 
 - **VERIFIED:** PhotoCraft `convert --quality` runs and warns "lossy compression"; q82 vs lossless

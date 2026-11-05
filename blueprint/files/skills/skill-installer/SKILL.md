@@ -30,14 +30,14 @@ Do not use it to edit skill content; edit the repo copy, validate, then install.
 
 | Layer | Path | Rule |
 |---|---|---|
-| Source of truth | `<repo>/blueprint/files/skills/<name>/SKILL.md` | edit here |
-| DSH runtime | `%USERPROFILE%\.dsh\skills\<name>\SKILL.md` | generated copy |
-| Hermes runtime | `%USERPROFILE%\.hermes\skills\<name>\SKILL.md` | generated copy |
+| Source of truth | `<repo>/blueprint/files/skills/<name>/SKILL.md` (+ `references/`, `assets/`) | edit here |
+| DSH runtime | `%USERPROFILE%\.dsh\skills\<name>\SKILL.md` (+ mirrored references/assets) | generated copy |
+| Hermes runtime | `%USERPROFILE%\.hermes\skills\<name>\SKILL.md` (+ mirrored references/assets) | generated copy |
 
 On POSIX the runtime roots are `~/.dsh/skills` and `~/.hermes/skills`; override them
 with `--dsh` and `--hermes`. On this machine `<repo>` is `C:\Users\Riley\Desktop\DeerFlow Forge`.
 
-One skill is one directory holding one `SKILL.md`; directories without one (`_meta`)
+One skill is one directory holding one `SKILL.md` and optional `references/`/`assets/`; directories without one (`_meta`)
 are tooling and are never installed.
 
 ## Commands
@@ -69,7 +69,9 @@ writes neither the manifest nor the index. Both tools are Python 3.8+, stdlib on
 3. Keep the file between 40 and 220 lines.
 4. Run `validate_skills.py` until the row says PASS, then `install_skills.py --targets both`.
 5. Confirm source and both runtime copies share one SHA-256; the installer
-   regenerates `_meta/SKILLS-INDEX.md`, so never hand-edit either generated file.
+   regenerates `_meta/SKILLS-INDEX.md`, so never hand-edit either generated file. The installer mirrors
+`references/` and `assets/` file-by-file with the same SHA-256 conflict rules, so command atlases and
+recipes ship with their skill to both runtimes.
 
 ## Update a skill
 

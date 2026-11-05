@@ -189,6 +189,8 @@ until cream lettering disappears; call a non-crash failure a success.
 - **Lossy WebP can grow:** on flat art `convert --quality 82` produced 2,718 B vs 1,372 B lossless —
   compare and pick the smaller, not the "higher quality" blindly.
 
+Photo command depth: **artcraft-command-atlas** (`pc-image-adjust.md`, `pc-filter-effect.md`); batch runs: **artcraft-batch-automation**.
+
 ## Sources & verification
 
 - **VERIFIED (2026-11-05):** audit numbers from a synthetic diffusion-like test; `prep_print_art`

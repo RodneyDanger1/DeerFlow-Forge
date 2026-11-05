@@ -38,6 +38,7 @@ LINES_MIN = 40
 LINES_MAX = 220
 
 TARGET_NAMES = ("dsh", "hermes")
+SUPPORT_DIRS = ("references", "assets")
 TARGET_LABELS = {"dsh": "DSH", "hermes": "Hermes"}
 
 NAME_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -585,6 +586,53 @@ def target_state(name: str, target_root: Path, source_sha: str) -> Dict[str, Any
     return state
 
 
+def iter_support_files(skill_dir: Path) -> Iterable[Tuple[Path, Path]]:
+    """Yield (source, relative path) for reference/support files under a skill."""
+    for dirname in SUPPORT_DIRS:
+        base = skill_dir / dirname
+        if not base.is_dir():
+            continue
+        for source in sorted(base.rglob("*")):
+            if source.is_file() and not source.is_symlink():
+                yield source, source.relative_to(skill_dir)
+
+
+def sync_support_files(
+    skill_dir: Path, skill_name: str, target_root: Path, force: bool
+) -> Dict[str, Any]:
+    """Mirror references/ (and assets/) into the installed skill directory."""
+    result: Dict[str, Any] = {
+        "files": 0,
+        "created": 0,
+        "updated": 0,
+        "unchanged": 0,
+        "conflicts": [],
+        "errors": [],
+    }
+    for source, relative in iter_support_files(skill_dir):
+        result["files"] += 1
+        target = target_root / skill_name / relative
+        try:
+            source_sha = sha256_file(source)
+            if target.exists():
+                if sha256_file(target) == source_sha:
+                    result["unchanged"] += 1
+                    continue
+                if not force:
+                    result["conflicts"].append(str(relative))
+                    continue
+                action = "updated"
+            else:
+                action = "created"
+            atomic_write_bytes(target, source.read_bytes())
+            if sha256_file(target) != source_sha:
+                raise OSError(f"post-write hash mismatch for {relative}")
+            result[action] += 1
+        except OSError as exc:
+            result["errors"].append(f"{relative}: {exc}")
+    return result
+
+
 def install_to_target(report: SkillReport, target_root: Path, force: bool) -> Dict[str, Any]:
     state = target_state(report.dir_name, target_root, report.sha256)
     result: Dict[str, Any] = {
@@ -593,9 +641,6 @@ def install_to_target(report: SkillReport, target_root: Path, force: bool) -> Di
         "action": "skipped",
         "sha256": state.get("sha256"),
     }
-    if state["status"] == "current":
-        result["action"] = "unchanged"
-        return result
     if state["status"] == "unreadable":
         result["action"] = "error"
         result["reason"] = state.get("error", "existing target is unreadable")
@@ -605,20 +650,38 @@ def install_to_target(report: SkillReport, target_root: Path, force: bool) -> Di
         result["existing_sha256"] = state.get("sha256")
         result["reason"] = "target exists with different content; pass --force to replace it"
         return result
-    try:
-        atomic_write_bytes(Path(state["path"]), report.raw)
-        written_sha = sha256_file(Path(state["path"]))
-    except OSError as exc:
+    if state["status"] == "current":
+        result["action"] = "unchanged"
+    else:
+        try:
+            atomic_write_bytes(Path(state["path"]), report.raw)
+            written_sha = sha256_file(Path(state["path"]))
+        except OSError as exc:
+            result["action"] = "error"
+            result["reason"] = str(exc)
+            return result
+        if written_sha != report.sha256:
+            result["action"] = "error"
+            result["reason"] = f"post-write hash mismatch (wrote {written_sha[:12]})"
+            return result
+        result["sha256"] = written_sha
+        result["status"] = "current"
+        result["action"] = "created" if state["status"] == "missing" else "updated"
+    support = sync_support_files(report.path.parent, report.dir_name, target_root, force)
+    result["support"] = support
+    if support["errors"]:
         result["action"] = "error"
-        result["reason"] = str(exc)
-        return result
-    if written_sha != report.sha256:
-        result["action"] = "error"
-        result["reason"] = f"post-write hash mismatch (wrote {written_sha[:12]})"
-        return result
-    result["sha256"] = written_sha
-    result["status"] = "current"
-    result["action"] = "created" if state["status"] == "missing" else "updated"
+        result["reason"] = "; ".join(support["errors"][:3])
+    elif support["conflicts"]:
+        result["action"] = "conflict"
+        result["reason"] = (
+            "reference files differ; pass --force to replace them: "
+            + ", ".join(support["conflicts"][:3])
+        )
+    elif support["created"] or support["updated"]:
+        result["status"] = "current"
+        if result["action"] == "unchanged":
+            result["action"] = "updated"
     return result
 
 

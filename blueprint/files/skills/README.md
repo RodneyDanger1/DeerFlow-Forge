@@ -20,9 +20,10 @@ python "blueprint/files/skills/_meta/check_skill_commands.py"                   
 The installer refuses to overwrite a differing target unless `--force`, skips unchanged files by
 SHA-256, and regenerates `_meta/manifest.json` + `_meta/SKILLS-INDEX.md`. New skills use the
 Hermes-superset frontmatter (name, description, version, author, license, platforms,
-`metadata.hermes`); the eight original skills keep minimal frontmatter and are still installable.
+`metadata.hermes`); the original skills keep minimal frontmatter and are still installable. Skills may ship a
+`references/` folder (command atlases, recipes, tips); the installer mirrors it to both runtimes.
 
-## Catalogue (22 skills)
+## Catalogue (32 skills)
 
 | Skill | Family | Use it for |
 |---|---|---|
@@ -45,6 +46,16 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 | `web-banner` | Brand/marketing | hero/banner desktop + mobile crops |
 | `brand-system` | Brand/marketing | logo variants, palette, type, rules |
 | `artcraft-command-catalog` | Engine | find/execute any of 918 commands in 64 groups |
+| `artcraft-command-atlas` | Engine | intent map + full family indexes, tips, recipes for 918/965 commands |
+| `artcraft-path-geometry` | Engine | booleans, path clean/simplify, offset/outline, compound paths |
+| `artcraft-typography-outlines` | Engine | type creation/styles, fonts, text-on-path, outlines |
+| `artcraft-layers-artboards-symbols` | Engine | layers, clipping, artboards, symbols, locking |
+| `artcraft-color-swatches-styles` | Engine | swatches, gradients, recolour, effects, opacity masks |
+| `artcraft-document-export-formats` | Engine | save/place/export SVG/PDF/PNG, artboards, presets |
+| `artcraft-svg-production` | Engine | production SVG options, text policy, XML/render checks |
+| `artcraft-selections-masks` | PhotoCraft | subject/sky selection, refine edge, masks, channels |
+| `artcraft-photocraft-adjustments-filters` | PhotoCraft | levels/curves/colour, denoise/sharpen, LUT |
+| `artcraft-batch-automation` | PhotoCraft | actions, batch folders, naming, droplets, verification |
 | `craft-mcp-drive` | Engine | drive VectorCraft/PhotoCraft over MCP (33+26 tools) |
 | `skill-installer` | Meta | install/validate skills on DSH + Hermes |
 | `skills-index` | Meta | discover/route skills and chains |
@@ -81,7 +92,8 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 
 ## Quality evidence
 
-- `_meta/validate_skills.py`: **22 checked / 22 passed**, DSH 22 current, Hermes 22 current.
+- `_meta/validate_skills.py`: **32 checked / 32 passed**, DSH 32 current, Hermes 32 current.
+`_meta/build_command_guide.py` regenerates the atlas indexes and asserts 918/965 coverage.
 - `_meta/manifest.json` + `_meta/SKILLS-INDEX.md` are generated from the live scan.
 - Independent audit: vault `30-reference/art-learning/19-SKILLS-QUALITY-AUDIT.md` (snapshot at
   08:32Z found 5 blockers; all 5 were fixed and the validator re-run — see the resolution log in

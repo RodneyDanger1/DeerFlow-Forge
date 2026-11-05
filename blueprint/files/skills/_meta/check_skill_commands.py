@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Semantic check: every command id quoted in a SKILL.md must exist in the installed catalogues.
+"""Semantic check: every command id quoted in a SKILL.md or a references/*.md must exist in the installed catalogues.
 
 Structural validation (validate_skills.py) cannot catch an invented command id. This does:
   * actual runnable steps — JSON {"command": "id"} / {"id": "id"} / `--cmd id` — must exist;
@@ -67,12 +67,17 @@ def main() -> int:
     args = parser.parse_args()
 
     skills = sorted(ROOT.glob("*/SKILL.md"))
-    report = {skill.parent.name: scan(skill) for skill in skills}
+    refs = sorted(ROOT.glob("*/references/*.md"))
+    targets = [(skill, skill.parent.name) for skill in skills] + [
+        (ref, f"{ref.parent.parent.name}/{ref.name}") for ref in refs
+    ]
+    report = {name: scan(path) for path, name in targets}
     bad = sum(1 for findings in report.values() if findings)
+    total_targets = len(targets)
     if args.json:
-        print(json.dumps({"skills": len(skills), "with_unknown_ids": bad, "report": report}, indent=2))
+        print(json.dumps({"targets": total_targets, "skills": len(skills), "references": len(refs), "with_unknown_ids": bad, "report": report}, indent=2))
         return 1 if bad else 0
-    print(f"{len(skills)} skills scanned; {bad} with unknown command ids")
+    print(f"{total_targets} files scanned ({len(skills)} SKILL.md + {len(refs)} references); {bad} with unknown command ids")
     for name, findings in report.items():
         if not findings:
             continue

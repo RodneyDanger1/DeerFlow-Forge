@@ -201,6 +201,8 @@ defect; CMYK/proof needed; batch name collision without `--naming`.
 **Never:** overwrite the source; sharpen before final resize; trust a lossy export byte-size blindly;
 claim CMYK proof from an RGB screen.
 
+Deeper PhotoCraft command map: **artcraft-command-atlas** (`pc-image-adjust.md`, `pc-filter-effect.md`); cutouts: **artcraft-selections-masks**.
+
 ## Sources & verification
 
 - **VERIFIED (2026-11-05):** `photocraft-cli` help for `run/convert/batch` (positional input,
