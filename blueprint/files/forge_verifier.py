@@ -57,6 +57,9 @@ def verify_gate_report(report: dict[str, Any], artifact_sha256: str) -> dict[str
     checks = report.get("checks")
     if not isinstance(checks, dict) or not checks:
         return _fail("E_REPORT_INVALID", "report.checks must be a non-empty object")
+    for name, value in checks.items():
+        if not isinstance(value, dict):
+            return _fail("E_REPORT_INVALID", f"check {name!r} is not an object")
     if report.get("ok") is not True or report.get("saved") is not True:
         return _fail("E_GATE_FAILED", "report ok/saved is not true")
     declared = report.get("output_sha256")
@@ -64,9 +67,9 @@ def verify_gate_report(report: dict[str, Any], artifact_sha256: str) -> dict[str
         return _fail("E_ARTIFACT_HASH_MISMATCH",
                      f"report={declared!r} actual={artifact_sha256!r}")
     applicable = [name for name, value in checks.items()
-                  if not (isinstance(value, dict) and value.get("applicable") is False)]
+                  if value.get("applicable") is not False]
     failed = [name for name, value in checks.items()
-              if not (isinstance(value, dict) and value.get("applicable") is False)
+              if value.get("applicable") is not False
               and value.get("pass") is not True]
     declared_count = report.get("applicable_checks")
     if declared_count != len(applicable):

@@ -78,13 +78,17 @@ class ForgeRepo:
             return self._row(row)
 
     async def create_job(self, *, kind: str, payload: dict[str, Any] | None = None,
-                         dedupe_key: str | None = None, run_after: datetime | None = None) -> int:
+                         dedupe_key: str | None = None, run_after: datetime | None = None,
+                         max_attempts: int = 3) -> int:
+        if not isinstance(max_attempts, int) or not 1 <= max_attempts <= 10:
+            raise ValueError("max_attempts must be an integer from 1 to 10")
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             return int(await conn.fetchval(
-                """INSERT INTO forge_job (kind, payload, dedupe_key, run_after)
-                   VALUES ($1, $2::jsonb, $3, $4) RETURNING id""",
-                kind, json.dumps(payload or {}), dedupe_key, run_after or datetime.now(timezone.utc),
+                """INSERT INTO forge_job (kind, payload, dedupe_key, run_after, max_attempts)
+                   VALUES ($1, $2::jsonb, $3, $4, $5) RETURNING id""",
+                kind, json.dumps(payload or {}), dedupe_key,
+                run_after or datetime.now(timezone.utc), max_attempts,
             ))
 
     async def claim_job(self, worker: str, *, lease_s: int = 300) -> dict[str, Any] | None:
@@ -100,13 +104,17 @@ class ForgeRepo:
             return self._row(row)
 
     async def reap_expired_jobs(self) -> int:
-        """Return expired claimed/running jobs to queued exactly once."""
+        """Recover expired leases; abandon a job once its attempt cap is reached."""
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             rows = await conn.fetch(
                 """UPDATE forge_job
-                      SET state='queued', lease_until=NULL, last_error='E_LEASE_EXPIRED'
+                      SET state = CASE WHEN attempts >= max_attempts THEN 'abandoned' ELSE 'queued' END,
+                          lease_until = NULL,
+                          last_error = CASE WHEN attempts >= max_attempts
+                                            THEN 'E_LEASE_EXPIRED_MAX_ATTEMPTS'
+                                            ELSE 'E_LEASE_EXPIRED' END
                     WHERE state IN ('claimed','running') AND lease_until IS NOT NULL
                       AND lease_until < now()
-                    RETURNING id""")
+                    RETURNING id, state""")
             return len(rows)

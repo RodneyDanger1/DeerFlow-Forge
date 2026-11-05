@@ -40,6 +40,10 @@ class EndToEndTests(unittest.IsolatedAsyncioTestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
+            health_status, health_body = await asyncio.to_thread(
+                self._request, server.server_address[1], "GET", "/healthz")
+            self.assertEqual(health_status, 200)
+            self.assertTrue(health_body["repo"]["ok"])
             body = {"idempotency_key": f"e2e-{self.run_id}", "account_id": 1,
                     "brief": "e2e", "task_family": "ai_badge_trace"}
             status, created = await asyncio.to_thread(self._request, server.server_address[1], "POST", "/v1/episodes", body)

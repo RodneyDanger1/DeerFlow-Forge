@@ -20,6 +20,7 @@ class ServiceRepo(Protocol):
     async def create_episode(self, *, idempotency_key: str, account_id: int, brief: str,
                              task_family: str, budget: dict[str, Any] | None = None) -> dict[str, Any]: ...
     async def get_episode(self, episode_id: str) -> dict[str, Any] | None: ...
+    async def health(self) -> dict[str, Any]: ...
 
 
 class _Loop:
@@ -50,7 +51,17 @@ def make_handler(repo: ServiceRepo, loop: _Loop):
         def do_GET(self) -> None:
             path = urlparse(self.path).path
             if path == "/healthz":
-                return _json(self, 200, {"ok": True, "service": "forge"})
+                try:
+                    health = loop.run(repo.health())
+                except Exception:
+                    log.exception("health check failed")
+                    return _json(self, 503, {"ok": False, "service": "forge",
+                                             "error": {"code": "E_SERVICE_UNAVAILABLE"}})
+                if not isinstance(health, dict) or health.get("ok") is not True:
+                    return _json(self, 503, {"ok": False, "service": "forge",
+                                             "error": {"code": "E_SERVICE_UNHEALTHY"},
+                                             "detail": health})
+                return _json(self, 200, {"ok": True, "service": "forge", "repo": health})
             prefix = "/v1/episodes/"
             if path.startswith(prefix):
                 episode_id = path[len(prefix):]

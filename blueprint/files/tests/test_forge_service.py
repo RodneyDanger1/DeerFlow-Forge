@@ -10,8 +10,12 @@ from forge_service import make_server
 
 
 class FakeRepo:
-    def __init__(self):
+    def __init__(self, healthy=True):
         self.rows = {}
+        self.healthy = healthy
+
+    async def health(self):
+        return {"ok": self.healthy, "tables": 13}
 
     async def create_episode(self, *, idempotency_key, account_id, brief, task_family, budget=None):
         row = {"id": "00000000-0000-0000-0000-000000000001",
@@ -46,7 +50,25 @@ class ServiceTests(unittest.TestCase):
         return response.status, data
 
     def test_health(self):
-        self.assertEqual(self._request("GET", "/healthz"), (200, {"ok": True, "service": "forge"}))
+        status, body = self._request("GET", "/healthz")
+        self.assertEqual(status, 200)
+        self.assertTrue(body["ok"])
+        self.assertEqual(body["repo"]["tables"], 13)
+
+    def test_unhealthy_repo_is_503(self):
+        server = make_server(FakeRepo(healthy=False), port=0)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            conn = HTTPConnection("127.0.0.1", server.server_address[1], timeout=5)
+            conn.request("GET", "/healthz")
+            response = conn.getresponse()
+            self.assertEqual(response.status, 503)
+            self.assertEqual(json.loads(response.read())["error"]["code"], "E_SERVICE_UNHEALTHY")
+            conn.close()
+        finally:
+            server.shutdown()
+            server.server_close()
 
     def test_create_and_get_episode(self):
         status, created = self._request("POST", "/v1/episodes", {

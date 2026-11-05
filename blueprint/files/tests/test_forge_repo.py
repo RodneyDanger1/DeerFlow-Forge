@@ -45,6 +45,18 @@ class RepoTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(second["attempts"], 2)
         self.assertEqual(await self.repo.reap_expired_jobs(), 0)
 
+    async def test_exhausted_lease_is_abandoned_not_requeued(self):
+        job_id = await self.repo.create_job(kind="poison", max_attempts=1)
+        claimed = await self.repo.claim_job("poison-worker", lease_s=1)
+        self.assertEqual(claimed["id"], job_id)
+        await asyncio.sleep(1.2)
+        self.assertEqual(await self.repo.reap_expired_jobs(), 1)
+        state, error = await self.repo.pool.fetchrow(
+            "SELECT state, last_error FROM forge.forge_job WHERE id=$1", job_id)
+        self.assertEqual(state, "abandoned")
+        self.assertEqual(error, "E_LEASE_EXPIRED_MAX_ATTEMPTS")
+        self.assertIsNone(await self.repo.claim_job("poison-worker", lease_s=30))
+
     async def test_unknown_episode_is_none(self):
         self.assertIsNone(await self.repo.get_episode(str(uuid.uuid4())))
 

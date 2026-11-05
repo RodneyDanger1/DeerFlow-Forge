@@ -66,6 +66,13 @@ class VerifierTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertEqual(result["code"], "E_ARTIFACT_HASH_MISMATCH")
 
+    def test_malformed_check_is_named_not_crash(self):
+        report = copy.deepcopy(self.report)
+        report["checks"]["white_residual_ratio"] = "not-an-object"
+        result = verify_gate_report(report, self.report["output_sha256"])
+        self.assertFalse(result["ok"])
+        self.assertEqual(result["code"], "E_REPORT_INVALID")
+
 
 if __name__ == "__main__":
     unittest.main()
