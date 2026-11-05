@@ -23,7 +23,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 `metadata.hermes`); the original skills keep minimal frontmatter and are still installable. Skills may ship a
 `references/` folder (command atlases, recipes, tips); the installer mirrors it to both runtimes.
 
-## Catalogue (34 skills)
+## Catalogue (39 skills)
 
 | Skill | Family | Use it for |
 |---|---|---|
@@ -48,6 +48,11 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 | `artcraft-command-catalog` | Engine | find/execute any of 918 commands in 64 groups |
 | `artcraft-command-atlas` | Engine | intent map + full family indexes, tips, recipes for 918/965 commands |
 | `craft-agent-operator` | Agent | plan → execute → verify → episode ledger → evidence-based promotion |
+| `research-corpus-navigator` | Research | route to the 400 answers without flooding context; evidence labels |
+| `forge-harness-architect` | Harness | design the third Forge plane, roles, contracts, phases |
+| `harness-code-adapter` | Harness | adapt a donor mechanism into an original, tested adapter |
+| `agent-learning-loop` | Learning | L0–L4, memory, Wilson promotion, reward-hacking defenses |
+| `visual-verification-critic` | Visual | evidence ladder, tile metrics, blind critic, human rubric |
 | `artcraft-path-geometry` | Engine | booleans, path clean/simplify, offset/outline, compound paths |
 | `artcraft-typography-outlines` | Engine | type creation/styles, fonts, text-on-path, outlines |
 | `artcraft-layers-artboards-symbols` | Engine | layers, clipping, artboards, symbols, locking |

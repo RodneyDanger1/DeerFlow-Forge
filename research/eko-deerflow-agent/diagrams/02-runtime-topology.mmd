@@ -1,0 +1,21 @@
+flowchart LR
+  U["Operator / SSH tunnel"] --> C["Console<br/>127.0.0.1:8091"]
+  U --> D["DeerFlow UI / API<br/>gateway"]
+  C -->|read-only| S["Source viewer"]
+  D -->|task envelope| F["Forge Conductor<br/>127.0.0.1:8092"]
+  F -->|typed tool call| G["Craft Tool Gateway"]
+  G -->|absolute path| V["VectorCraft 0.21.1<br/>CLI / MCP"]
+  G -->|absolute path| P["PhotoCraft 0.20.2<br/>CLI / MCP"]
+  G -->|absent| A["Film / Design / Effect<br/>NOT INSTALLED"]
+  V --> H["Artifact store<br/>SHA-256 + gate report"]
+  P --> H
+  F --> L["Postgres forge<br/>episode / eval / skill"]
+  F --> R["Visual Critic<br/>render + crops"]
+  F --> J["job queue<br/>FOR UPDATE SKIP LOCKED"]
+  H --> R
+  R --> L
+  L -->|verified / promoted| F
+  F -->|approval required| PUB["Fourthwall publish<br/>NOT autonomous"]
+  D -.->|currently only 3 pipeline MCP tools| M["pod-mcp 0.0.0.0:8765"]
+  M --> W["pod worker / orchestrator"]
+  W -.->|stub exit 127| G

@@ -1,0 +1,88 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "07-PACKAGE",
+  "taskId": "task-14",
+  "producer": "examples-skills-packager",
+  "generatedAtUtc": "2026-11-05T16:51:00Z",
+  "frozenAtUtc": "2026-11-05T16:50:20Z",
+  "status": "SUPERSEDED — freeze record only; Lead executed the final copy",
+  "superseded": true,
+  "supersededBy": {
+    "executedBy": "lead",
+    "destination": "C:\\Users\\Riley\\Desktop\\Ridgeboundia-Agent-Research",
+    "vaultStagingPath": "/srv/vaults/storefront/30-reference/art-learning/29-AGENT-HARNESS-RESEARCH",
+    "vaultIndexFile": "/srv/vaults/storefront/30-reference/art-learning/00-ART-LEARNING-INDEX.md",
+    "fileCount": 129,
+    "bytes": 4499906,
+    "topLevel": [
+      "00-START-HERE.md",
+      "BIBLIOGRAPHY.md",
+      "ERRATA.md",
+      "GOALS.md",
+      "INDEX.json",
+      "README.md",
+      "REPORT.md",
+      "diagrams/",
+      "examples/",
+      "execution-wave/",
+      "skills/",
+      "wave2/"
+    ],
+    "observation": "read-only directory listing by this task at the freeze point; the Lead performed the copy and owns the target",
+    "verifiedByThisTask": false
+  },
+  "thisManifest": {
+    "status": "superseded candidate subset; DO NOT EXECUTE",
+    "plannedFileCount": 55,
+    "plannedCopyCount": 50,
+    "plannedGeneratedCount": 5,
+    "note": "The 55-file candidate (research/ corpus subset + skills + examples + generated INDEX/BIBLIOGRAPHY) was the default described in the 16:46Z version of this file. The Lead froze the source and built the 129-file flat package instead. The candidate must not be copied, merged or used to overwrite the target."
+  },
+  "freeze": {
+    "sourceRoot": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\research\\eko-deerflow-agent",
+    "sourceFilesObserved": 117,
+    "sourceBytesObserved": 4335911,
+    "sourceFileCountPolicy": "excludes __pycache__ and this task's 07-PACKAGE.md / 07-PACKAGE.json",
+    "note": "The source tree was still changing during the builder run (00-START-HERE.md, GOALS.md, ERRATA.md, examples/, diagrams/index.html, execution-wave 01-06/09/10/RECON all appeared between 10:42 and 10:50 local). The Lead's freeze at 16:50:20Z is the authoritative point."
+  },
+  "candidateValidationBeforeFreeze": {
+    "method": "temporary staging tree under %TEMP%; no target or vault file created by this task",
+    "cleanRun": {
+      "filesStaged": 55,
+      "copied": 50,
+      "generated": 5,
+      "jsonParsed": 9,
+      "jsonErrors": 0,
+      "markdownLinks": 20,
+      "markdownLinksResolved": 20,
+      "markdownLinksBroken": 0,
+      "markdownLinksOutsidePackage": 0,
+      "words": 105794,
+      "emptyFiles": 0,
+      "caseInsensitiveDuplicatePaths": false,
+      "exampleCopiesByteIdentical": true,
+      "sourceFilesUnchangedDuringBuild": true
+    },
+    "driftObserved": {
+      "observedAtUtc": "2026-11-05T16:49:00Z",
+      "stagedFiles": 56,
+      "wordCountReconciliation": "failed (105,789 staged vs 105,888 indexed) because a source file was added mid-build",
+      "action": "builder stopped; no further writes"
+    }
+  },
+  "supersededDeliverable": {
+    "artifact": "07-PACKAGE.md / 07-PACKAGE.json (16:46Z version)",
+    "reason": "Lead-built package differs in file count (129 vs 55) and layout (flat corpus with skills/, examples/, execution-wave/ at root)",
+    "instruction": "Historical record only. Do not copy, merge, or overwrite the Lead-built target or vault from this manifest."
+  },
+  "caveats": [
+    "This file is a freeze/supersession record, not an executable manifest. No copy procedure is retained.",
+    "The 55-file candidate was a subset snapshot; it is not the final package and must not be used to modify the target.",
+    "The vault path and 00-ART-LEARNING-INDEX.md were not accessed from this seat (no local /srv mount); the Lead owns the vault copy.",
+    "File counts, bytes and top-level layout of the Lead package were observed read-only at freeze; they are not a re-verification of every packaged file.",
+    "Source hashes captured during the earlier candidate run are stale after the freeze; they are deliberately not presented as package hashes.",
+    "Word/URL counts from the candidate run are historical and apply only to the 55-file subset."
+  ],
+  "taskStatus": "complete with snapshot caveat",
+  "blockers": []
+}

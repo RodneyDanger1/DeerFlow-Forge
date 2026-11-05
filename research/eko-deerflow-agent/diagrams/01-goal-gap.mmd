@@ -1,0 +1,36 @@
+flowchart TD
+  G1["Goal: agent that designs<br/>and ships print-ready art"] --> G2["Goal: drive all Craft apps"]
+  G1 --> G3["Goal: learn/remember<br/>from runs"]
+  G1 --> G4["Goal: host on VPS with<br/>DeepSeek V4.1 Flash"]
+  G1 --> G5["Goal: measurable quality<br/>and safe publish"]
+
+  G2 --> C1["Code: only VectorCraft +<br/>PhotoCraft installed"]
+  G2 --> C2["Code: pipeline bin shims<br/>exit 127; argv invented"]
+  G2 --> C3["Code: Craft MCP not<br/>registered in DeerFlow"]
+  G3 --> C4["Code: no episode/action/<br/>gate/skill tables"]
+  G3 --> C5["Code: DeerMem facts only;<br/>no tool-procedure learner"]
+  G4 --> C6["Code: DeerFlow 2.2 runs<br/>deepseek-flash, key unverified"]
+  G5 --> C7["Code: console is a viewer;<br/>no approval queue"]
+  G5 --> C8["Code: gates can pass vacuously;<br/>prep ok hard-coded true"]
+
+  C1 --> X1["Gap: multi-app<br/>is not available"]
+  C2 --> X2["Gap: execution path<br/>cannot run today"]
+  C3 --> X3["Gap: no direct<br/>tool surface"]
+  C4 --> X4["Gap: no learning<br/>ledger"]
+  C5 --> X5["Gap: L0, not L2"]
+  C6 --> X6["Gap: key/model<br/>not live-proven"]
+  C7 --> X7["Gap: no human<br/>approval gate"]
+  C8 --> X8["Gap: visual proof<br/>not trustworthy alone"]
+
+  X1 --> O["Outcome: Forge Conductor<br/>on DeerFlow + Craft gateway"]
+  X2 --> O
+  X3 --> O
+  X4 --> O
+  X5 --> O
+  X6 --> O
+  X7 --> O
+  X8 --> O
+  O --> P1["Phase 0: fix execution<br/>+ 10 goldens"]
+  P1 --> P2["Phase 1: gateway<br/>+ verifier"]
+  P2 --> P3["Phase 2: ledger<br/>+ blind critic"]
+  P3 --> P4["Phase 3: retrieval<br/>+ skill promotion"]

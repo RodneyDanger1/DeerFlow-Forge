@@ -1,0 +1,147 @@
+{
+    "generatedOn":  "VPS srv2108523 /opt/pod-pipeline/.venv python 3.12.16 (Pillow 13.0.0, numpy 2.5.4, scipy 1.18.1, scikit-image 0.26.0)",
+    "runOrder":  [
+                     "build_corpus.py",
+                     "analyze_regions.py",
+                     "evaluate_critic.py"
+                 ],
+    "files":  [
+                  {
+                      "sha256":  "7c339cb8a253dc9dd7ce838fdb87e202c1f17e0e78dae50d546dd366d970ffa2",
+                      "name":  "00_reference.png",
+                      "bytes":  25479
+                  },
+                  {
+                      "sha256":  "318de6b529097349fb3b50135c8996bb2391c0fab02ce4f71215d844353db6bd",
+                      "name":  "01_white_fringe_mild.png",
+                      "bytes":  26712
+                  },
+                  {
+                      "sha256":  "84eb7928064f84a20addf9dc686cac482768d85ed0b221fafd955eecdfe3e263",
+                      "name":  "02_white_fringe_strong.png",
+                      "bytes":  26319
+                  },
+                  {
+                      "sha256":  "7a704c5b26a8ed4e45d351587d86e7010e2da59385021dce0816872a2920764d",
+                      "name":  "03_halo_mild.png",
+                      "bytes":  38234
+                  },
+                  {
+                      "sha256":  "bd65d70c92616f9ae165bb7970b8989bc56efb6ec1e7a66e83ce78f7f1b38ee4",
+                      "name":  "04_halo_strong.png",
+                      "bytes":  52385
+                  },
+                  {
+                      "sha256":  "893dc5166eee5be7b699ea18062322d5237fd596a3a6648488c3a8e899cf9054",
+                      "name":  "05_ghost_text_mild.png",
+                      "bytes":  27777
+                  },
+                  {
+                      "sha256":  "3fa3885e8bac861693f33d7e38089132d95def8887269aff7038516c7ace03fe",
+                      "name":  "06_ghost_text_strong.png",
+                      "bytes":  28787
+                  },
+                  {
+                      "sha256":  "884738bc3441bc9fefd8f4a75f8bb2081e953c0b68d5e3e520f2f6b60d937ab0",
+                      "name":  "07_speck_mild.png",
+                      "bytes":  25573
+                  },
+                  {
+                      "sha256":  "545afc18828965802fbd80584ac15ed204a96970cbc2d38564b2d81abe3db92d",
+                      "name":  "08_speck_strong.png",
+                      "bytes":  25954
+                  },
+                  {
+                      "sha256":  "5db221888a0210c7117b05004798ced0c2aa7957cf6ba31fbcb9496dae6aac97",
+                      "name":  "09_lost_stroke_full.png",
+                      "bytes":  25479
+                  },
+                  {
+                      "sha256":  "c948ea5a8cc0c0e8e78ffcfe4cd34d8bcf21477a16e174eef03042802a48c958",
+                      "name":  "10_lost_stroke_partial.png",
+                      "bytes":  25487
+                  },
+                  {
+                      "sha256":  "978d75600c676ade7518e887ab36fe2654cec3e11d0b204e9abd3dfbf741f8b2",
+                      "name":  "11_wrong_colour_mild_triangle.png",
+                      "bytes":  25525
+                  },
+                  {
+                      "sha256":  "952e855cf7cc7695d3833b2d6e2bea855aca91bd99b4bba7aae33a5c3ca9b3d5",
+                      "name":  "12_wrong_colour_strong_triangle.png",
+                      "bytes":  25478
+                  },
+                  {
+                      "sha256":  "2fa5d1e1a41db6da1d43412dbf54281cfdf19f8a31f6a717776a07c7d9bb9831",
+                      "name":  "13_wrong_colour_flat_inner_disc.png",
+                      "bytes":  25868
+                  },
+                  {
+                      "sha256":  "0c68837e049749948b00aabee9641a75748ffd995f2be75b1bd7495a8674d8b6",
+                      "name":  "14_margin_shift_40px.png",
+                      "bytes":  25498
+                  },
+                  {
+                      "sha256":  "4d6c93e87b7aa373621e621f0f4e8c6a3cfbb8481dd033e16b76c5de43e3397b",
+                      "name":  "15_margin_overflow_8pct.png",
+                      "bytes":  131661
+                  },
+                  {
+                      "sha256":  "7c339cb8a253dc9dd7ce838fdb87e202c1f17e0e78dae50d546dd366d970ffa2",
+                      "name":  "16_clean_identical.png",
+                      "bytes":  25479
+                  },
+                  {
+                      "sha256":  "606df76e772f0abab6de9bab7453cc0e88968872778f819d9f2d5251bc4992ce",
+                      "name":  "17_clean_recompressed_jpeg92.png",
+                      "bytes":  246436
+                  },
+                  {
+                      "sha256":  "ea15a36cce4931e1c2d9b6852ea54b858bd59d20b44cb83d4ad6d446f3776731",
+                      "name":  "18_clean_recompressed_jpeg75.png",
+                      "bytes":  273262
+                  },
+                  {
+                      "sha256":  "742812696f74bd38343cbf6928255f96ab78de0d7c180e8b604e515c9f8dd092",
+                      "name":  "19_clean_recompressed_webp80.png",
+                      "bytes":  177353
+                  },
+                  {
+                      "sha256":  "885c2667c3faeb07765c56670d604e4e659af96619afdb198a21b7092fd8ecc8",
+                      "name":  "analysis.json",
+                      "bytes":  49537
+                  },
+                  {
+                      "sha256":  "47de8faebfab59d4d9f3a3e8ba611ea42306a34838a42f333af2facaea90c5b3",
+                      "name":  "analyze_regions.py",
+                      "bytes":  5065
+                  },
+                  {
+                      "sha256":  "0cec90b1328e34ebcea23baec1653e607519c16393eff45491db273962d6bf65",
+                      "name":  "build_corpus.py",
+                      "bytes":  15552
+                  },
+                  {
+                      "sha256":  "caea9121923f32ef486136348c5eb21281296395bf3a101475258f5b047e7817",
+                      "name":  "critique.json",
+                      "bytes":  16263
+                  },
+                  {
+                      "sha256":  "7079c35101b04f25ad8a5028648ba44a8a6cc73aa033da93107fc1df70685a7e",
+                      "name":  "evaluate_critic.py",
+                      "bytes":  4805
+                  },
+                  {
+                      "sha256":  "a2223b533b664230ef31723e36ab882013a9f8eef6a9ddce84d7e05d7533394f",
+                      "name":  "metrics.json",
+                      "bytes":  35200
+                  }
+              ],
+    "tile":  64,
+    "note":  "manifest.json excludes itself",
+    "canvas":  [
+                   1200,
+                   1500
+               ],
+    "seed":  20261105
+}

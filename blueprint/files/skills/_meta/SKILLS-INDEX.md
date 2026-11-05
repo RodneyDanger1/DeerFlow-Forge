@@ -1,20 +1,21 @@
 # DeerFlow Forge skills index
 
-Generated **2026-11-05T16:02:50Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
+Generated **2026-11-05T16:47:06Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
 
 - Source of truth: `C:\Users\Riley\Desktop\DeerFlow Forge\blueprint\files\skills`
 - DSH runtime: `C:\Users\Riley\.dsh\skills`
 - Hermes runtime: `C:\Users\Riley\.hermes\skills`
 
-**34 skill directories scanned | 34 installable | 0 failing validation.**
+**39 skill directories scanned | 39 installable | 0 failing validation.**
 
-Runtime parity for installable skills: DSH current=34, missing=0, differs=0; Hermes current=34, missing=0, differs=0.
+Runtime parity for installable skills: DSH current=39, missing=0, differs=0; Hermes current=39, missing=0, differs=0.
 
 ## Installable skills
 
 | Skill | What it does (trigger summary) | Lines | Version | DSH | Hermes | SHA-256 |
 |---|---|---|---|---|---|---|
 | `ad-creative` | Use when a feed, portrait or story/reel ad still is needed at a standard canvas (1080×1080, 1080×1350, 1080×1920): brand kit, safe margins, one… | 191 | 1.1.0 | current | current | `f914319c0cfd` |
+| `agent-learning-loop` | Use when claiming, designing or implementing agent learning/memory: distinguish L0 context, L1 episodic retrieval, L2 skills, L3 fine-tuning and L4… | 127 | 1.0.0 | current | current | `4489b06b7738` |
 | `ai-art-vectorize-vectorcraft` | Use for the production path from an AI-generated illustration to a clean vector print master: strict white cutout, AI text erased and retyped,… | 220 | 1.1.0 | current | current | `ad4c1edac10e` |
 | `ai-diffusion-artifact-cleanup` | Use when an AI-diffusion render looks dirty at print size: soft/haloed edges, grey rim, speckle, semi-transparent fringe or JPEG blocking. Measures… | 204 | 1.1.0 | current | current | `8b959d0824b9` |
 | `ai-image-upscale-print` | Decide and execute the print-resolution step for AI/raster art: 150 vs 300 DPI pixel math, the 2.5x upscale gate, when upscaling is acceptable… | 157 | 1.0.0 | current | current | `347658beffd5` |
@@ -37,16 +38,20 @@ Runtime parity for installable skills: DSH current=34, missing=0, differs=0; Her
 | `craft-agent-operator` | Use when an AI agent must plan, execute, verify and learn from a real ArtCraft/Craft production job: retrieve similar cases, choose exact command… | 216 | 1.0.0 | current | current | `5bf769b9f64e` |
 | `craft-mcp-drive` | Drive VectorCraft and PhotoCraft over MCP: start the stdio server headless or connected, initialize and list tools, map design jobs to the 33… | 159 | 1.0.0 | current | current | `0d6433c643df` |
 | `embroidery-art` | Produce stitch-legal embroidery artwork (caps, patches, beanies) with measured cap heights, minimum stroke widths and a thread-colour limit —… | 140 | — | current | current | `3835eaa9ea17` |
+| `forge-harness-architect` | Use when designing or changing the hosted Forge Conductor: a third plane beside the DeerFlow console and pod pipeline, with a supervisor,… | 142 | 1.0.0 | current | current | `62596f956174` |
 | `fourthwall-beanie-embroidery` | Produce the exact Fourthwall Otto Knit Beanie embroidery master for template pro_12abde5f29c34ffbb2 — embroidery_front 5x1.75 in, 1500x525 at 300… | 160 | 1.0.0 | current | current | `2f970dc336e4` |
 | `fourthwall-catalog-audit` | Independently audit what is actually live in the Ridgeboundia Fourthwall store — Open API state/access/price/image readback, local DB whitelist and… | 157 | 1.0.0 | current | current | `b0a483632828` |
 | `fourthwall-hoodie-vector` | Produce the exact Fourthwall Gildan Classic Hoodie master for template pro_gUu4CvXsRm-BxogjB89KzA — front 14x14 in, 4200x4200 at 300 DPI, 8.5 in… | 158 | 1.0.0 | current | current | `d630d766d759` |
 | `fourthwall-product-publish` | Publish, replace or retire a Ridgeboundia Fourthwall design product through the exact live pipeline — hidden create, PUBLIC, hide the old… | 159 | 1.0.0 | current | current | `c2d09bf576ff` |
 | `fourthwall-tee-vector` | Produce the exact Fourthwall Gildan Heavyweight Tee master for template pro_e4677535402b4eeb81 — front_large 15x18 in, 4500x5400 at 300 DPI, 8 in… | 156 | 1.0.0 | current | current | `0c56dc49b7a9` |
+| `harness-code-adapter` | Use when borrowing a mechanism from another agent harness or repo: map the donor pattern to our contracts, write an original adapter, record… | 114 | 1.0.0 | current | current | `baa79d7733cd` |
 | `merch-mockup-proof` | Pull a live Ridgeboundia product's mockups from its product page and Fourthwall CDN into a dated proof folder, inspect placement/colour/cut-off… | 160 | 1.0.0 | current | current | `8f0b3f630e39` |
 | `print-mockup-composite` | Compose a finished print master or design onto a garment/product canvas or a flat mockup for review: exact canvas sizes, integer centring math,… | 158 | 1.0.0 | current | current | `c6300d75ab87` |
+| `research-corpus-navigator` | Use when planning, coding or answering from the Ridgeboundia/DeerFlow research corpus: routes an agent to the right file/question without flooding… | 101 | 1.0.0 | current | current | `ee7d7076f958` |
 | `shipping-card-tag` | Lay out thank-you cards, package inserts, hang tags and product/QR cards with bleed, safe margins and 300 DPI, exported as print PDF or PNG. Use… | 122 | — | current | current | `fcaf557b3fcc` |
 | `skill-installer` | Install, validate and update DeerFlow Forge skills in the DSH and Hermes runtimes — scan the skills tree, enforce the frontmatter and content… | 167 | 1.0.0 | current | current | `052f810033f9` |
-| `skills-index` | Route work to the right DeerFlow Forge skill — read the generated catalogue instead of guessing, match the user's wording to trigger descriptions,… | 154 | 1.0.0 | current | current | `d5a089a048e6` |
+| `skills-index` | Route work to the right DeerFlow Forge skill — read the generated catalogue instead of guessing, match the user's wording to trigger descriptions,… | 155 | 1.0.0 | current | current | `d18feef8d86d` |
+| `visual-verification-critic` | Use when judging rendered art or a GUI result: artifact/hash, domain gates, independent render, tile/crop metrics, a blind schema-constrained… | 121 | 1.0.0 | current | current | `fda1742e4ee5` |
 | `web-banner` | Produce website hero and banner art at desktop (1920x600-800) and mobile (800x1000) sizes, keeping type as HTML wherever possible and exporting… | 134 | — | current | current | `157593e26abb` |
 
 ## Present but not installable

@@ -1,0 +1,15 @@
+{
+  "name": "forge-craft-adapter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Original adapter prototype: ordered re-entrant operation pipeline for the Craft Command Gateway. No runtime dependencies.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.mjs\"",
+    "test:crash": "node --test \"test/crash-resume.test.mjs\"",
+    "test:report": "node --test --test-reporter=spec \"test/*.test.mjs\""
+  }
+}

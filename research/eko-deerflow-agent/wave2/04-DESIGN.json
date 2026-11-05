@@ -1,0 +1,436 @@
+{
+  "schema": "forge-conductor-design/1.0",
+  "task": "wave2-task-04",
+  "status": "design-only-not-implemented",
+  "generated": "2026-11-05",
+  "owner": "Riley",
+  "author": "harness-architect",
+  "design_doc": "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md",
+  "non_claims": [
+    "Nothing in this design is implemented, deployed, migrated or measured.",
+    "No model call, Craft command, service unit or database table was created by this task.",
+    "The DeepSeek credential was observed by environment variable name only; its value was never read, echoed or logged.",
+    "Learning is not claimed: no A/B, no held-out result, no human study exists yet.",
+    "Only VectorCraft 0.21.1 and PhotoCraft 0.20.2 are installed; FilmCraft, DesignCraft and EffectCraft capability is unverified.",
+    "No dollar figure or timeline here is measured; both are estimates pending the Phase 0 baseline."
+  ],
+  "evidence_legend": {
+    "V": "verified this session by a read-only command on the host; command and output recorded in the design doc appendix",
+    "R": "read from a local repository file, path cited",
+    "D": "verified in the prior dossier REPORT.md and not re-executed",
+    "I": "inference or design decision, not yet tested",
+    "U": "unverified; must be closed before it becomes policy"
+  },
+  "environment": {
+    "host": {
+      "label": "V",
+      "hostname": "srv2108523",
+      "kernel": "7.0.0-38-generic",
+      "vcpu": 2,
+      "memory_mb": 7935,
+      "memory_available_mb_at_probe": 4835,
+      "disk_root_gb": 96,
+      "disk_used_percent": 63,
+      "disk_free_gb": 36,
+      "load_average_1_5_15": [1.37, 1.12, 0.84],
+      "notes": "Shared host: unrelated ridgeboundia stack owns 80/443; DeerFlow stack, pod-postgres, console and MCP already running. Forge must stay loopback-only and CPU-polite."
+    },
+    "services": {
+      "label": "V",
+      "active_units": ["deerflow-forge-console.service", "pod-mcp.service", "pod-worker.timer", "docker.service"],
+      "listeners": [
+        {"addr": "127.0.0.1:8091", "process": "node", "role": "console"},
+        {"addr": "127.0.0.1:5432", "process": "docker-proxy", "role": "postgres pod"},
+        {"addr": "0.0.0.0:8765", "process": "python", "role": "pod MCP, ufw-restricted"}
+      ],
+      "firewall": "ufw active; 22/80/443 open; 8765 allowed from 172.16.0.0/12 and 192.168.200.0/24 only"
+    },
+    "model": {
+      "label": "V",
+      "config_path": "/opt/deer-flow/config.yaml",
+      "model_id": "deepseek-flash",
+      "display_name": "DeepSeek V4.1 Flash",
+      "context_window": 1048576,
+      "max_output_tokens": 8192,
+      "timeout_s": 600,
+      "max_retries": 2,
+      "supports_vision": true,
+      "supports_thinking": true,
+      "subagent_runtime": {"max_running": 3, "max_queued": 64, "admission_policy": "queue", "queue_timeout_seconds": 300},
+      "recursion_limit": 100,
+      "token_budget_enabled": false,
+      "api_key_env_name": "DEEPSEEK_API_KEY",
+      "api_key_value_observed": false
+    },
+    "craft": {
+      "label": "V",
+      "installed": [
+        {"app": "vectorcraft", "version": "0.21.1", "bin": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli", "version_probe": "vectorcraft-cli 0.21.1"},
+        {"app": "photocraft", "version": "0.20.2", "bin": "/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli", "version_probe": "not printed"}
+      ],
+      "absent": ["filmcraft", "designcraft", "effectcraft"],
+      "catalogues": ["/opt/craft/catalogues/vectorcraft-commands.json", "/opt/craft/catalogues/photocraft-commands.json"],
+      "path_resolution_finding": "bare names vectorcraft-cli/photocraft-cli/filmcraft-cli/designcraft-cli/effectcraft-cli are all MISSING on PATH; /opt/pod-pipeline/bin holds shipped shims that print vendor binary not installed and exit 127; real clients under /opt/craft are not wired",
+      "consequence": "tool gateway must resolve by absolute path plus version probe; the deployment must replace the five shims in Phase 0"
+    },
+    "database": {
+      "label": "V",
+      "instance": "pod-postgres (postgres:16), 127.0.0.1:5432",
+      "pod_db_public_tables": ["agent_sync_logs", "fourthwall_products", "ingested_assets", "processing_jobs", "users_saas_accounts"],
+      "agent_memory_tables_present": false,
+      "plan": "new database forge with least-privilege role forge_app; pod untouched"
+    },
+    "deerflow_checkout": {"label": "V", "commit": "58fc5bd5b8e6ea46538e9481ba06ca2a46e14e2a", "date": "2026-11-04", "changelog_version": "2.2.0"}
+  },
+  "components": [
+    {
+      "id": "conductor",
+      "name": "Forge Conductor",
+      "kind": "supervisor",
+      "owns": ["episode lifecycle", "plan DAG", "budgets", "locks", "arbitration", "refusals", "final verdict assembly"],
+      "must_not": ["execute craft tools", "approve taste", "write memory", "publish"],
+      "model": {"id": "deepseek-flash", "thinking": true, "temperature_max": 0.2, "max_output_tokens": 2048},
+      "handoff_in": ["task_envelope", "verification_verdict", "critique", "gate_report"],
+      "handoff_out": ["artspec_request", "command_batch_request", "verify_request", "critique_request", "promote_request"],
+      "allowlist": ["none (orchestrates only)"],
+      "context_cap_tokens": 6000
+    },
+    {
+      "id": "art_director",
+      "name": "Art Director",
+      "kind": "specialist",
+      "owns": ["brief to ArtSpec translation", "brand fact citation", "success criteria", "composition and hierarchy intent"],
+      "must_not": ["call CLIs", "approve its own ArtSpec", "redefine the brief", "score taste"],
+      "model": {"id": "deepseek-flash", "thinking": true, "temperature_max": 0.4, "max_output_tokens": 2048},
+      "handoff_in": ["task_envelope", "brand_facts", "retrieved_cases", "reference_crops"],
+      "handoff_out": ["artspec"],
+      "allowlist": ["memory.read", "retrieval.read"],
+      "context_cap_tokens": 8000
+    },
+    {
+      "id": "vector_operator",
+      "name": "Vector Operator",
+      "kind": "specialist",
+      "owns": ["vector commands", "document state resets", "svg export", "type outline and retype steps"],
+      "must_not": ["run gates", "publish", "write outside episode roots", "modify sources"],
+      "model": {"id": "deepseek-flash", "thinking": false, "temperature_max": 0.1, "max_output_tokens": 1024},
+      "handoff_in": ["artspec", "skill_pin", "command_schema_slice"],
+      "handoff_out": ["command_batch", "artifact_record"],
+      "allowlist": ["craft.run(vectorcraft)", "inspect.state", "render.svg"],
+      "context_cap_tokens": 6000
+    },
+    {
+      "id": "raster_operator",
+      "name": "Raster Operator",
+      "kind": "specialist",
+      "owns": ["raster commands", "crop", "adjustments", "masks", "upscale within 2.5x", "frame extraction"],
+      "must_not": ["trace AI text", "upscale past 2.5x", "touch masters", "run gates"],
+      "model": {"id": "deepseek-flash", "thinking": false, "temperature_max": 0.1, "max_output_tokens": 1024},
+      "handoff_in": ["artspec", "skill_pin", "command_schema_slice"],
+      "handoff_out": ["command_batch", "artifact_record"],
+      "allowlist": ["craft.run(photocraft)", "inspect.state", "render.raster"],
+      "context_cap_tokens": 6000
+    },
+    {
+      "id": "print_verifier",
+      "name": "Print Verifier",
+      "kind": "specialist",
+      "owns": ["gate execution", "geometry and DPI checks", "white and alpha checks", "source mutation check", "read-back from system of record"],
+      "must_not": ["author or edit art", "see operator success claims", "publish"],
+      "model": {"id": "deepseek-flash", "thinking": false, "temperature_max": 0.0, "max_output_tokens": 512},
+      "handoff_in": ["artifact_record", "gate_definitions"],
+      "handoff_out": ["gate_report", "artifact_metrics"],
+      "allowlist": ["verify.*", "readback.file", "readback.db", "readback.http"],
+      "context_cap_tokens": 3000
+    },
+    {
+      "id": "visual_critic",
+      "name": "Visual Critic",
+      "kind": "specialist",
+      "owns": ["blind rubric assessment", "crop-cited evidence", "confidence and unseen list"],
+      "must_not": ["see exit codes or gate reports", "see operator claims", "author art", "promote skills"],
+      "model": {"id": "deepseek-flash", "vision": true, "thinking": false, "temperature_max": 0.2, "max_output_tokens": 1536},
+      "handoff_in": ["brief_rubric_lines", "rendered_images", "optional_reference_image"],
+      "handoff_out": ["critique_report"],
+      "allowlist": ["render.*", "vision.assess"],
+      "context_cap_tokens": 10000
+    },
+    {
+      "id": "memory_curator",
+      "name": "Memory Curator",
+      "kind": "specialist",
+      "owns": ["lessons", "skill versions", "brand facts", "promotion", "rollback", "contradiction records"],
+      "must_not": ["promote without evidence", "edit in place", "delete evidence", "write craft artifacts"],
+      "model": {"id": "deepseek-flash", "thinking": true, "temperature_max": 0.1, "max_output_tokens": 1536},
+      "handoff_in": ["episode_digest", "lesson_candidate", "contradiction_candidates"],
+      "handoff_out": ["lesson_candidate", "skill_draft", "promotion_decision", "rollback_decision"],
+      "allowlist": ["memory.read", "memory.write", "eval.read"],
+      "context_cap_tokens": 6000
+    },
+    {
+      "id": "tool_gateway",
+      "name": "Tool Gateway",
+      "kind": "service",
+      "owns": ["tool registry", "absolute-path and version pinning", "allowlist enforcement", "root enforcement", "idempotency keys", "refusal codes", "execution sandbox"],
+      "must_not": ["interpret briefs", "score artifacts", "own durable episode state"],
+      "model": null,
+      "allowlist": ["declared tool entries only"],
+      "context_cap_tokens": 0
+    },
+    {
+      "id": "verifier_engine",
+      "name": "Verifier Engine",
+      "kind": "service",
+      "owns": ["evidence ladder rungs 1 to 4", "render ladder", "diagnostics", "non-vacuity checks", "source mutation checks"],
+      "must_not": ["call a vision model", "write memory"],
+      "model": null,
+      "context_cap_tokens": 0
+    },
+    {
+      "id": "retrieval_service",
+      "name": "Case Retrieval",
+      "kind": "service",
+      "owns": ["metadata filter", "BM25 lexical rank", "optional vector rank", "rerank", "bounded injection", "retrieval receipts"],
+      "must_not": ["invent precedent when the store is empty", "retrieve private held-out cases"],
+      "model": null,
+      "context_cap_tokens": 1200
+    },
+    {
+      "id": "eval_runner",
+      "name": "Evaluation Runner",
+      "kind": "service",
+      "owns": ["golden execution", "arm assignment", "metric computation", "CI reporting", "regression gates"],
+      "must_not": ["fabricate a score when fixtures are missing", "compare across changed baselines"],
+      "model": null,
+      "context_cap_tokens": 0
+    },
+    {
+      "id": "queue",
+      "name": "Postgres Job Queue",
+      "kind": "infrastructure",
+      "owns": ["forge_job lease and retry semantics", "backoff", "abandonment"],
+      "must_not": ["rely on an external broker"],
+      "model": null
+    }
+  ],
+  "interfaces": {
+    "http": [
+      {"method": "POST", "path": "/v1/episodes", "auth": "role token", "purpose": "submit TaskEnvelope, return episode_id"},
+      {"method": "GET", "path": "/v1/episodes/{id}", "auth": "role token", "purpose": "episode state and evidence summary"},
+      {"method": "POST", "path": "/v1/episodes/{id}/approve", "auth": "human approval token", "purpose": "approve an exact artifact sha256 for publish/promotion"},
+      {"method": "GET", "path": "/healthz", "auth": "loopback", "purpose": "liveness: DB and credential presence, no model call"},
+      {"method": "GET", "path": "/metrics", "auth": "loopback", "purpose": "Prometheus text metrics"}
+    ],
+    "mcp": {
+      "existing_pipeline_tools_reused": ["list_pending_assets", "trigger_pipeline_job", "get_fourthwall_status"],
+      "new_forge_tools": ["command_lookup", "craft_run", "craft_inspect", "verify_artifact", "render_preview", "vision_assess", "memory_search", "memory_write_candidate", "eval_run", "publish_request"],
+      "rule": "every tool returns ok, data, error_code, message, artifacts, gate_report, next_actions; no prose-only success"
+    },
+    "contracts": [
+      {"name": "TaskEnvelope", "version": "1.0", "required": ["episode_id", "brief", "task_family", "target", "inputs", "constraints", "budget", "approval", "mode"], "bytes_cap": 16384},
+      {"name": "ArtSpec", "version": "1.0", "required": ["deliverable", "canvas", "composition", "palette", "typography", "constraints", "success_criteria", "brand_fact_ids"], "bytes_cap": 16384},
+      {"name": "HandoffEnvelope", "version": "1.0", "required": ["handoff_id", "episode_id", "kind", "produced_by", "consumed_by", "schema_version", "deadline_s", "budget", "input_hashes", "payload"], "bytes_cap": 32768},
+      {"name": "CommandBatch", "version": "1.0", "required": ["handoff_id", "commands", "workdir", "stop_on_error"], "bytes_cap": 32768},
+      {"name": "CommandResult", "version": "1.0", "required": ["exit_code", "duration_ms", "argv_executed", "stdout_digest", "stderr_digest", "log_path", "artifacts", "error"], "bytes_cap": 16384},
+      {"name": "ArtifactRecord", "version": "1.0", "required": ["episode_id", "kind", "path", "sha256", "bytes", "format"], "bytes_cap": 4096},
+      {"name": "GateReport", "version": "1.0", "required": ["episode_id", "artifact_sha256", "runner", "runner_version", "ok", "checks", "non_vacuous", "source_mutation"], "bytes_cap": 16384},
+      {"name": "CritiqueReport", "version": "1.0", "required": ["episode_id", "artifact_sha256", "critic_prompt_version", "model_id", "blinded_to", "dimensions", "defects", "confidence", "unseen", "verdict"], "bytes_cap": 16384, "validator": "reject ungrounded dimensions, gate-value mentions, pass with major defects"},
+      {"name": "VerificationVerdict", "version": "1.0", "required": ["episode_id", "artifact_sha256", "verdict", "rungs", "reason_codes", "human_required"], "enum_verdict": ["pass", "pass_with_notes", "reject", "needs_human", "unverified"]},
+      {"name": "Skill", "version": "1.0", "required": ["skill_id", "name", "version", "app", "task_family", "preconditions", "steps", "gates", "recovery", "stats", "status"], "bytes_cap": 32768},
+      {"name": "LessonCandidate", "version": "1.0", "required": ["scope", "task_family", "content", "evidence_episode_ids", "conditions", "counterexamples"], "bytes_cap": 8192}
+    ],
+    "role_tool_matrix": {
+      "conductor": [],
+      "art_director": ["memory.read", "retrieval.read"],
+      "vector_operator": ["craft.run.vectorcraft", "inspect.state", "render.svg"],
+      "raster_operator": ["craft.run.photocraft", "inspect.state", "render.raster"],
+      "print_verifier": ["verify.*", "readback.*"],
+      "visual_critic": ["render.*", "vision.assess"],
+      "memory_curator": ["memory.read", "memory.write", "eval.read"],
+      "enforcement": "role token allowlist in forge_role_token; not prompt-based"
+    }
+  },
+  "tables": [
+    {"name": "forge_episode", "purpose": "one run one row", "key_columns": ["id uuid pk", "account_id", "brief", "task_family", "apps jsonb", "rights jsonb", "plan jsonb", "status", "mode", "budget jsonb", "cost jsonb", "skill_pin jsonb", "catalogue_hash", "started_at", "finished_at"], "indexes": ["(task_family, status, started_at desc)"], "mutability": "append + status transitions only"},
+    {"name": "forge_event", "purpose": "hash-chained append-only event log", "key_columns": ["id bigserial", "episode_id", "seq", "kind", "payload jsonb", "prev_hash char(64)", "hash char(64)", "created_at"], "constraints": ["unique (episode_id, seq)"], "mutability": "append-only"},
+    {"name": "forge_handoff", "purpose": "typed handoffs over a queue table", "key_columns": ["id uuid pk", "episode_id", "parent_id", "kind", "produced_by", "consumed_by", "payload jsonb", "refusal_code", "state", "lease_until", "attempts", "created_at"], "indexes": ["(state, lease_until)"], "mutability": "state machine"},
+    {"name": "forge_tool_call", "purpose": "tool audit and idempotent replay", "key_columns": ["id bigserial", "episode_id", "handoff_id", "tool", "cmd_id", "params jsonb", "idempotency_key char(64)", "result jsonb", "exit_code", "duration_ms", "argv text[]", "refused bool"], "constraints": ["unique (idempotency_key)"], "mutability": "append-only"},
+    {"name": "forge_artifact", "purpose": "artifact index backed by a content-addressed store", "key_columns": ["id bigserial", "episode_id", "handoff_id", "kind", "path", "sha256", "bytes", "width", "height", "dpi", "format", "gate_report jsonb"], "indexes": ["(sha256)"], "mutability": "append-only"},
+    {"name": "forge_gate", "purpose": "gate evidence separated from artifact", "key_columns": ["id bigserial", "episode_id", "artifact_sha256", "runner", "runner_version", "ok", "checks jsonb", "non_vacuous jsonb", "source_mutation jsonb"], "mutability": "append-only"},
+    {"name": "forge_critique", "purpose": "blind critic evidence", "key_columns": ["id bigserial", "episode_id", "artifact_sha256", "prompt_version", "model_id", "blinded_to jsonb", "dimensions jsonb", "defects jsonb", "confidence", "unseen jsonb", "verdict"], "mutability": "append-only"},
+    {"name": "forge_eval", "purpose": "evaluation record per run and arm", "key_columns": ["id bigserial", "episode_id", "arm", "technical jsonb", "human jsonb", "verdict", "reviewer", "created_at"], "mutability": "append-only"},
+    {"name": "forge_resolution", "purpose": "arbitration outcome", "key_columns": ["id bigserial", "episode_id", "candidate_sha256", "resolution", "reason_codes text[]"], "mutability": "append-only"},
+    {"name": "forge_job", "purpose": "Postgres queue with SKIP LOCKED", "key_columns": ["id bigserial", "kind", "payload jsonb", "priority", "state", "lease_until", "attempts", "max_attempts", "run_after", "created_at"], "indexes": ["(state, priority, run_after)"], "mutability": "lease and state machine"},
+    {"name": "forge_episode_case", "purpose": "retrieval index", "key_columns": ["episode_id", "task_family", "brand", "product_type", "summary tsvector", "embedding real[] null", "outcome", "accepted bool"], "indexes": ["gin(summary)", "btree(task_family, accepted, started_at desc)"], "mutability": "derived, rebuildable"},
+    {"name": "forge_retrieval", "purpose": "retrieval receipt for A/B", "key_columns": ["id bigserial", "episode_id", "query_hash", "returned_ids uuid[]", "scores real[]", "injected_tokens int"], "mutability": "append-only"},
+    {"name": "forge_brand_fact", "purpose": "semantic memory with temporal validity", "key_columns": ["id text pk", "scope", "key", "value jsonb", "provenance", "confidence", "valid_from", "valid_to", "superseded_by", "status"], "indexes": ["(key, scope, status)"], "mutability": "versioned; supersede never delete"},
+    {"name": "forge_skill", "purpose": "procedural memory", "key_columns": ["skill_id text", "version int", "app", "catalogue_hash", "preconditions jsonb", "steps jsonb", "gates jsonb", "recovery jsonb", "stats jsonb", "status", "promoted_at", "superseded_by"], "constraints": ["unique (skill_id, version)"], "indexes": ["(app, status)"], "mutability": "new version per change"},
+    {"name": "forge_lesson", "purpose": "candidate rules with evidence", "key_columns": ["id uuid", "scope", "task_family", "content", "evidence uuid[]", "success_count", "failure_count", "confidence", "version", "status", "superseded_by", "created_at"], "mutability": "new version per change"},
+    {"name": "forge_conflict", "purpose": "contradictions are recorded, never averaged", "key_columns": ["id bigserial", "kind", "a_ref", "b_ref", "detail jsonb", "resolved_by", "resolution"], "mutability": "append + resolution"},
+    {"name": "forge_budget_ledger", "purpose": "daily cost caps", "key_columns": ["day date", "account_id", "tokens_in", "tokens_out", "calls", "cents", "hard_cap_cents"], "constraints": ["unique (day, account_id)"], "mutability": "incremented"},
+    {"name": "forge_role_token", "purpose": "role-scoped tool authorisation", "key_columns": ["role", "token_hash", "allowlist jsonb", "active bool"], "mutability": "admin only"}
+  ],
+  "tool_layer": {
+    "planes": ["native CLI/JSON/MCP (default)", "Playwright MCP accessibility-snapshot fallback (declared only, read-back mandatory)"],
+    "resolution": "absolute path plus version probe plus binary sha256 pinned per episode; bare command names forbidden",
+    "roots": {
+      "inbox": "/var/lib/forge/inbox (read-only)",
+      "work": "/var/lib/forge/work/<episode_id> (read-write, deleted on success)",
+      "build": "/var/lib/forge/build/<episode_id> (read-write, immutable after close)",
+      "artifacts": "/var/lib/forge/artifacts/<sha256> (content-addressed)",
+      "policy": "realpath before root check; symlink escape is E_ROOT_DENIED; sources hashed before and after each batch"
+    },
+    "idempotency": "sha256(episode_id + tool_id + canonical params + input hashes); unique index; replay returns stored result; publish needs a second human-issued key",
+    "concurrency": {"episodes": 2, "global_craft_steps": 1, "model_calling_subagents": 3, "vision_calls_per_revision": 1},
+    "locks": ["postgres advisory lock craft:global", "postgres advisory lock doc:<app>:<realpath>"]
+  },
+  "verification": {
+    "ladder": [
+      {"rung": 1, "name": "process", "evidence": ["exit code", "timeout flag", "argv executed", "duration", "pid", "stdout/stderr digests"], "sufficient_alone": false},
+      {"rung": 2, "name": "artifact", "evidence": ["exists", "bytes > 0", "sha256", "magic bytes", "openable", "dimensions", "dpi", "colour space", "alpha bbox", "page count"], "sufficient_alone": false},
+      {"rung": 3, "name": "domain", "evidence": ["craft_trace 10 gates", "prep_print_art coverage/subject/upscale", "provider geometry", "retype non-vacuity"], "sufficient_alone": false},
+      {"rung": 4, "name": "rendered perception", "evidence": ["thumb 256 on white/grey/black", "view 1024", "100 percent crop tiles", "print sheet", "contrast simulation", "alpha matte", "deterministic diagnostics"], "sufficient_alone": false},
+      {"rung": 5, "name": "visual critic", "evidence": ["blind rubric", "crop-cited per dimension", "confidence", "unseen list"], "sufficient_alone": false},
+      {"rung": 6, "name": "human rubric", "evidence": ["anchored 1-5 scores", "two reviewers for promotion/publish", "blind arm assignment"], "sufficient_alone": true}
+    ],
+    "verdict_rule": "pass requires rungs 1-5 green and, for print/publish/promotion, rung 6; any missing rung is unverified; rung 3 versus rung 5 disagreement is needs_human",
+    "anti_trust_rules": [
+      "exit 0 is a process claim, never an effect claim",
+      "a screenshot can only downgrade a verdict, never upgrade it",
+      "vacuous gate passes are rejected from an independent text-presence probe",
+      "input hash checked before and after every batch; mutation quarantines the episode",
+      "vector artifacts re-rendered independently and compared by perceptual hash",
+      "critic is blind to exit codes, gate reports, prior verdicts and operator claims",
+      "critic output is schema-rejected if any dimension lacks crop evidence or any gate value is mentioned"
+    ]
+  },
+  "memory": {
+    "stores": {
+      "episode_ledger": {"tables": ["forge_episode", "forge_event", "forge_tool_call", "forge_artifact", "forge_gate", "forge_critique", "forge_resolution"], "hash_chained": true, "source_of_truth": true},
+      "case_retrieval": {"tables": ["forge_episode_case", "forge_retrieval"], "method": "metadata filter, BM25 tsvector, optional real[] cosine, rerank by outcome/gate/recency/failure affinity, inject <=1200 tokens", "always_writes_receipt": true},
+      "semantic_facts": {"table": "forge_brand_fact", "typed_keys": ["brand.palette.primary", "print.max_width_in", "type.licensed_fonts", "provider.template_id", "channel.safe_zone", "owner.preference.background"], "requires_provenance": true},
+      "procedural_skills": {"tables": ["forge_skill", "forge_lesson"], "execution_modes": ["replay", "adapt within declared ranges only"], "pinned_in_episode": true}
+    },
+    "promotion": {
+      "states": ["draft", "candidate", "active", "superseded", "rolled_back"],
+      "rules": {
+        "draft_to_candidate": "1 verified episode plus explicit scope and failure conditions",
+        "candidate_to_active": "3 independent successes plus golden regression pass plus human sign-off",
+        "active_to_superseded": "new version promoted; old version kept and replayable",
+        "active_to_rolled_back": "failure, regression or contradiction; pointer flip plus goldens re-run"
+      },
+      "kill_switch_env": "FORGE_SKILLS_ENABLED=0 forces the baseline arm"
+    },
+    "not_learning": {
+      "fine_tuning": {"status": "not planned; optional Phase 3 only if retrieval plateaus", "missing": ["rights-cleared trajectory corpus", "frozen eval set", "cost model"]},
+      "rl_on_gates": {"status": "not planned", "reason": "gates measure technical correctness, not taste; optimising them produces gate-passing art"},
+      "claim_rule": "learns means a held-out gain that persists across briefs and survives rollback; otherwise say retrieves cases and reuses vetted procedures"
+    }
+  },
+  "metrics": [
+    {"id": "first_attempt_verified_pass_rate", "definition": "accepted on attempt 1 divided by goldens attempted, pass means rungs 1-5 and 6 where required", "direction": "up", "primary": true, "baseline": "unmeasured"},
+    {"id": "attempts_per_accepted_artifact", "definition": "tool batches until acceptance", "direction": "down", "baseline": "unmeasured"},
+    {"id": "human_rework_minutes", "definition": "reviewer minutes per accepted artifact", "direction": "down", "baseline": "unmeasured"},
+    {"id": "cost_per_accepted_artifact", "definition": "tokens in and out at verified price plus wall seconds of CPU value", "direction": "down", "baseline": "unmeasured", "note": "no dollar figure invented"},
+    {"id": "pass_precision", "definition": "human-accepted divided by runs marked pass", "direction": "up", "baseline": "unmeasured", "note": "the honesty metric"},
+    {"id": "unsafe_side_effects", "definition": "source mutations plus unapproved publishes", "direction": "flat", "target": 0},
+    {"id": "regression_rate", "definition": "previously passing goldens now failing", "direction": "flat", "target": 0},
+    {"id": "refusal_correctness", "definition": "refusals matching the expected refusal on negative fixtures", "direction": "up", "baseline": "unmeasured"},
+    {"id": "retrieval_lift", "definition": "pass rate arm B minus arm A with 95 percent CI", "direction": "up", "baseline": "unmeasured"},
+    {"id": "critic_stability", "definition": "verdict flips on identical inputs for the same prompt version", "direction": "down", "baseline": "unmeasured"}
+  ],
+  "phases": [
+    {"id": "phase-0", "weeks": "0-1", "deliverable": "host baseline, forge DB and role, catalogue hashes, CLI probes, 10 frozen goldens with rights, rubric v0, critic prompt v0.3, forge_job queue", "gate": "10 goldens execute on the existing pipeline with honest pass/fail; shims replaced or gap documented", "status": "not-started"},
+    {"id": "phase-1", "weeks": "2-3", "deliverable": "tool gateway (registry, absolute path plus version pinning, allowlist, roots, idempotency, refusals), verifier rungs 1-3, source mutation check", "gate": "one trace and one retouch episode end to end; every call in forge_tool_call; zero source mutations", "status": "not-started"},
+    {"id": "phase-2", "weeks": "4-5", "deliverable": "ledger, handoffs, conductor state machine, render ladder, blind critic, episode replay", "gate": "one episode reconstructable from the ledger alone; critic schema validation 100 percent; critic stability measured on 20 identical renders", "status": "not-started"},
+    {"id": "phase-3", "weeks": "6-7", "deliverable": "case retrieval, retrieval receipts, A/B harness, baseline versus memory arms", "gate": "A/B report with CI; a null result disables retrieval by default", "status": "not-started"},
+    {"id": "phase-4", "weeks": "8-9", "deliverable": "skill draft/candidate/active, promotion gate, regression suite, kill switch, rollback drill", "gate": "3 skills promoted with 3 independent evidences each; one deliberate rollback exercised and verified", "status": "not-started"},
+    {"id": "phase-5", "weeks": "10-11", "deliverable": "print masters, second app, 50-golden corpus, cost and latency baseline, dashboards", "gate": "zero unsafe publishes; cost per accepted artifact measured; private held-out set recorded", "status": "not-started"},
+    {"id": "phase-6", "weeks": "12", "deliverable": "backup and restore drill, security review, retention and GC, runbooks, ops handover", "gate": "restore drill passes; systemd-analyze security baseline recorded; incident runbook tested", "status": "not-started"}
+  ],
+  "build_vs_buy": [
+    {"candidate": "DeerFlow 2.2", "verified_state": "installed and running at /opt/deer-flow, changelog 2.2.0, model deepseek-flash configured", "use": "conversational front door and interactive agent only; never the ledger, gates or promotion owner", "label": "V"},
+    {"candidate": "Eko 4.1.3", "verified_state": "source and README verified in the dossier; docs host returned 503", "use": "borrow planner DAG, pause/resume and MCP discovery patterns; optional TypeScript sidecar later", "label": "D"},
+    {"candidate": "LangGraph", "verified_state": "not installed in this repo; package.json has no agent SDK", "use": "optional for the planner graph only; ledger-critical state machine stays Postgres-native", "label": "R+V"},
+    {"candidate": "OpenAdapt", "verified_state": "pattern verified in the dossier", "use": "adopt verify-effect-from-system-of-record, compiled procedures, halt on uncertainty", "label": "D"},
+    {"candidate": "Playwright MCP", "verified_state": "verified in the dossier", "use": "fallback plane only, with mandatory read-back", "label": "D"},
+    {"candidate": "Craft CLIs, atlas, craft_trace, prep_print_art", "verified_state": "VectorCraft 0.21.1 and PhotoCraft 0.20.2 installed; FilmCraft, DesignCraft and EffectCraft absent", "use": "domain layer; resolve absolute paths; replace 127 shims first", "label": "V+R"},
+    {"candidate": "existing pod_pipeline and console", "verified_state": "running, read and schema-audited", "use": "leave untouched; call pipeline via MCP", "label": "V+R"},
+    {"candidate": "build from scratch", "verified_state": "no framework supplies these", "use": "tool gateway, evidence ladder and verifier, blind critic harness, hash-chained ledger and retrieval receipts, skill runner and promotion, eval harness, ops units", "label": "I"}
+  ],
+  "refusal_codes": [
+    {"code": "E_BRIEF_MISSING", "terminal": true, "meaning": "no deliverable, target or usable constraints"},
+    {"code": "E_RIGHTS_MISSING", "terminal": true, "meaning": "asset lacks a recorded rights id"},
+    {"code": "E_ROOT_DENIED", "terminal": true, "meaning": "resolved path outside declared roots or symlink escape"},
+    {"code": "E_INPLACE_WRITE", "terminal": true, "meaning": "tool would overwrite a source or master"},
+    {"code": "E_COMMAND_UNKNOWN", "terminal": true, "meaning": "command id not in the pinned allowlist; return nearest matches, never execute"},
+    {"code": "E_PARAM_REJECTED", "terminal": false, "meaning": "schema, type or range violation"},
+    {"code": "E_APP_DRIFT", "terminal": true, "meaning": "binary or version does not match the episode pin"},
+    {"code": "E_CATALOGUE_STALE", "terminal": true, "meaning": "catalogue hash older than the app version"},
+    {"code": "E_DOCUMENT_STATE", "terminal": false, "meaning": "wrong or absent document or selection"},
+    {"code": "E_ARTIFACT_MISSING", "terminal": false, "meaning": "expected output absent"},
+    {"code": "E_ARTIFACT_EMPTY", "terminal": false, "meaning": "zero bytes or unopenable"},
+    {"code": "E_SOURCE_MUTATED", "terminal": true, "meaning": "input hash changed; quarantine episode"},
+    {"code": "E_GATE_FAILED", "terminal": false, "meaning": "a required technical gate failed"},
+    {"code": "E_GATE_MISSING", "terminal": false, "meaning": "no gate report for an artifact that needs one; verdict unverified"},
+    {"code": "E_GATE_VACUOUS", "terminal": false, "meaning": "pass with vacuous counters or threshold hugging"},
+    {"code": "E_UPSCALE_LIMIT", "terminal": true, "meaning": "upscale beyond 2.5x subject relative"},
+    {"code": "E_TEXT_TRACE_FORBIDDEN", "terminal": true, "meaning": "AI text traced instead of erased and retyped"},
+    {"code": "E_WHITE_MODE_REFUSED", "terminal": true, "meaning": "white mode requested on an image without a white background"},
+    {"code": "E_VISION_UNAVAILABLE", "terminal": false, "meaning": "vision call failed or unparseable after one retry"},
+    {"code": "E_CRITIQUE_UNGROUNDED", "terminal": false, "meaning": "critique missing crop evidence or citing gate values"},
+    {"code": "E_BUDGET_EXCEEDED", "terminal": true, "meaning": "token, wall clock or spend cap hit before the next model call"},
+    {"code": "E_TIMEOUT", "terminal": false, "meaning": "step or handoff deadline exceeded"},
+    {"code": "E_PUBLISH_NOT_APPROVED", "terminal": true, "meaning": "publish without a human approval token for this exact hash"},
+    {"code": "E_SURFACE_UNVERIFIABLE", "terminal": true, "meaning": "GUI fallback with no read-back from the system of record"},
+    {"code": "E_MEMORY_CONFLICT", "terminal": false, "meaning": "contradictory facts or lessons; curator opens a conflict record"},
+    {"code": "E_EVAL_EMPTY", "terminal": true, "meaning": "golden fixtures missing; evaluation refuses"},
+    {"code": "E_UNSUPPORTED_SURFACE", "terminal": true, "meaning": "app not installed or not verified on this host"}
+  ],
+  "state_machine": {
+    "episode_states": ["intake", "briefed", "planned", "context_ready", "executing", "verifying", "critiquing", "needs_human", "accepted", "rejected", "refused", "failed", "paused", "cancelled", "quarantined", "rolled_back"],
+    "terminal_states": ["accepted", "rejected", "refused", "failed", "cancelled", "quarantined"],
+    "transition_guards": {
+      "briefed": "deliverable, target and rights present",
+      "planned": "ArtSpec with cited brand facts and success criteria",
+      "context_ready": "retrieval receipt exists, possibly empty",
+      "executing": "locks acquired and budget available",
+      "verifying": "handoff completed with artifact records",
+      "critiquing": "evidence ladder rungs 1-4 green",
+      "accepted": "arbitration agrees and human approval where required"
+    },
+    "skill_states": ["draft", "candidate", "active", "superseded", "rolled_back"],
+    "job_states": ["queued", "claimed", "running", "succeeded", "failed", "abandoned"]
+  },
+  "risks": [
+    {"id": "R1", "risk": "The critic false-passes bad art because deepseek-flash vision is untested on print defects, making the evidence ladder ceremonial", "likelihood": "medium", "impact": "high", "mitigation": "50-defect labelled corpus before Phase 2 sign-off; measure false-pass rate; human review until measured; critic verdict can never override a failed gate", "owner": "design-owner"},
+    {"id": "R2", "risk": "Gates and metrics get optimised instead of art quality (reward hacking)", "likelihood": "medium", "impact": "high", "mitigation": "private held-out goldens, verifier/operator separation, vacuity and threshold-hugging checks, human rubric, no RL", "owner": "conductor"},
+    {"id": "R3", "risk": "2 vCPU host is overloaded; Craft steps starve the shop app or DeerFlow", "likelihood": "medium", "impact": "high", "mitigation": "one global craft semaphore, two episodes max, nice and ionice, 900 s timeouts, cgroup limits, daily cost and CPU review", "owner": "ops"},
+    {"id": "R4", "risk": "Craft CLI stdout/stderr is not a stable machine interface, so error mapping and gates mis-classify failures", "likelihood": "medium", "impact": "medium", "mitigation": "snapshot 20 commands per app, pin envelope format, fail closed on unparseable output, never regex a success message", "owner": "engineer"},
+    {"id": "R5", "risk": "Only two of five Craft apps are installed, so the multi-app supervision claim is overreach", "likelihood": "high", "impact": "medium", "mitigation": "E_UNSUPPORTED_SURFACE until installation plus catalogue snapshot plus smoke task; keep FilmCraft out of scope", "owner": "owner"},
+    {"id": "R6", "risk": "Memory poisoning: a single verified-looking case or brand fact propagates to many runs", "likelihood": "medium", "impact": "high", "mitigation": "hash-chained ledger, provenance on facts, three independent successes plus human sign-off, contradiction records, kill switch and rollback drill", "owner": "curator"},
+    {"id": "R7", "risk": "Secret leakage into prompts, logs or argv", "likelihood": "low", "impact": "critical", "mitigation": "env-file only, redaction tests in CI, no secrets in tool results, rotate on any exposure", "owner": "ops"},
+    {"id": "R8", "risk": "Prompt injection from brief, OCR, EXIF or metadata changes tool policy", "likelihood": "medium", "impact": "high", "mitigation": "treat all external text as data, delimit, never insert into policy or system prompts, log untrusted content separately", "owner": "engineer"},
+    {"id": "R9", "risk": "Disk exhaustion: artifacts and logs fill a 63 percent full disk", "likelihood": "medium", "impact": "medium", "mitigation": "10 GB quota, content-addressed store, GC after 90 days with dry-run, bounded logs, daily disk alert", "owner": "ops"},
+    {"id": "R10", "risk": "Retrieval has no lift and adds tokens and latency", "likelihood": "medium", "impact": "low", "mitigation": "A/B with CI; a null result disables retrieval by default; findings recorded rather than hidden", "owner": "engineer"},
+    {"id": "R11", "risk": "The existing published shims hide a broken CLI wiring, so a demo can look green while exiting 127", "likelihood": "high", "impact": "medium", "mitigation": "absolute-path resolution and version probes; a step with exit 127 is a refusal, never a pass; Phase 0 replaces the shims", "owner": "engineer"},
+    {"id": "R12", "risk": "Rights and data-protection violations from fixtures or customer art", "likelihood": "medium", "impact": "high", "mitigation": "rights id required per input, curated public-domain or owned fixtures, retention limits, no training on customer data", "owner": "owner"}
+  ],
+  "env_names_only": {
+    "inherited_from_existing_stack": ["DEEPSEEK_API_KEY"],
+    "proposed": ["FORGE_MODEL_ID", "FORGE_MODEL_BASE_URL", "FORGE_MAX_OUTPUT_TOKENS", "FORGE_THINKING", "FORGE_VISION_MODEL_ID", "FORGE_DB_URL", "FORGE_ROOTS", "FORGE_CRAFT_BIN_ROOT", "FORGE_MAX_EPISODES", "FORGE_CRAFT_SEMAPHORE", "FORGE_DAILY_TOKEN_CAP", "FORGE_DAILY_CENTS_CAP", "FORGE_SKILLS_ENABLED", "FORGE_CRITIC_PROMPT_VERSION", "FORGE_PUBLISH_MODE"],
+    "rule": "names only in this design; values live in a root-owned environment file and are never committed, logged or echoed"
+  },
+  "open_unknowns": [
+    {"id": "U1", "unknown": "model pricing and real token usage for this workload", "blocks": "every cost cap and dollar figure", "evidence_needed": "instrument 10 episodes and read provider usage"},
+    {"id": "U2", "unknown": "vision accuracy on print-class defects", "blocks": "the critic rung of the evidence ladder", "evidence_needed": "50-defect labelled corpus, precision and recall"},
+    {"id": "U3", "unknown": "stability of Craft CLI machine output", "blocks": "error mapping and gate parsing", "evidence_needed": "snapshot 20 commands per app"},
+    {"id": "U4", "unknown": "FilmCraft, DesignCraft and EffectCraft availability", "blocks": "multi-app supervision claim", "evidence_needed": "install, version probe, catalogue snapshot, smoke task"},
+    {"id": "U5", "unknown": "pgvector availability on the stock postgres:16 image", "blocks": "vector retrieval design", "evidence_needed": "CREATE EXTENSION vector on a scratch DB"},
+    {"id": "U6", "unknown": "DeerFlow memory backend extensibility", "blocks": "where facts and episodes live", "evidence_needed": "read backend memory provider interfaces"},
+    {"id": "U7", "unknown": "human rater availability and inter-rater agreement", "blocks": "taste claims and promotion sign-off", "evidence_needed": "two reviewers on 20 artifacts, compute agreement"},
+    {"id": "U8", "unknown": "exact refusal-code mapping for CLI stderr across both apps", "blocks": "correct refusal versus generic failure", "evidence_needed": "10 negative fixtures per app"},
+    {"id": "U9", "unknown": "whether the configured model accepts multiple images and at what resolution", "blocks": "render ladder and critic cost", "evidence_needed": "one documented API probe, owner-approved spend"},
+    {"id": "U10", "unknown": "cost and duration of a full 50-golden three-arm evaluation", "blocks": "evaluation cadence", "evidence_needed": "measure 5 goldens times 3 arms once"}
+  ]
+}

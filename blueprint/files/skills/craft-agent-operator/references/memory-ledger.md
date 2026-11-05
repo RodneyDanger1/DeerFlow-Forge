@@ -120,9 +120,18 @@ Return a bounded summary plus episode IDs, not the whole trace.
 | Transition | Requirement |
 |---|---|
 | `draft → candidate` | One verified episode with the lesson; explicit conditions |
-| `candidate → active` | ≥3 independent successes, no golden regression, human approval |
+| `candidate → active` | Calibrated evaluation horizon + Wilson lower bound above baseline, no golden regression, human approval; ≥3 independent successes is only the minimum sample, not a rule |
 | `active → superseded` | New version active; old kept for replay |
 | `active → rolled_back` | Failure/regression; notify owner; pin old version |
+
+> **Correction (2026-11-05, execution-wave task-11):** 3/3 successes give a Wilson 95% lower bound of
+> **0.4385**, so a `LB > 0.60` rule cannot promote at N=3. The rule must declare a horizon. A simulation
+> suggests `n=8, k≥7, LB>p0` as a starting point (3.51% synthetic null promotions, 81.14% retention at
+> p=0.90), but this is **not adopted** until the owner picks p0/n and real episodes test it. “2 failures
+> in last 20” also false-demoted a 95%-reliable skill 41.22% of the time; choose 2-consecutive/3-in-20
+> and test. A 40-golden suite misses ~19.5% of risky skills at 5% regression/golden; size the suite.
+> The human gate is load-bearing: a gate-optimising strategy was promoted 85.73% without it vs 0.01%
+> with it.
 
 - "Independent" means different inputs/runs, not three attempts of the same file.
 - A lesson must state its **scope** and **failure conditions**; a global rule from one brand is invalid.

@@ -1,0 +1,497 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "03-SURFACE",
+  "taskId": "task-3",
+  "producer": "craft-surface-auditor",
+  "generatedAtUtc": "2026-11-05T16:25:00Z",
+  "auditWindowUtc": ["2026-11-05T16:10:15Z", "2026-11-05T16:25:00Z"],
+  "method": {
+    "readOnly": true,
+    "localReads": [
+      "blueprint/files/skills/artcraft-command-atlas/references/{README.md,coverage.json,group-index.md,command-tips.md,sources.md,00-intent-map.md,catalogues/*.json,check_atlas.py,command_lookup.py,recipes-vectorcraft.md,pc-batch-automation.md}",
+      "blueprint/files/skills/{craft-mcp-drive,apparel-print-master,ai-art-vectorize-vectorcraft,artcraft-vector-trace,artcraft-image-cleanup,artcraft-photocraft-layers,craft-agent-operator}/SKILL.md",
+      "blueprint/files/skills/craft-agent-operator/references/evaluation.md",
+      "blueprint/files/tools/craft_trace.py",
+      "blueprint/files/tools/prep_print_art.py"
+    ],
+    "hostWrites": ["/tmp/aud-* scratch paths only (synthetic fixtures, probe reports, probe renders)"],
+    "repoWrites": [
+      "research/eko-deerflow-agent/wave2/03-CRAFT-SURFACE.md",
+      "research/eko-deerflow-agent/wave2/03-SURFACE.json"
+    ],
+    "ssh": {
+      "target": "root@179.197.88.181",
+      "hostname": "srv2108523",
+      "identityFile": "~/.ssh/id_ed25519_hostinger",
+      "batchMode": true
+    },
+    "notPerformed": [
+      "no source edits",
+      "no artifact overwrite (all exports to new /tmp paths)",
+      "no --in-place",
+      "no publish / store change",
+      "no package install",
+      "no desktop app left running (GUI probe killed, port re-checked)"
+    ]
+  },
+  "evidenceLabels": ["VERIFIED", "READ", "DOCS", "INFERRED", "UNVERIFIED"],
+  "host": {
+    "hostname": "srv2108523",
+    "publicIpv4": "179.197.88.181",
+    "kernel": "Linux 7.0.0-38-generic",
+    "user": "root",
+    "display": { "DISPLAY": null, "WAYLAND_DISPLAY": null, "x11Sockets": false, "xvfb": true, "gpu": false },
+    "mediaTooling": {
+      "imagemagick": "7.1.2-18 Q16 x86_64",
+      "rsvgConvert": "2.61.3",
+      "identify": true,
+      "compare": true,
+      "composite": true,
+      "magick": true,
+      "ffmpeg": true,
+      "fcMatch": true,
+      "inkscape": false,
+      "exiftool": false
+    },
+    "python": {
+      "system": "3.14 (no PIL/numpy/skimage)",
+      "podVenv": "/opt/pod-pipeline/.venv/bin/python (Pillow, numpy, scipy, scikit-image available; skimage.metrics.ssim executed)"
+    }
+  },
+  "apps": {
+    "vectorcraft": {
+      "version": "0.21.1",
+      "versionCommandOutput": "vectorcraft-cli 0.21.1",
+      "cliPath": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli",
+      "appPath": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft",
+      "appBytes": 169774080,
+      "status": "installed, working",
+      "evidence": "VERIFIED"
+    },
+    "photocraft": {
+      "version": "0.20.2",
+      "build": "7c12f6471, 2026-11-05",
+      "versionCommandOutput": "photocraft-cli 0.20.2 (7c12f6471, 2026-11-05)",
+      "cliPath": "/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli",
+      "appPath": "/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft",
+      "appBytes": 139617776,
+      "status": "installed, working",
+      "evidence": "VERIFIED"
+    },
+    "filmcraft": {
+      "version": null,
+      "status": "NOT INSTALLED",
+      "stubPath": "/opt/pod-pipeline/bin/filmcraft-cli",
+      "stubBytes": 122,
+      "stubExitCode": 127,
+      "stubMessage": "filmcraft-cli: vendor binary not installed. Replace this file and rebuild pod-craft-runner.",
+      "commandCount": null,
+      "reason": "no /opt/craft/filmcraft*, no binary on PATH, find over /opt and filesystem (maxdepth 4) found only the stub",
+      "evidence": "VERIFIED (absence)"
+    },
+    "otherCraftApps": {
+      "designcraft": "stub only (/opt/pod-pipeline/bin/designcraft-cli, exit 127)",
+      "effectcraft": "stub only (/opt/pod-pipeline/bin/effectcraft-cli, exit 127)",
+      "pathTrap": "/opt/pod-pipeline/bin/{vectorcraft-cli,photocraft-cli} are ALSO 122-127 byte stubs exiting 127; the real CLIs exist only under /opt/craft/*/bin/",
+      "evidence": "VERIFIED"
+    }
+  },
+  "counts": {
+    "vectorcraft": {
+      "commands": 918,
+      "groups": 64,
+      "capture": "vectorcraft-cli commands",
+      "rawBytes": 552309,
+      "localCatalogueMd5": "D197F7DB99DF9021A3FCB23A6FDB4B4F",
+      "hostCatalogueMd5": "d197f7db99df9021a3fcb23a6fdb4b4f",
+      "byteIdenticalLocalVsHost": true,
+      "rowKeys": ["enabled", "id", "label", "menu", "params", "shortcut"],
+      "rowsWithParams": 918,
+      "rowsWithShortcut": 81,
+      "enabledTrue": 147,
+      "enabledFalse": 771,
+      "enabledFlagIsStateNotCapability": true,
+      "stateDependenceProof": "the catalogue marks all 55 'select' commands enabled:false, yet select.all executed successfully inside an MCP command_batch on an open document and returned {count:3}",
+      "needsDocumentField": false,
+      "disabledReasonField": false,
+      "evidence": "VERIFIED"
+    },
+    "photocraft": {
+      "commands": 965,
+      "groups": 38,
+      "capture": "photocraft-cli commands --json",
+      "rawBytes": 392959,
+      "localCatalogueMd5": "630BD8BE7DF9E8915A0DD5742CE097C2",
+      "hostCataloguePath": "/opt/craft/catalogues/photocraft-commands.json",
+      "hostCatalogueBytes": 84052,
+      "hostCatalogueIsJson": false,
+      "hostCatalogueNote": "965-line plain-text table (id, label, menu); .json extension is misleading",
+      "rowKeys": ["disabledReason", "enabled", "id", "label", "menu", "needsDocument", "params", "shortcut"],
+      "rowsWithParams": 965,
+      "enabledTrue": 182,
+      "enabledFalse": 783,
+      "needsDocumentTrue": 731,
+      "needsDocumentFalse": 234,
+      "disabledReasonBreakdown": {
+        "no document open": 661,
+        "no document": 39,
+        "no active document": 31,
+        "no selection": 13,
+        "select three or more layers to distribute": 8,
+        "other": 31
+      },
+      "evidence": "VERIFIED"
+    },
+    "intentMap": {
+      "path": "blueprint/files/skills/artcraft-command-atlas/references/00-intent-map.md",
+      "lines": 195,
+      "vectorcraftIntentRows": 82,
+      "photocraftIntentRows": 78,
+      "note": "row counts include one header row per section",
+      "evidence": "READ"
+    }
+  },
+  "cli": {
+    "vectorcraft": {
+      "subcommands": ["mcp", "run", "commands", "convert", "info", "bench", "perf"],
+      "noBatchSubcommand": true,
+      "subcommandHelpIsGlobalOnly": true,
+      "run": {
+        "flags": ["--in FILE", "--cmd ID [--params JSON]", "--commands FILE|-", "--export FILE", "--scale N"],
+        "stepsLimit": "<=64 MiB and <=100000 steps",
+        "acceptsJsonArray": true,
+        "acceptsJsonLines": true,
+        "acceptsStdin": true,
+        "printsOneJsonPerStep": true,
+        "stepTags": ["open", "cmd", "export"]
+      },
+      "convert": {
+        "flags": ["--scale", "--artboard", "--range", "--outline-text", "--decimals", "--replace-lossy", "--editing-data", "--preserve-editing", "--ai-version", "--hidden-objects", "--transparent-images"],
+        "outMayEqualInOnlyWith": "--replace-lossy"
+      },
+      "info": "JSON summary (import warnings, title, colour mode, units, artboards, object counts by kind, fonts)",
+      "commands": "prints catalogue as JSON (no --filter option documented)",
+      "readableFormats": ["vectorcraft", "drawcraft", "svg", "svgz", "pdf", "ai", "ait", "png", "pns", "jpg", "gif", "webp", "tif", "bmp", "tga", "psd", "psb", "vctemplate", "dxf", "emf", "wmf", "eps", "ps", "af", "afdesign", "afpub"],
+      "writableFormats": ["vectorcraft", "svg", "svgz", "pdf", "ai", "png", "jpg", "gif", "webp", "tif", "bmp", "vctemplate", "txt", "dxf", "eps", "emf", "wmf", "tga", "psd"],
+      "evidence": "VERIFIED --help"
+    },
+    "photocraft": {
+      "subcommands": ["convert", "info", "run", "batch", "droplet", "commands", "mcp", "serve", "help"],
+      "run": {
+        "flags": ["FILE positional", "--new JSON", "--cmd ID", "--params JSON", "--out FILE", "--in-place", "--approve-high-memory", "--format", "--quality", "--tiff-*", "--tga-bits", "--dpx-bits", "--dds-*", "--jpeg-format", "--pcraft-full-composite"],
+        "samePathOutRefusedUnless": "--in-place",
+        "paramsBindToPrecedingCmd": true
+      },
+      "batch": {
+        "flags": ["--actions FILE", "--action NAME", "--in DIR", "--out DIR", "--in-place", "--recursive", "--naming TEMPLATE", "--start-serial 1-4294967295", "--stop-on-error", "--error-log FILE", "--approve-high-memory", "--format", "--quality"],
+        "namingTokens": ["{name}", "{serial}", "{date}", "{ext}"],
+        "acceptsActionsFile": [".atn", "actions.json", "droplet"],
+        "observedOutput": "with --naming '{name}-{serial}' outputs were a-001 and b-002: NO extension emitted because {ext} was absent; {serial} is global across the run",
+        "recursiveFlattensIntoOut": true
+      },
+      "commands": { "jsonFlag": "--json", "filterFlag": "--filter TEXT", "observedFilterProbe": "commands --filter trace -> filter.stylize.traceContour" },
+      "mcp": {
+        "modes": ["headless (default)", "--bridge 127.0.0.1:PORT"],
+        "bridgeRequires": ["--control-token <64 hex>", "or --control-token-file PATH", "env PHOTOCRAFT_CONTROL_PORT / PHOTOCRAFT_CONTROL_TOKEN / PHOTOCRAFT_CONTROL_TOKEN_FILE"],
+        "rootsRefusedInBridgeMode": true
+      },
+      "evidence": "VERIFIED --help"
+    },
+    "exitCodes": {
+      "vectorcraftCli": { "success": 0, "unknownCommand": 1, "gateFailure": 1, "refusal": 2 },
+      "photocraftCli": { "success": 0, "unknownCommand": 1, "samePathRefusal": 1, "badFlagUsage": 2 },
+      "atlasClaimCorrection": "command-tips.md says '2 = usage/refusal (PhotoCraft CLI)'; probed: 2 is argument-parser usage only, semantic refusals exit 1",
+      "evidence": "VERIFIED (each case executed)"
+    }
+  },
+  "mcp": {
+    "transport": "stdio, newline-delimited JSON-RPC 2.0, logs to stderr, one message per line",
+    "vectorcraft": {
+      "command": "vectorcraft-cli mcp [--connect ADDR | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]...",
+      "serverInfo": { "name": "vectorcraft", "title": "VectorCraft", "version": "0.21.1" },
+      "protocolVersionNegotiated": "2025-06-18",
+      "serverEchoesRequestedVersion": true,
+      "acceptedVersionsDocs": ["2025-06-18", "2025-03-26", "2024-11-05"],
+      "capabilities": ["completions", "logging", "prompts", "resources", "tools"],
+      "toolCount": 33,
+      "tools": ["command_list", "command_run", "command_batch", "doc_inspect", "render_preview", "ui_inspect", "ui_screenshot", "list_commands", "run_command", "inspect_document", "inspect_ui", "select_tool", "pointer_gesture", "draw_path", "draw_shape", "set_paint", "press_key", "type_text", "answer_dialog", "invoke_menu", "open_panel", "screenshot", "open_file", "save_file", "export", "add_text", "apply_effect", "pathfinder", "transform", "create_graph", "text_wrap", "undo", "redo"],
+      "resources": ["document", "document-json", "commands"],
+      "prompts": ["poster", "icon-set", "recolor", "trace-and-style", "export-set"],
+      "resourceTemplates": ["object", "command", "effect", "swatch"],
+      "roots": {
+        "flags": ["--automation-read-root", "--automation-write-root"],
+        "repeatable": true,
+        "denyByDefaultOnceAnyFlagUsed": true,
+        "readWriteSeparate": true,
+        "impliesHeadless": true,
+        "startupLog": "vectorcraft-cli: files confined: read /tmp/aud-ro; write /tmp/aud-rw"
+      },
+      "concurrency": "processed in request order in probe; dependent open_file -> render_preview -> document.inspect -> command_batch all succeeded in one piped session",
+      "evidence": "VERIFIED (handshake + live tools/call)"
+    },
+    "photocraft": {
+      "command": "photocraft-cli mcp [--bridge host:port] [--automation-read-root DIR] [--automation-write-root DIR]",
+      "serverInfo": { "name": "photocraft", "version": "0.20.2" },
+      "protocolVersionNegotiated": "2025-06-18",
+      "capabilities": ["resources", "tools"],
+      "toolCount": 26,
+      "tools": ["command_batch", "command_list", "command_run", "control_call", "doc_close", "doc_export", "doc_export_data_sets", "doc_export_layers", "doc_import_data_sets", "doc_inspect", "doc_new", "doc_open", "doc_place", "doc_replace_smart_object", "doc_save", "doc_select", "jobs_cancel", "jobs_list", "render_preview", "session_list", "ui_inspect", "ui_menu_invoke", "ui_pointer", "ui_screenshot", "ui_set"],
+      "resources": ["document", "commands"],
+      "prompts": [],
+      "resourceTemplates": [],
+      "concurrency": "DISPATCHES CALLS CONCURRENTLY: responses arrived out of request order and dependent calls failed (doc_open succeeded while render_preview returned 'no document open' and command_batch returned 'command image.crop is not available right now: no document open')",
+      "concurrencyEvidence": "VERIFIED (single piped session)",
+      "evidence": "VERIFIED (handshake + live tools/call)"
+    },
+    "refusals": {
+      "vectorcraftReadRoot": "open_file: automation path rejected: outside the read root /tmp/aud-ro: /etc/hostname",
+      "vectorcraftWriteRoot": "export: automation path rejected: outside the write root /tmp/aud-rw: /tmp/aud-ro/vc_forbidden.png",
+      "photocraftRoot": "{\"error\":\"automation path rejected: absolute paths must be inside the automation root: `/etc/hostname`\"}",
+      "vectorcraftUiScreenshotHeadless": "ui_screenshot: `screenshot {window:true}` needs the desktop app: run `vectorcraft --control 7979` and start the server with `vectorcraft-cli mcp --connect 127.0.0.1:7979`",
+      "photocraftUiScreenshotHeadless": "`ui_screenshot` drives the live GUI and needs bridge mode: start the app with `photocraft --control <port> --control-token-file <path>`, then run `photocraft-cli mcp --bridge 127.0.0.1:<port> --control-token-file <path>`",
+      "noModeFlagFallsBackToUnconfinedHeadless": true,
+      "evidence": "VERIFIED"
+    },
+    "limits": {
+      "messageBytesMax": 16777216,
+      "messagesPerJsonRpcBatchMax": 64,
+      "commandBatchStepsMax": 256,
+      "commandBatchCallBytesMax": 8388608,
+      "cliRunStepsMax": 100000,
+      "cliRunBytesMax": 67108864,
+      "stopOnErrorDefault": true,
+      "evidence": "VERIFIED (inputSchema + --help) / DOCS (mcp.md Protocol)"
+    }
+  },
+  "visual": {
+    "renderTools": {
+      "vectorcraft": {
+        "render_preview": { "args": { "artboard": "0-based", "max_side": "1..4096", "traceViews": "boolean" }, "returns": "inline image/png + {height,width}", "mutatesDocument": false, "observed": "256x192 PNG, 4224 base64 chars" },
+        "screenshot": { "args": ["artboard", "max_side 1..4096", "path", "scale", "traceViews", "window"], "windowRequires": "desktop app (headless returns isError)" },
+        "export": { "args": ["path", "format (20 enum values)", "artboard", "scale", "ppi", "options", "outlineText"], "observed": "200x150 PNG at --scale 0.5 with DPI metadata 14.17 px/cm (36 DPI)" }
+      },
+      "photocraft": {
+        "render_preview": { "args": { "index": "headless only", "max_side": "default 1024, max 2048, 0=full within ceiling" }, "bridgeMode": "returns window screenshot and rejects index" },
+        "doc_render_preview": { "args": ["index", "max_side"] }
+      }
+    },
+    "metricsProbe": {
+      "groundTruth": "rsvg-convert -w 400 -h 300 of /tmp/aud-ro/test.svg",
+      "engineRender": "vectorcraft-cli convert /tmp/aud-ro/test.svg /tmp/aud-rw/vc400.png",
+      "engineVsGroundTruth": { "rmse": 73.7272, "normalized": 0.001125, "mae": 0.013, "ssim": 0.99994 },
+      "deliberateLocalizedEdit": { "edit": "120x100 block filled white (~4% of frame)", "rmse": 6801.74, "normalized": 0.103788, "mae": 7.587, "ssim": 0.97872 },
+      "finding": "global SSIM/RMSE barely move for a localized but glaring defect (SSIM 0.99994 -> 0.97872); a critic needs tile-wise metrics + difference bounding box, not one global number",
+      "dpiReadCommand": "identify -format '%f %wx%h %x %y %[colorspace]'",
+      "dpiReadExample": "300 DPI = 118.11 px/cm",
+      "evidence": "VERIFIED"
+    },
+    "criticCanInfer": [
+      "exact pixel dimensions, DPI (px/cm), colourspace, bit depth",
+      "alpha structure and transparent corners",
+      "palette size from SVG fill hexes",
+      "coverage and edge density",
+      "per-tile structural agreement against a reference render",
+      "changed-region bounding boxes",
+      "presence of non-transparent pixels inside a designated text box",
+      "layer/object counts from document.inspect",
+      "byte identity (sha256) against a previously accepted artifact"
+    ],
+    "criticCannotInfer": [
+      "print colour accuracy from an RGB render (CMYK/spot/Lab needs a proof)",
+      "physical scale or feel from a mockup",
+      "text correctness: retyped_text_present is vacuous with retype_boxes == 0; a retype can be present and wrong",
+      "design quality / brief fit from a gate pass",
+      "localized defects from a single global score",
+      "font licensing, rights, provenance",
+      "UI state, dialogs, panels (headless has no window)",
+      "that a different renderer agrees for gradients/filters/blends/text (agreement was probed on one simple SVG only)"
+    ],
+    "ladder": [
+      { "level": "L0", "check": "document state (open, artboards, layers, selection)", "tool": "document.inspect / info" },
+      { "level": "L1", "check": "artifact exists, format, bytes, sha256", "tool": "export result + sha256sum" },
+      { "level": "L2", "check": "geometry, DPI, colourspace, alpha", "tool": "identify -format" },
+      { "level": "L3", "check": "declarative gates + warnings", "tool": "craft_trace / prep_print_art report" },
+      { "level": "L4", "check": "render vs independent renderer", "tool": "render_preview / rsvg-convert + compare -metric RMSE" },
+      { "level": "L5", "check": "localized perceptual diff", "tool": "tile SSIM + diff bbox + edge density" },
+      { "level": "L6", "check": "taste / brand fit / legibility", "tool": "VLM or human rubric" },
+      { "level": "L7", "check": "print / publish approval", "tool": "human sign-off" }
+    ]
+  },
+  "gates": {
+    "craftTrace": {
+      "path": "blueprint/files/tools/craft_trace.py (host: /opt/pod-pipeline/tools/craft_trace.py)",
+      "verifyFunctionLines": "238-251",
+      "reportOkRule": "ok = all(checks[*].pass)",
+      "exitCodes": { "pass": 0, "gateFailure": 1, "refusal": 2 },
+      "writesArtifactBeforeGating": true,
+      "artifactWrittenOnFailureObservation": "/tmp/aud-rw/ct_small.png (1626 B) written although canvas_geometry failed and exit was 1",
+      "gates": {
+        "white_residual_ratio": { "rule": "<= 0.002", "observed": 0.0, "pass": true },
+        "edge_specks": { "rule": "components < 150 px count == 0", "observed": 0, "pass": true },
+        "coverage": { "rule": "0.05 <= art-frame alpha fill <= 0.95", "observed": 0.779, "pass": true },
+        "dpi": { "rule": ">= 300", "observed": 300, "pass": true },
+        "canvas_geometry": { "rule": "both sides >= 1500 px", "observed": [2400, 3000], "pass": true },
+        "vector_fill_colours": { "rule": "2..40 distinct fill hexes", "observed": 3, "pass": true },
+        "edge_definition": { "rule": ">= 0.01 (Sobel > 0.08 per alpha px)", "observed": 0.0063, "pass": false },
+        "alpha_hard_edges": { "rule": "alpha in {0,255} share >= 0.85", "observed": 1.0, "pass": true },
+        "transparent_corners": { "rule": "4 corners transparent", "observed": true, "pass": true },
+        "retyped_text_present": { "rule": "each text box >= 2000 alpha px and overlay >= 2000 px", "observed": true, "pass": true, "vacuousWhenNoRetypeSpec": true, "retypeBoxesObserved": 0 }
+      },
+      "observedRun": { "command": "craft_trace --input /tmp/aud-ro/badge.png --canvas-width 2400 --canvas-height 3000 --dpi 300 --print-width-in 8", "ok": false, "svgPaths": 3, "svgBytes": 38946, "previews": ["black.jpg", "white.jpg", "100pct.png"] },
+      "refusalCodes": ["E_TEMPLATE_UNKNOWN", "E_TEMPLATE_UNRENDERABLE", "E_AREA_UNKNOWN", "E_GEOMETRY_MISSING", "E_INPUT_MISSING", "E_FONT_MISSING", "E_VECTORCRAFT_MISSING", "E_CUTOUT_FAILED", "E_TRACE_FAILED", "E_RENDER_FAILED"],
+      "evidence": "READ source + VERIFIED execution"
+    },
+    "prepPrintArt": {
+      "path": "blueprint/files/tools/prep_print_art.py",
+      "modes": ["auto", "glow", "lineart", "white", "white-flood", "alpha", "none"],
+      "gates": { "min_coverage": 0.005, "max_coverage": 0.62, "max_upscale": 2.5 },
+      "okField": "hard-coded True on the success path (line 356); NOT a gate summary",
+      "observedSuccess": { "exit": 0, "ok": true, "coverage": 0.3304, "upscale_factor": 3.609, "warnings": ["source upscaled 3.61x (gate 2.5x)"] },
+      "observedRefusal": { "exit": 2, "code": "E_SUBJECT_FULL_FRAME", "detail": "mask kept 100.0% of the frame" },
+      "refusalCodes": ["E_ALPHA_MISSING", "E_GEOMETRY_MISSING", "E_TEMPLATE_UNKNOWN", "E_TEMPLATE_UNRENDERABLE", "E_AREA_UNKNOWN", "E_INPUT_MISSING", "E_SUBJECT_EMPTY", "E_SUBJECT_FULL_FRAME"],
+      "finding": "the 2.5x upscale limit is a warning, not a gate: ok:true was returned with upscale_factor 3.609",
+      "reportKeys": ["ok", "input", "output", "mode", "geometry_source", "canvas_px", "dpi", "canvas_inches", "subject_bbox", "subject_px", "coverage", "upscale_factor", "print_width_in", "usable_width_px", "source_stats", "thresholds", "previews", "warnings"],
+      "evidence": "READ source + VERIFIED execution"
+    },
+    "providerGeometry": {
+      "detailsFile": "/opt/pod-pipeline/config/fourthwall-template-details.json",
+      "resolution": "areaGeometry[area].inchesWidth/inchesHeight x dpi; retype-ridgeboundia.json is a per-design example, never reusable",
+      "evidence": "READ"
+    }
+  },
+  "guiFallback": {
+    "appBinariesPresent": true,
+    "xvfbPresent": true,
+    "versionUnderXvfb": { "command": "xvfb-run -a vectorcraft --version", "output": "vectorcraft 0.21.1", "exit": 0 },
+    "controlPortUnderXvfb": {
+      "command": "xvfb-run -a vectorcraft --control 7999 --automation-read-root /tmp/aud-ro --automation-write-root /tmp/aud-rw",
+      "result": "FAILED",
+      "panic": "Library libxkbcommon-x11.so could not be loaded.",
+      "engineLog": "vectorcraft_engine::guard: recovered from a panic: Library libxkbcommon-x11.so could not be loaded.",
+      "finalLog": "VectorCraft stopped",
+      "portListening": false,
+      "cleanup": "process killed; ss -ltn confirms port 7999 closed"
+    },
+    "fixRequired": "install the system package providing libxkbcommon-x11.so (e.g. libxkbcommon-x11-0) and retest",
+    "photocraftBridge": { "requirements": ["photocraft --control <port> --control-token-file <path>", "photocraft-cli mcp --bridge 127.0.0.1:<port> --control-token-file <path>"], "launchProbed": false },
+    "verdict": "GUI/bridge fallback NOT available on this VPS today; headless document rendering is the only working visual path",
+    "evidence": "VERIFIED (launch attempt) / UNVERIFIED (after package install)"
+  },
+  "adobeTransfer": {
+    "transfers": ["task intent", "workflow order", "visual conventions", "concept vocabulary (trace modes, batch, actions)"],
+    "doesNotTransfer": ["command ids", "parameter names and units", "presets and defaults", "gate thresholds", "provider (Fourthwall) geometry", "print colour proof"],
+    "mappings": [
+      { "adobe": "Illustrator Image Trace panel", "craft": "imageTrace.make {params:{}}", "boundary": "vocabulary maps; presets/defaults do not" },
+      { "adobe": "Photoshop retouch order", "craft": "image.crop -> filter.noise.* -> image.adjustments.* -> filter.sharpen.* -> image.imageSize", "boundary": "order transfers; ids are local" },
+      { "adobe": "Photoshop Actions / Batch", "craft": "actions.* family + batch/droplet", "boundary": "actions.photoshopStep exists because some .atn steps have no PhotoCraft command and fail at playback" },
+      { "adobe": "Premiere Pro project", "craft": "FilmCraft", "boundary": "FilmCraft absent; also does not open .prproj even when present" },
+      { "adobe": "After Effects project", "craft": "EffectCraft", "boundary": "EffectCraft absent; does not open .aep" }
+    ],
+    "rule": "an Adobe tutorial supplies intent; every id, param, unit and threshold must be re-derived locally; a translated tutorial is a hypothesis until it passes a gate",
+    "evidence": "DOCS (REPORT.md Part 4-5, sources.md) + INFERRED"
+  },
+  "bestFirstTarget": {
+    "app": "vectorcraft",
+    "rationale": [
+      "only complete, machine-checked catalogue (918/918) and byte-identical local vs host copy",
+      "richest MCP layer: 33 tools including semantic draw_path/draw_shape/add_text/apply_effect/pathfinder/transform, 3 resources, 5 prompts, 4 templates",
+      "deterministic batch (run --commands, <=100000 steps, per-step JSON)",
+      "only app with gate tooling already implemented and executed (10-gate craft_trace + provider geometry)",
+      "best headless visual evidence (render_preview inline PNG up to 4096 px)",
+      "existing production masters and a measured preset comparison"
+    ],
+    "runnerUp": "photocraft",
+    "runnerUpReason": "rich document/layer surface and batch/actions/droplet, but no equivalent gate tool, MCP calls dispatch concurrently, preview capped at 2048",
+    "excluded": "filmcraft (not installed)",
+    "caveats": ["VectorCraft README claims only ~65% ready for real work", "no dry-run, destructive by default", "select.all precondition on trace/path work"],
+    "evidence": "INFERRED from VERIFIED surface facts"
+  },
+  "capabilities": [
+    { "id": "C1", "capability": "enumerate the full VectorCraft command registry", "how": "vectorcraft-cli commands", "status": "WORKING" },
+    { "id": "C2", "capability": "enumerate the full PhotoCraft command registry", "how": "photocraft-cli commands --json (or --filter)", "status": "WORKING" },
+    { "id": "C3", "capability": "run ordered command batches", "how": "VC run --commands (<=100k steps) / PC run --cmd / PC batch", "status": "WORKING" },
+    { "id": "C4", "capability": "drive both apps over MCP with file confinement", "how": "mcp --headless + automation read/write roots", "status": "WORKING (root refusals verified)" },
+    { "id": "C5", "capability": "semantic drawing/text/boolean ops over MCP", "how": "VC draw_path, draw_shape, add_text, apply_effect, pathfinder, transform", "status": "AVAILABLE (schema-verified; probe used command_run)" },
+    { "id": "C6", "capability": "render a document headless to PNG for review", "how": "VC render_preview (<=4096), PC render_preview (<=2048)", "status": "WORKING" },
+    { "id": "C7", "capability": "gate a print master", "how": "tools.craft_trace (10 gates), tools.prep_print_art", "status": "WORKING, with caveats (artifact written before gate; ok ignores upscale; vacuous retype gate)" },
+    { "id": "C8", "capability": "compare two renders numerically", "how": "compare -metric RMSE / MAE / skimage SSIM", "status": "WORKING (probed)" },
+    { "id": "C9", "capability": "capture the GUI window / inspect UI state", "how": "screenshot {window:true}, ui_screenshot, ui_inspect", "status": "BLOCKED headless; app cannot start under Xvfb (libxkbcommon-x11 missing)" },
+    { "id": "C10", "capability": "run FilmCraft", "how": "filmcraft-cli", "status": "BLOCKED (stub, exit 127)" }
+  ],
+  "unknowns": [
+    "FilmCraft command count and surface (binary absent; '650+' is a README claim only)",
+    "Whether PhotoCraft MCP concurrency causes nondeterminism under load (only one piped session probed)",
+    "Whether the GUI/bridge fallback works after installing libxkbcommon-x11",
+    "CMYK/spot/Lab fidelity and PDF/EPS transparency flattening (not probed)",
+    "PSD/.ai round-trip fidelity on this build (not probed)",
+    "VectorCraft bench/perf behaviour and PhotoCraft droplet/serve behaviour (not probed)",
+    "MCP resources/read payloads and prompts/get output (not probed)",
+    "Whether the 234 PhotoCraft needsDocument:false commands are exactly the headless-runnable set",
+    "Behaviour of long PhotoCraft commands with wait:false (background jobs) and jobs_cancel semantics",
+    "Whether vectorcraft-cli silently ignores unknown flags (commands --filter returned exit 0; filtering effect not isolated)"
+  ],
+  "questions": [
+    "Does awaiting each PhotoCraft MCP response reproduce deterministic ordering under load, and what is the latency penalty?",
+    "Can the ten craft_trace gates be re-implemented as a pure function of (artifact, brief) so they judge any app's output?",
+    "Is ok:true + all gates demonstrably insufficient? Measure gate-pass vs human-reject disagreement on a fixture set.",
+    "Which localized metric (tile SSIM, difference bbox, edge density) catches a missing glyph or a 2-px fringe that global SSIM misses?",
+    "Which subset of the 918 VectorCraft commands is safe without a copy-and-new-path rule, and which are irreversible?",
+    "Can the select.all precondition be inferred from document.inspect before a trace, removing the most common named failure?",
+    "Does imageTrace.make colors predict exported fill count within +-1 across palette modes?",
+    "Are VectorCraft and rsvg renders equivalent for gradients, filters, blend modes and text, not just the probed SVG?",
+    "Does render_preview at max_side 4096 resolve a 1-px fringe, and what does it cost per call?",
+    "Can a VLM critique be calibrated against the human 1-5 rubric well enough to triage rather than replace review?",
+    "Are repeated identical command batches byte-identical or does the eval protocol need a variance statement?",
+    "Which PhotoCraft commands are genuinely unavailable headless versus merely state-gated?",
+    "Is catalogue --filter + params prose cheaper and more reliable than loading the full 918-row catalogue?",
+    "What is the correct conformance test for a gate tool (fixture per gate, both pass and fail, exit code + report asserted)?",
+    "With libxkbcommon-x11 installed, is a bridge session under Xvfb stable, and is a window screenshot ever better evidence than render_preview?"
+  ],
+  "evidence": [
+    { "id": "E1", "label": "VERIFIED", "command": "vectorcraft-cli --version", "observation": "vectorcraft-cli 0.21.1" },
+    { "id": "E2", "label": "VERIFIED", "command": "photocraft-cli --version", "observation": "photocraft-cli 0.20.2 (7c12f6471, 2026-11-05)" },
+    { "id": "E3", "label": "VERIFIED", "command": "vectorcraft-cli commands", "observation": "918 rows, 64 groups, 552309 bytes, keys enabled/id/label/menu/params/shortcut" },
+    { "id": "E4", "label": "VERIFIED", "command": "photocraft-cli commands --json", "observation": "965 rows, 38 groups, 392959 bytes, adds needsDocument/disabledReason" },
+    { "id": "E5", "label": "VERIFIED", "command": "local md5 vs host md5 of vectorcraft-commands.json", "observation": "D197F7DB99DF9021A3FCB23A6FDB4B4F on both sides (byte-identical)" },
+    { "id": "E6", "label": "VERIFIED", "command": "head + wc -l /opt/craft/catalogues/photocraft-commands.json", "observation": "965 lines of plain text, not JSON; 84052 bytes" },
+    { "id": "E7", "label": "VERIFIED", "command": "vectorcraft-cli --help / run --help / mcp --help / commands --help", "observation": "global help only; subcommands mcp,run,commands,convert,info,bench,perf; run steps <=64 MiB and <=100000" },
+    { "id": "E8", "label": "VERIFIED", "command": "photocraft-cli --help / run --help / batch --help / mcp --help / commands --help", "observation": "convert,info,run,batch,droplet,commands,mcp,serve,help; batch naming/start-serial/stop-on-error/error-log; commands --filter" },
+    { "id": "E9", "label": "VERIFIED", "command": "VC MCP initialize + tools/list + resources/list + prompts/list + resources/templates/list", "observation": "33 tools, 3 resources, 5 prompts, 4 templates, caps completions/logging/prompts/resources/tools, protocol 2025-06-18" },
+    { "id": "E10", "label": "VERIFIED", "command": "PC MCP initialize + tools/list + resources/list + prompts/list + resources/templates/list", "observation": "26 tools, 2 resources, 0 prompts, 0 templates, caps resources/tools" },
+    { "id": "E11", "label": "VERIFIED", "command": "VC MCP open_file /etc/hostname with --automation-read-root /tmp/aud-ro", "observation": "isError: open_file: automation path rejected: outside the read root /tmp/aud-ro: /etc/hostname" },
+    { "id": "E12", "label": "VERIFIED", "command": "VC MCP export /tmp/aud-ro/vc_forbidden.png with write root /tmp/aud-rw", "observation": "isError: export: automation path rejected: outside the write root /tmp/aud-rw" },
+    { "id": "E13", "label": "VERIFIED", "command": "VC MCP render_preview {max_side:256}", "observation": "image/png 4224 base64 chars + {height:192,width:256}" },
+    { "id": "E14", "label": "VERIFIED", "command": "VC MCP ui_screenshot headless", "observation": "isError: needs the desktop app: run vectorcraft --control 7979 ..." },
+    { "id": "E15", "label": "VERIFIED", "command": "VC MCP command_batch atomic steps [select.all, object.path.simplify]", "observation": "{completed:2,failed:0,created:[],results:[{ok,result:{count:3}},{ok,result:{before:12,after:10}}]}" },
+    { "id": "E16", "label": "VERIFIED", "command": "PC MCP doc_open + render_preview + doc_inspect + command_batch in one piped session", "observation": "responses out of order; render_preview 'no document open'; batch 'command image.crop is not available right now: no document open'; doc_open succeeded" },
+    { "id": "E17", "label": "VERIFIED", "command": "PC MCP doc_open /etc/hostname", "observation": "isError: automation path rejected: absolute paths must be inside the automation root" },
+    { "id": "E18", "label": "VERIFIED", "command": "PC MCP doc_save /tmp/aud-rw/pc_out.png", "observation": "4753-byte PNG written under the write root" },
+    { "id": "E19", "label": "VERIFIED", "command": "photocraft-cli batch --actions … --in … --out … --naming '{name}-{serial}'", "observation": "a-001 and b-002 written (no extension because {ext} absent); 2 succeeded, 0 failed" },
+    { "id": "E20", "label": "VERIFIED", "command": "photocraft-cli batch --out <in dir> / run --out <input file>", "observation": "both exit 1 with 'choose another --out folder, or pass --in-place'" },
+    { "id": "E21", "label": "VERIFIED", "command": "photocraft-cli run --nonsense", "observation": "exit 2 clap usage error (contrast: semantic refusals exit 1)" },
+    { "id": "E22", "label": "VERIFIED", "command": "VC run --cmd no.such.command", "observation": "exit 1; stderr 'step 0 (no.such.command): unknown command'" },
+    { "id": "E23", "label": "VERIFIED", "command": "VC run --commands - (stdin) --export png", "observation": "5 JSON lines tagged step open/cmd/export; exit 0; 400x300 PNG" },
+    { "id": "E24", "label": "VERIFIED", "command": "craft_trace on synthetic 1024^2 badge, canvas 2400x3000", "observation": "ok:false; edge_definition 0.0063 fail; other 9 pass; svg_paths 3; svg_bytes 38946; retype_boxes 0 with retyped_text_present true" },
+    { "id": "E25", "label": "VERIFIED", "command": "craft_trace --canvas-width 400 --canvas-height 300", "observation": "exit 1, canvas_geometry fail, artifact ct_small.png still written (1626 B)" },
+    { "id": "E26", "label": "VERIFIED", "command": "craft_trace with no geometry", "observation": "exit 2, REFUSED E_GEOMETRY_MISSING" },
+    { "id": "E27", "label": "VERIFIED", "command": "prep_print_art --mode white on dark full-frame 600^2", "observation": "exit 2, REFUSED E_SUBJECT_FULL_FRAME (mask kept 100.0%)" },
+    { "id": "E28", "label": "VERIFIED", "command": "prep_print_art --mode white on badge -> 2400x3000", "observation": "exit 0, ok:true, coverage 0.3304, upscale_factor 3.609, warning 'source upscaled 3.61x (gate 2.5x)'" },
+    { "id": "E29", "label": "VERIFIED", "command": "compare -metric RMSE + skimage SSIM: rsvg vs vectorcraft render", "observation": "RMSE 73.7272 (0.001125), MAE 0.013, SSIM 0.99994" },
+    { "id": "E30", "label": "VERIFIED", "command": "same comparison after a 120x100 white block (~4% of frame)", "observation": "RMSE 6801.74 (0.103788), MAE 7.587, SSIM 0.97872" },
+    { "id": "E31", "label": "VERIFIED", "command": "xvfb-run -a vectorcraft --version", "observation": "vectorcraft 0.21.1, exit 0" },
+    { "id": "E32", "label": "VERIFIED", "command": "xvfb-run -a vectorcraft --control 7999 (25 s)", "observation": "panic: Library libxkbcommon-x11.so could not be loaded; engine guard; 'VectorCraft stopped'; port 7999 never listening; process cleaned up" },
+    { "id": "E33", "label": "VERIFIED", "command": "psock / listing of /opt/pod-pipeline/bin", "observation": "five 122-127 byte stub scripts (vectorcraft,photocraft,designcraft,effectcraft,filmcraft) all exit 127" },
+    { "id": "E34", "label": "READ", "command": "craft_trace.py verify() lines 238-251", "observation": "gate names and thresholds quoted verbatim" },
+    { "id": "E35", "label": "READ", "command": "prep_print_art.py line 356 and DEFAULT_GATES", "observation": "ok hard-coded True; gates min_coverage 0.005 / max_coverage 0.62 / max_upscale 2.5 (warning only)" },
+    { "id": "E36", "label": "READ", "command": "00-intent-map.md row count", "observation": "82 VectorCraft + 78 PhotoCraft intent rows (incl. one header each)" }
+  ],
+  "documents": {
+    "companion": "research/eko-deerflow-agent/wave2/03-CRAFT-SURFACE.md",
+    "sibling_reports": ["research/eko-deerflow-agent/REPORT.md", "research/eko-deerflow-agent/wave2/01-VPS-FACTS.json"]
+  },
+  "notes": {
+    "protocolVersionConflictWithSiblingAudit": "01-VPS-FACTS.json records protocolVersion 2024-11-05 for VectorCraft; this audit's client requested 2025-06-18 and received 2025-06-18. The server echoes the requested version; mcp.md lists 2025-06-18 as current with older versions accepted. Both observations are consistent.",
+    "exitCodeCorrectionVsAtlas": "command-tips.md §6 says PhotoCraft '2 = usage/refusal'; probed 2 = argument-parser usage only, semantic refusals = 1.",
+    "toolingNote": "/opt/pod-pipeline/bin must not be used to resolve the CLIs; only /opt/craft/*/bin contains real binaries."
+  }
+}

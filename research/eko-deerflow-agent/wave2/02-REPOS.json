@@ -1,0 +1,1181 @@
+{
+  "meta": {
+    "task_id": "task-2",
+    "subject": "Verify agent-harness repos and terminology",
+    "owner": "agent-repos-scout",
+    "generated_at_local": "2026-11-05",
+    "timezone": "America/Chicago",
+    "access_date_utc": "2026-11-05",
+    "workspace": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge",
+    "outputs": [
+      "research/eko-deerflow-agent/wave2/02-AGENT-REPOS.md",
+      "research/eko-deerflow-agent/wave2/02-REPOS.json"
+    ],
+    "scope": "Read-only primary-source verification of candidate agent harnesses and user terminology. No production code modified.",
+    "method": [
+      "GitHub REST API for repository metadata, releases, tags, commits, root trees, README and LICENSE (E1).",
+      "Raw repository files at default branch (README, package.json, pyproject.toml, setup.py, server.json, CHANGELOG.md, selected source files) for stated claims (E2).",
+      "Official paper and product websites fetched directly (E3).",
+      "GitHub repository search API and general web search only for terminology discovery; every hit re-verified against its own record (E4 leads)."
+    ],
+    "source_hierarchy": [
+      "E1 GitHub REST API record",
+      "E2 repository source file at main",
+      "E3 official paper / official product site",
+      "E4 secondary source (leads only, never proof)"
+    ],
+    "evidence_labels": {
+      "E1": "GitHub REST API record (stars, forks, license, push, release tag)",
+      "E2": "Repository source file at default branch (README/manifest/code), self-reported",
+      "E3": "Official paper or official product website",
+      "E4": "Secondary source; discovery only",
+      "INFERRED": "Conclusion drawn by this task from two or more verified observations",
+      "UNVERIFIED": "README claim not confirmable in code, manifest, or docs",
+      "NOT_FOUND": "No primary source located; no project invented"
+    },
+    "point_in_time_warning": "Stars, forks, push dates and release tags are a 2026-11-05 snapshot and change daily; re-fetch before quoting.",
+    "coverage_caveat": "bytedance/deer-flow README (380,614 bytes), CHANGELOG.md (1,024,197 bytes) and config.example.yaml (194,493 bytes) were read selectively (headings, architecture, subagents, sandbox, memory, deployment, security, provider sections), not end-to-end. Only quoted/read sections are cited.",
+    "readme_marketing_policy": "README marketing was not accepted as standalone proof; cross-checked in manifests or source where possible.",
+    "cross_references": {
+      "task-1": "Sibling audit reports VPS 2 vCPU / 7.9 GB, no display/GPU, DeerFlow 2.2.0 already deployed at /opt/deer-flow with DEEPSEEK_API_KEY set, and Craft CLIs exposing headless MCP stdio servers. Attributed, not re-verified by task-2.",
+      "task-3": "Craft command/MCP surface audit (not read by this task).",
+      "task-4": "Harness design (this file feeds it)."
+    }
+  },
+
+  "verified_headlines": [
+    {
+      "n": 1,
+      "fact": "bytedance/deer-flow is real and current: v2.2.0 released 2026-11-04, backend version 2.3.0-dev, 85028 stars / 11947 forks, MIT, Python >=3.12, last push 2026-11-05. It self-describes as an 'open-source super agent harness'.",
+      "evidence": ["E1", "E2"]
+    },
+    {
+      "n": 2,
+      "fact": "FellouAI/eko is real but stale: package/npm version 4.1.3, latest release tag v4.1.0 (2025-12-29), 4960 stars / 446 forks, MIT, TypeScript, last commit 2026-03-03.",
+      "evidence": ["E1", "E2"]
+    },
+    {
+      "n": 3,
+      "fact": "Eko ships pauseTask/abortTask, task_snapshot recovery, McpTool, HumanInteractTool, plan/replan agents; its memory is a token-managed message store, not durable long-term memory; README makes no memory or learning claim.",
+      "evidence": ["E2"]
+    },
+    {
+      "n": 4,
+      "fact": "'Harness 2' exists: google-research/harness2 = Harness^2, arXiv:2610.14224, 22790 stars / 2267 forks, Apache-2.0, Python 3.12, created 2026-10-06, last push 2026-11-02.",
+      "evidence": ["E1", "E2", "E3"]
+    },
+    {
+      "n": 5,
+      "fact": "'superagent' is ambiguous: DeerFlow self-description; deepseek-ai/dsh-superagent-prototype (19342 stars, MIT, TypeScript, explicitly 'not an official DeepSeek product', research prototype); plus name collisions forwardemail/superagent (HTTP client) and superagent-ai/superagent (security).",
+      "evidence": ["E1", "E2"]
+    },
+    {
+      "n": 6,
+      "fact": "'Hermes' is real: NousResearch/hermes-agent, 260789 stars / 57574 forks, MIT, Python, v0.22.7 (2026-11-03), official site hermes-agent.nousresearch.com, self-improving agent with learning loop and durable memory.",
+      "evidence": ["E1", "E2", "E3"]
+    },
+    {
+      "n": 7,
+      "fact": "'Hermes hyperagent' exact phrase/project NOT FOUND. Only one 3-star community repo (yurekami/ultragent) mixes HyperAgents + Hermes Agent + Anthropic harness design; the phrase is a conflation of two distinct real things.",
+      "evidence": ["E1", "NOT_FOUND"]
+    },
+    {
+      "n": 8,
+      "fact": "'metas hyperagent' exact project NOT FOUND. Closest primary sources: facebookresearch/HyperAgents (Meta, CC BY-NC-SA 4.0, arXiv 2603.19461) and stanford-iris-lab/meta-harness-tbench2-artifact ('Meta-Harness', 76.4% Terminal-Bench 2.0, unlicensed).",
+      "evidence": ["E1", "E2", "NOT_FOUND"]
+    },
+    {
+      "n": 9,
+      "fact": "'hyperagent' maps to at least four things: commercial hosted hyperagent.com (closed source); hyperbrowserai/HyperAgent (AGPL-3.0); facebookresearch/HyperAgents (CC BY-NC-SA 4.0); older ICML-2024 HyperAgent bandit algorithm. Never use the term unqualified.",
+      "evidence": ["E1", "E2", "E3"]
+    },
+    {
+      "n": 10,
+      "fact": "Decisive constraint inferred for this VPS: Craft CLIs expose headless MCP stdio servers and there is no display/GPU (per sibling task-1), so browser/GUI computer-use agents cannot be the execution base; DeerFlow is already deployed at 2.2.0 with DeepSeek configured.",
+      "evidence": ["INFERRED", "task-1 attributed"]
+    }
+  ],
+
+  "projects": [
+    {
+      "id": "eko",
+      "repo": "FellouAI/eko",
+      "requested_as": "FellouAI/Eko",
+      "canonical_repo": "FellouAI/eko",
+      "what_it_is": "Production-ready JavaScript/TypeScript framework for building agents and multi-step workflows that run in browser and Node environments; unified interface for computer and browser environments.",
+      "license": "MIT",
+      "version": "4.1.3",
+      "version_sources": ["root package.json", "packages/eko-core/package.json", "npm @eko-ai/eko dist-tags.latest"],
+      "latest_release_tag": "v4.1.0",
+      "latest_release_date_utc": "2025-12-29",
+      "stars": 4960,
+      "forks": 446,
+      "last_push_utc": "2026-03-03T10:22:49Z",
+      "last_commit_sha10": "c3de315af2",
+      "last_commit_date_utc": "2026-03-03T10:17:25Z",
+      "last_commit_message": "v4.1.3",
+      "created_utc": null,
+      "language": "TypeScript",
+      "runtime": "pnpm monorepo; ESM; browser extension, web app, Node.js; Vercel AI SDK providers (@ai-sdk/*, incl. openai-compatible for DeepSeek-style gateways)",
+      "tool_interface": "npm library @eko-ai/eko; native MCP client (src/mcp/http.ts, sse.ts, McpTool wrapper); no standalone CLI",
+      "orchestration": "Multi-agent chain/plan/replan, dependency-aware parallel agent execution (v3.0), A2A file present",
+      "pause_resume": "Confirmed in code: pauseTask(taskId, pause, abortCurrentStep?, reason?), abortTask(), onTaskStatus events pause / resume-pause / abort; task_snapshot tool archives progress for continuation",
+      "human_approval": "HumanInteractTool shipped",
+      "memory": "EkoMemory: message history with capacity management, import/export, system prompt; no vector store or cross-session persistence claim",
+      "learning_training": "No claim in README; no training code",
+      "eval": "None found",
+      "deployment": "Embedded in app; examples for browser extension, Node.js (Playwright), web",
+      "strengths": [
+        "Small dependency surface",
+        "Native MCP client",
+        "Code-level pause/resume/abort with task_snapshot recovery",
+        "Multi-agent plan/replan/parallel execution",
+        "Human-in-the-loop tool",
+        "MIT"
+      ],
+      "limits": [
+        "No commits since 2026-03-03 (near-dormant)",
+        "Release tag v4.1.0 lags package version 4.1.3",
+        "Memory is conversation-scoped only",
+        "No evaluation or learning loop",
+        "JS/TS only, awkward for a Python/DeepSeek VPS stack",
+        "No desktop-native creative-app tooling"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/FellouAI/eko",
+        "https://api.github.com/repos/FellouAI/eko/releases",
+        "https://api.github.com/repos/FellouAI/eko/commits",
+        "https://api.github.com/repos/FellouAI/eko/contents/",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/README.md",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/package.json",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/package.json",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/memory/memory.ts",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/memory/snapshot.ts",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/agent/eko.ts",
+        "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/tools/index.ts",
+        "https://registry.npmjs.org/@eko-ai%2Feko"
+      ],
+      "verdict": "Real, MIT, dormant. Do not use as the base for a new production harness in 2026-11."
+    },
+    {
+      "id": "deerflow",
+      "repo": "bytedance/deer-flow",
+      "what_it_is": "Open-source long-horizon 'SuperAgent harness' that researches, codes, and creates with sandboxes, memories, tools, skills, subagents and a message gateway; 2.0 is a ground-up rewrite built on LangGraph and LangChain.",
+      "license": "MIT",
+      "version": "2.2.0 (release); backend pyproject 2.3.0-dev",
+      "version_sources": ["GitHub release v2.2.0", "backend/pyproject.toml", "CHANGELOG.md head"],
+      "latest_release_tag": "v2.2.0",
+      "latest_release_date_utc": "2026-11-04",
+      "stars": 85028,
+      "forks": 11947,
+      "last_push_utc": "2026-11-05T13:40:33Z",
+      "last_commit_sha10": "2feec9cb09",
+      "last_commit_date_utc": "2026-11-05T13:40:32Z",
+      "last_commit_message": "fix(mcp): degrade a blob without mimeType instead of failing the tool call (#7800)",
+      "language": "Python (backend) + TypeScript/Node 22 (frontend)",
+      "runtime": "Python >=3.12, FastAPI gateway, LangGraph + LangChain, Node 22+, nginx on port 2026, Docker Compose v2.24+",
+      "architecture": [
+        "LangGraph graph runtime with thread checkpoints and interrupt_before/interrupt_after",
+        "Gateway service owning runs, durable threads, cancellation and rollback",
+        "Embedded Python client speaking LangGraph SSE protocol",
+        "Native task/batch_task subagents with isolated or snapshot context",
+        "Pluggable sandbox providers (AIO sandbox, provisioner/Kubernetes mode)",
+        "DeerMem long-term memory",
+        "Skills and Capability Center",
+        "MCP servers (HTTP/SSE + stdio, OAuth, durable background tasks)",
+        "Message gateway/channels: Telegram, Slack, Feishu/Lark, WeChat iLink, WeCom, DingTalk",
+        "Scheduled tasks (cron), TUI, PATs, token-usage dashboard, monocle traces"
+      ],
+      "tool_interface": "Web UI, TUI, HTTP API/Gateway, embedded Python client, MCP client (consumes MCP servers), skills; no official CLI-only mode for crafting",
+      "deployment": "Docker Compose (make docker-init/start/logs), make dev, make up; binds 127.0.0.1 by default (BIND_HOST to expose); first-run /setup admin; sizing recommendation 8-16 vCPU for a long-running server",
+      "memory": "DeerMem: user-global summaries in memory.json, Markdown facts per agent under agents/{agent_name}/facts/, deterministic scope/durability/authority write gate, SQLite FTS5/BM25 retrieval under .retrieval/, middleware vs tool modes, optional mem0 / OpenViking-style backends",
+      "learning_training": "No weight training; learning-by-memory (facts/summaries) and skills. No promotion loop verified.",
+      "eval": "Per-run monocle traces, token dashboard, sandbox benchmark scripts; no task-quality eval or promotion gate",
+      "human_approval": "LangGraph interrupts/checkpoints/resume and rollback; no first-class approval queue documented (UNVERIFIED)",
+      "deepseek_support": "Explicit: deerflow.models.patched_deepseek:PatchedChatDeepSeek; DeepSeek V4 (Thinking) example with supports_vision: false; recommended models list includes DeepSeek v3.2",
+      "security_posture": "Designed for local trusted environment (127.0.0.1); 'Gateway admin is equivalent to code execution'; rejects client-supplied system/developer messages; IP allowlist/reverse-proxy auth recommended for exposure",
+      "strengths": [
+        "Most complete self-hostable harness among candidates",
+        "MIT and very active (same-day commits)",
+        "Native subagents incl. durable batches and context snapshots",
+        "Durable memory with deterministic write gates",
+        "Skills + pluggable sandbox + MCP both ways",
+        "Multi-channel gateway, cron, TUI, Python client",
+        "First-class DeepSeek adapter",
+        "Already deployed on the target VPS at 2.2.0 (task-1)"
+      ],
+      "limits": [
+        "Heavy for 2 vCPU / 8 GB host (README recommends 8-16 vCPU for servers)",
+        "Loopback-trusted by design; exposure requires hardening",
+        "No native desktop/creative-app tools (filesystem/shell/MCP only)",
+        "Token persistence depends on provider usage metadata",
+        "No built-in task-quality evaluation or promotion",
+        "Large surface to audit"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/bytedance/deer-flow",
+        "https://api.github.com/repos/bytedance/deer-flow/releases",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/README.md",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/backend/pyproject.toml",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/config.example.yaml",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/CHANGELOG.md"
+      ],
+      "verdict": "Primary integration candidate."
+    },
+    {
+      "id": "browser-use",
+      "repo": "browser-use/browser-use",
+      "what_it_is": "Open-source Python library for AI browser agents, plus Browser Use Cloud (stealth browsers and hosted agent API).",
+      "license": "MIT",
+      "version": "0.13.14",
+      "version_sources": ["pyproject.toml", "GitHub release 0.13.14 (2026-10-26)"],
+      "latest_release_tag": "0.13.14",
+      "latest_release_date_utc": "2026-10-26",
+      "stars": 120107,
+      "forks": 13399,
+      "last_push_utc": "2026-11-05T09:04:15Z",
+      "last_commit_sha10": "b49a68e406",
+      "language": "Python",
+      "runtime": "Python >=3.11,<4.0; CDP via cdp-use==1.4.5; Playwright-backed; dependency mcp==2.1.1",
+      "tool_interface": "Python library (Agent, Tools, Browser); MCP server registered as com.browser-use/browser-use (stdio 'uvx browser-use --cli-mcp'; remote streamable-HTTP https://api.browser-use.com/v3/mcp); CLI skill install; toolsets for Claude",
+      "deployment": "Local Python + local browser; Browser Use Cloud browsers ($0.02/browser-hour); hosted agent API; Dockerfiles present",
+      "memory": "No durable memory subsystem; per-run history can be saved/loaded for replay",
+      "learning_training": "No user-facing learning; deterministic replay of recorded clicks/typing without per-step model calls",
+      "eval": "Browser Use Benchmark v2; separate browser-use/benchmark repository",
+      "human_approval": "Not claimed (UNVERIFIED)",
+      "strengths": [
+        "Largest ecosystem (120k stars)",
+        "31 browser actions and strong toolset",
+        "Cloud stealth browsers and CAPTCHA handling",
+        "MCP server available over stdio and remote HTTP",
+        "Record/replay without per-step model calls",
+        "MIT library"
+      ],
+      "limits": [
+        "Browser-only; no native desktop tooling",
+        "Managed BU2 model/cloud path beside the OSS library",
+        "Single agent loop; no specialist-subagent orchestration",
+        "No durable memory",
+        "Approval and verification not first-class"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/browser-use/browser-use",
+        "https://raw.githubusercontent.com/browser-use/browser-use/main/README.md",
+        "https://raw.githubusercontent.com/browser-use/browser-use/main/pyproject.toml",
+        "https://raw.githubusercontent.com/browser-use/browser-use/main/server.json"
+      ],
+      "verdict": "Excellent browser tool layer; wrong base for desktop creative apps."
+    },
+    {
+      "id": "agent-s",
+      "repo": "simular-ai/Agent-S",
+      "what_it_is": "Open-source computer-use agent framework (gui-agents) that operates a real GUI on macOS/Windows/Linux; plus the Agent S4 research package that evolves agent tool interfaces.",
+      "license": "Apache-2.0",
+      "version": "gui-agents 0.3.2",
+      "version_sources": ["setup.py", "GitHub release v0.3.2 (2025-12-16)", "agent_s4 separate distribution"],
+      "latest_release_tag": "v0.3.2",
+      "latest_release_date_utc": "2025-12-16",
+      "stars": 12882,
+      "forks": 1502,
+      "last_push_utc": "2026-10-30T20:56:06Z",
+      "last_commit_sha10": "0fff0e6348",
+      "language": "Python",
+      "runtime": "Python; pyautogui, pyobjc (macOS), pywinauto/pywin32 (Windows), selenium, paddleocr, pytesseract, FastAPI/uvicorn",
+      "tool_interface": "Python library + console entry point agent_s=gui_agents.s3.cli_app:main; hosted Simular API/Sai alternative",
+      "deployment": "Local desktop session; hosted Simular API; benchmark VMs for S4",
+      "memory": "Memory/RAG are repo topics and paper themes; no durable store verified in code (UNVERIFIED)",
+      "learning_training": "Agent S4 (2026-10-20, arXiv 2610.28601): Builder agent evolves a shadow-interface Python tool library; population-based evolution selects by benchmark fitness; research pipeline needs AWS VMs",
+      "eval": "OSWorld V2 21.3% binary (Qwen3.8-27B, S4); S3 first to surpass human on OSWorld (72.60%); ScienceBoard 41.4% -> 58.6%",
+      "human_approval": "Not claimed (UNVERIFIED)",
+      "strengths": [
+        "Real desktop GUI control",
+        "OSWorld state of the art",
+        "Apache-2.0",
+        "Cross-platform",
+        "Active research (S4)"
+      ],
+      "limits": [
+        "Needs a live display/session; headless VPS cannot run as-is",
+        "Heavy dependency set (paddle, OCR, pyautogui)",
+        "Benchmark-tuned rather than productized",
+        "Learning is a research training loop, not in-product"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/simular-ai/Agent-S",
+        "https://raw.githubusercontent.com/simular-ai/Agent-S/main/README.md",
+        "https://raw.githubusercontent.com/simular-ai/Agent-S/main/setup.py",
+        "https://raw.githubusercontent.com/simular-ai/Agent-S/main/agent_s4/README.md"
+      ],
+      "verdict": "Not viable headless on this VPS; useful reference for GUI/tool-interface evolution."
+    },
+    {
+      "id": "ui-tars-desktop",
+      "repo": "bytedance/UI-TARS-desktop",
+      "what_it_is": "Multimodal AI Agent stack shipping Agent TARS (general multimodal agent with CLI + Web UI) and UI-TARS Desktop (native GUI agent app with local/remote computer and browser operators).",
+      "license": "Apache-2.0",
+      "version": "v0.3.1",
+      "version_sources": ["GitHub release v0.3.1 (2026-10-08)", "README news (Agent TARS CLI v0.3.0)"],
+      "latest_release_tag": "v0.3.1",
+      "latest_release_date_utc": "2026-10-08",
+      "stars": 39551,
+      "forks": 4025,
+      "last_push_utc": "2026-10-09T01:29:53Z",
+      "last_commit_sha10": "3ac2cb8d94",
+      "language": "TypeScript",
+      "runtime": "TypeScript monorepo (pnpm 9, turbo, Node), Electron desktop app, npm @agent-tars/cli",
+      "tool_interface": "Agent TARS CLI + Web UI; MCP-based kernel with ability to mount extra MCP servers; UI-TARS SDK",
+      "deployment": "Desktop app (macOS/Windows/Linux) or server/CLI; local or remote operators; optional AIO agent sandbox",
+      "memory": "No durable memory claim in repository README (UNVERIFIED)",
+      "learning_training": "UI-TARS model trained by ByteDance; this repo is runtime/product, no user-trainable loop",
+      "eval": "No benchmark harness in this repository",
+      "human_approval": "Not claimed (UNVERIFIED)",
+      "strengths": [
+        "Polished desktop GUI agent",
+        "Vision-first multimodal",
+        "MCP-native kernel",
+        "Remote operators require no local install",
+        "Apache-2.0"
+      ],
+      "limits": [
+        "GUI/vision-first, not an orchestration/learning harness",
+        "No memory/eval/approval",
+        "Needs a graphical session",
+        "Last commit ~1 month old vs DeerFlow same-day cadence"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/bytedance/UI-TARS-desktop",
+        "https://raw.githubusercontent.com/bytedance/UI-TARS-desktop/main/README.md",
+        "https://raw.githubusercontent.com/bytedance/UI-TARS-desktop/main/package.json"
+      ],
+      "verdict": "GUI fallback only; not a harness base."
+    },
+    {
+      "id": "openadapt",
+      "repo": "OpenAdaptAI/OpenAdapt",
+      "what_it_is": "Open-source verified execution layer for computer-use agents: a demonstration compiles into a program that repeats the task with no model calls, verifies the record before each save and reads it back after, and halts on mismatch.",
+      "license": "MIT",
+      "version": "1.20.0",
+      "version_sources": ["pyproject.toml", "GitHub release v1.20.0 (2026-11-05)"],
+      "latest_release_tag": "v1.20.0",
+      "latest_release_date_utc": "2026-11-05",
+      "stars": 1863,
+      "forks": 279,
+      "last_push_utc": "2026-11-05T12:50:05Z",
+      "last_commit_sha10": "9f503bd811",
+      "language": "Python",
+      "runtime": "Python >=3.10 (supports 3.10-3.12); local-first CLI",
+      "tool_interface": "CLI (openadapt quickstart); MCP server (openadapt-agent serve); Agent Skills",
+      "modes": ["Explore: record demonstration, read back save", "Run: compiled program, no model calls, checked save + read-back", "Repair: stop before saving, agent proposes fix, person approves"],
+      "deployment": "Local process on Windows/macOS/Linux; hosted demo/Cloud dashboard for counts/digests/receipts",
+      "memory": "Procedural: compiled programs, run receipts, benchmark scoreboards",
+      "learning_training": "Learns from any successful run (person's demonstration or agent's verified run) and compiles it into a program; no weight training",
+      "eval": "Fault-injection studies: model-built success screens 54/72 bad saves reported saved vs 0/72 with full read-back; agent claimed all 30 bad saves in broken-save test, verify-run caught all 30 with no false alarms",
+      "human_approval": "Yes: approval gate, person approves repairs before saving",
+      "strengths": [
+        "Only candidate treating effect verification (read system of record) as a first-class gate",
+        "Deterministic replay at zero model cost",
+        "Approval workflow",
+        "MIT and very active",
+        "MCP + CLI + Skills"
+      ],
+      "limits": [
+        "Oriented to GUI/RPA + EHR-style record systems, not creative-app project files",
+        "Per-task program compilation is an onboarding cost",
+        "Small community",
+        "Not an orchestrator/multi-agent planner"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/OpenAdaptAI/OpenAdapt",
+        "https://raw.githubusercontent.com/OpenAdaptAI/OpenAdapt/main/README.md",
+        "https://raw.githubusercontent.com/OpenAdaptAI/OpenAdapt/main/pyproject.toml",
+        "https://raw.githubusercontent.com/OpenAdaptAI/OpenAdapt/main/CAPABILITIES.md"
+      ],
+      "verdict": "Not a base harness; best verification/approval pattern to copy for Craft mutations."
+    },
+    {
+      "id": "playwright-mcp",
+      "repo": "microsoft/playwright-mcp",
+      "what_it_is": "MCP server providing browser automation to LLMs through structured accessibility snapshots (no screenshots, no vision model).",
+      "license": "Apache-2.0",
+      "version": "0.0.84",
+      "version_sources": ["package.json", "GitHub release v0.0.84 (2026-10-31)"],
+      "latest_release_tag": "v0.0.84",
+      "latest_release_date_utc": "2026-10-31",
+      "stars": 39216,
+      "forks": 3384,
+      "last_push_utc": "2026-11-04T19:07:47Z",
+      "last_commit_sha10": "50b004fb3d",
+      "language": "TypeScript",
+      "runtime": "Node >=18; playwright pinned to 1.65.0-alpha-2026-10-30 build",
+      "tool_interface": "MCP only: browser_click, browser_close, browser_console_messages, browser_drag, browser_drop, browser_emulate_media, browser_evaluate and more; each tool declares Read-only true/false; CLI options --init-page, --init-script, user profile, config file, standalone server, Docker",
+      "deployment": "npx @playwright/mcp@latest per MCP client; Docker (port 8080); stdio or standalone HTTP",
+      "memory": "None (browser profile persistence only)",
+      "learning_training": "None",
+      "eval": "None",
+      "human_approval": "Partial: per-tool read-only hints and element descriptions for permission; server does not itself gate approvals",
+      "strengths": [
+        "Deterministic and token-efficient (a11y tree)",
+        "First-party Microsoft, widely supported",
+        "Apache-2.0",
+        "Per-tool read-only hints useful for policy engines",
+        "README itself recommends Playwright CLI + SKILLs for high-throughput coding agents"
+      ],
+      "limits": [
+        "Browser-only",
+        "No vision",
+        "No orchestration/memory/eval",
+        "Accessibility-tree token cost at scale"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/microsoft/playwright-mcp",
+        "https://raw.githubusercontent.com/microsoft/playwright-mcp/main/README.md",
+        "https://raw.githubusercontent.com/microsoft/playwright-mcp/main/package.json"
+      ],
+      "verdict": "Optional browser tier only."
+    },
+    {
+      "id": "harness2",
+      "repo": "google-research/harness2",
+      "role": "terminology referent for 'Harness 2'; design blueprint",
+      "what_it_is": "Harness^2: plug-and-play framework for recursive agent harnessing: refines an execution harness per task via contrastive Propose-Probe-Compose without ground-truth verifiers, and updates a persistent improvement harness across tasks; model weights frozen.",
+      "license": "Apache-2.0",
+      "version": "no release tags found; repository at main",
+      "stars": 22790,
+      "forks": 2267,
+      "created_utc": "2026-10-06T21:48:11Z",
+      "last_push_utc": "2026-11-02T02:17:27Z",
+      "language": "Python",
+      "runtime": "Linux, Python 3.12, uv; model-backed runs need Node 20+, Google Cloud CLI, Vertex AI; OpenCode default executor, Codex via --substrate cx; credential-free local demo (harness2-demo)",
+      "editable_components": [
+        "C1 system prompt",
+        "C2 guardrails",
+        "C3 memory",
+        "C4 tool guidance",
+        "C5 subagents",
+        "C6 skills",
+        "C7 scripts",
+        "C8 plugins"
+      ],
+      "tool_interface": "CLI: harness2, harness2-demo, harness2-setup, harness2-check, harness2-judge, harness2-report",
+      "deployment": "Research/experiment framework, not a service; results under runs/, resume supported; benchmarks JobBench, LAB, WorkBuddy-Bench",
+      "memory": "Memory component plus persistent improvement harness (harness files + EXPERIENCE.md)",
+      "learning_training": "Harness-level self-improvement (no model weight changes); evidence-supported lessons; parallel and sequential recursion",
+      "eval": "Strong: benchmark setup/check/run/judge/report pipeline; reported gains up to +11.5 WorkBuddy-Bench, +4.5 JobBench, +11.8pp LAB",
+      "human_approval": "None",
+      "strengths": [
+        "Only candidate with a published recursive self-improvement method and results",
+        "Apache-2.0",
+        "Explicit eight-component harness taxonomy",
+        "Benchmark drivers and resume",
+        "Credential-free demo"
+      ],
+      "limits": [
+        "Benchmark/experiment harness, not a production runtime",
+        "Executors OpenCode/Codex; model-backed runs oriented to Vertex AI",
+        "Linux-only; no service, memory store, approval API",
+        "Explicitly not an officially supported Google product"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/google-research/harness2",
+        "https://api.github.com/repos/google-research/harness2/readme",
+        "https://raw.githubusercontent.com/google-research/harness2/main/README.md",
+        "https://arxiv.org/abs/2610.14224",
+        "https://harness2.github.io/"
+      ],
+      "verdict": "Design blueprint to adopt, not a runtime."
+    },
+    {
+      "id": "hermes-agent",
+      "repo": "NousResearch/hermes-agent",
+      "role": "terminology referent for 'Hermes'",
+      "what_it_is": "Self-improving AI agent by Nous Research with a built-in learning loop: creates skills from experience, improves them during use, persists knowledge, searches past conversations, models the user across sessions; runs on a VPS or cloud.",
+      "license": "MIT",
+      "version": "v0.22.7",
+      "version_sources": ["GitHub release v0.22.7 (2026-11-03)"],
+      "latest_release_tag": "v0.22.7",
+      "latest_release_date_utc": "2026-11-03",
+      "stars": 260789,
+      "forks": 57574,
+      "created_utc": "2025-07-22T22:22:28Z",
+      "last_push_utc": "2026-11-05T15:34:59Z",
+      "language": "Python",
+      "runtime": "Python (installer delegates Python 3.14, Node.js, npm, ripgrep, FFmpeg); TUI + gateway; Docker",
+      "tool_interface": "CLI/TUI, gateway, MCP integration docs, tools/toolsets, skills, plugins, REST/web UI ecosystem",
+      "deployment": "Local install scripts (Linux/macOS/WSL2, native Windows PowerShell), Docker, cloud hosting via Nous Portal; $5 VPS claim",
+      "memory": "Agent-curated memory with periodic nudges; FTS5 session search with LLM summarization; Honcho dialectic user modeling; agent-managed state DB",
+      "learning_training": "Closed learning loop: autonomous skill creation after complex tasks, skills self-improve during use, trajectory generation/compression for training tool-calling models",
+      "eval": "evals/ directory and batch trajectory tooling; no promotion gate verified (UNVERIFIED)",
+      "human_approval": "Desktop approvals/settings mentioned; not verified for VPS (UNVERIFIED)",
+      "strengths": [
+        "MIT and enormous community (260k stars)",
+        "Genuine built-in learning loop (skills + memory + recall)",
+        "Isolated subagents with own terminals and Python RPC",
+        "Six terminal backends incl. Docker/SSH/Modal/Daytona/Vercel Sandbox",
+        "Multi-channel gateway, cron, voice",
+        "VPS-friendly"
+      ],
+      "limits": [
+        "Very large surface; duplicates DeerFlow's roles",
+        "Two gateways and two memory systems if run beside DeerFlow",
+        "Resource pressure on 2 vCPU / 8 GB",
+        "MCP/approval/eval details not verified in code by this task"
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/NousResearch/hermes-agent",
+        "https://api.github.com/repos/NousResearch/hermes-agent/readme",
+        "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/README.md",
+        "https://hermes-agent.nousresearch.com/"
+      ],
+      "verdict": "Viable alternative substrate only if priorities shift to a personal always-on self-improving agent."
+    }
+  ],
+
+  "terminology": [
+    {
+      "term": "Harness 2",
+      "verdict": "VERIFIED",
+      "canonical": "google-research/harness2, product name Harness^2 (Harness squared)",
+      "paper": "arXiv:2610.14224, Harness^2: Recursive Agent Harnessing for an Open World, submitted 2026-10-09",
+      "official_site": "https://harness2.github.io/",
+      "facts": {
+        "stars": 22790,
+        "forks": 2267,
+        "license": "Apache-2.0",
+        "language": "Python",
+        "created_utc": "2026-10-06",
+        "last_push_utc": "2026-11-02",
+        "release_tags": "none found"
+      },
+      "what_it_is": "Plug-and-play recursive agent-harnessing framework: eight editable harness components, Propose-Probe-Compose task-level recursion, persistent improvement harness, model weights frozen; OpenCode/Codex executors; JobBench/LAB/WorkBuddy-Bench.",
+      "notes": [
+        "Explicitly not an officially supported Google product.",
+        "Community ports to DeepSeek Harness exist (Xnmk029/dsh-plugin-harness2, Asiu-x/dsh-harness2) but are third-party and unverified."
+      ],
+      "evidence_uris": [
+        "https://api.github.com/repos/google-research/harness2",
+        "https://raw.githubusercontent.com/google-research/harness2/main/README.md",
+        "https://arxiv.org/abs/2610.14224",
+        "https://harness2.github.io/"
+      ]
+    },
+    {
+      "term": "superagent",
+      "verdict": "AMBIGUOUS",
+      "referents": [
+        {
+          "referent": "DeerFlow category name",
+          "evidence": "bytedance/deer-flow description: 'An open-source long-horizon SuperAgent harness'; topics include superagent and harness",
+          "status": "official self-description, strongest usage"
+        },
+        {
+          "referent": "deepseek-ai/dsh-superagent-prototype",
+          "evidence": "MIT, TypeScript, 19342 stars / 2205 forks, created 2026-10-31, last push 2026-11-03; README: 'Research prototype for reference only, not an official DeepSeek product... not production-ready software'; proactive coding agent for one GitHub repo, packaged as a bundle for DeepSeek Harness",
+          "status": "official DeepSeek org, explicitly non-production"
+        },
+        {
+          "referent": "forwardemail/superagent",
+          "evidence": "16633 stars, 'Ajax for Node.js and browsers (JS HTTP client)'",
+          "status": "name collision, not an agent"
+        },
+        {
+          "referent": "superagent-ai/superagent",
+          "evidence": "6837 stars, 'protects your AI applications against prompt injections, data leaks, and harmful outputs'",
+          "status": "name collision, AI security"
+        }
+      ],
+      "guidance": "Never use 'superagent' unqualified; specify DeerFlow or dsh-superagent-prototype.",
+      "evidence_uris": [
+        "https://api.github.com/repos/bytedance/deer-flow",
+        "https://api.github.com/repos/deepseek-ai/dsh-superagent-prototype",
+        "https://raw.githubusercontent.com/deepseek-ai/dsh-superagent-prototype/main/README.md"
+      ]
+    },
+    {
+      "term": "metas hyperagent",
+      "verdict": "NOT_FOUND as exact project",
+      "closest_primary_sources": [
+        {
+          "name": "Meta HyperAgents",
+          "repo": "facebookresearch/HyperAgents",
+          "description": "Self-referential self-improving agents that can optimize for any computable task",
+          "stars": 2867,
+          "forks": 372,
+          "license": "CC BY-NC-SA 4.0 (non-commercial)",
+          "paper": "arXiv:2603.19461",
+          "language": "Python",
+          "last_push_utc": "2026-07-31",
+          "files": "meta_agent.py, task_agent.py, generate_loop.py; docker build; warns it executes model-generated code"
+        },
+        {
+          "name": "Meta-Harness",
+          "repo": "stanford-iris-lab/meta-harness-tbench2-artifact",
+          "description": "Meta-Harness: 76.4% on Terminal-Bench 2.0 (Claude Opus 4.6)",
+          "stars": 1249,
+          "license": "NONE (no license file)",
+          "last_push_utc": "2026-03-26",
+          "note": "Harness^2 results table lists 'Meta-Harness' (average 76.4) as a baseline method"
+        }
+      ],
+      "search_evidence": "GitHub repo search 'metas hyperagent' returned 9 third-party experiment repos, none official; web search surfaced only articles about Meta Hyperagents and the Meta-Harness baseline.",
+      "guidance": "Treat as unresolved user shorthand; ask which referent is meant; neither referent is usable as a production dependency.",
+      "evidence_uris": [
+        "https://api.github.com/repos/facebookresearch/HyperAgents",
+        "https://raw.githubusercontent.com/facebookresearch/HyperAgents/main/README.md",
+        "https://api.github.com/repos/stanford-iris-lab/meta-harness-tbench2-artifact",
+        "https://harness2.github.io/"
+      ]
+    },
+    {
+      "term": "Hermes hyperagent",
+      "verdict": "NOT_FOUND as exact project",
+      "components": [
+        {
+          "name": "Hermes Agent",
+          "repo": "NousResearch/hermes-agent",
+          "license": "MIT",
+          "stars": 260789,
+          "version": "v0.22.7 (2026-11-03)",
+          "official_site": "https://hermes-agent.nousresearch.com/",
+          "what": "self-improving agent with learning loop, skills, durable memory, subagents, terminal backends, gateway"
+        },
+        {
+          "name": "Hyperagent",
+          "referents": [
+            "hyperagent.com commercial hosted product (closed source)",
+            "hyperbrowserai/HyperAgent (AGPL-3.0)",
+            "facebookresearch/HyperAgents (CC BY-NC-SA 4.0)"
+          ]
+        }
+      ],
+      "conflation_evidence": "GitHub search 'hermes hyperagent' returned exactly one repo: yurekami/ultragent (3 stars), 'Self-referential self-improving agent configuration for Claude Code. Combines HyperAgents + AutoResearch + Hermes Agent + Anthropic harness design.'",
+      "guidance": "Do not name a 'Hermes hyperagent' project. Ask whether the user means Hermes Agent (Nous), Hyperagent (hyperagent.com), or Meta HyperAgents.",
+      "evidence_uris": [
+        "https://api.github.com/repos/NousResearch/hermes-agent",
+        "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/README.md",
+        "https://hermes-agent.nousresearch.com/",
+        "https://www.hyperagent.com/"
+      ]
+    },
+    {
+      "term": "hyperagent",
+      "verdict": "AMBIGUOUS (four referents)",
+      "referents": [
+        {
+          "referent": "hyperagent.com",
+          "type": "commercial hosted product",
+          "evidence": "Official site: 'Agents that ship real, powerful work', fleet of agents with browsers/shells delivering websites, video, slides, documents, dashboards; 'Hyperagent learns as it goes and generates new memories and skills'; Slack/Telegram/webhook/schedule delivery",
+          "source_code": "no public repository found",
+          "license": "proprietary",
+          "status": "verified official product; not self-hostable"
+        },
+        {
+          "referent": "hyperbrowserai/HyperAgent",
+          "type": "open-source TypeScript library",
+          "evidence": "1604 stars / 205 forks; 'Hyperagent is Playwright supercharged with AI'; npm @hyperbrowser/agent; MCP client; action caching; last push 2026-05-11",
+          "license": "AGPL-3.0 (LICENSE text: GNU AFFERO GPL v3, Copyright (c) 2025 S2 Labs Inc.)",
+          "status": "verified; network copyleft"
+        },
+        {
+          "referent": "facebookresearch/HyperAgents",
+          "type": "Meta research code",
+          "license": "CC BY-NC-SA 4.0",
+          "status": "verified; non-commercial"
+        },
+        {
+          "referent": "szrlee/HyperAgent",
+          "type": "ICML 2024 bandit algorithm",
+          "status": "different domain, not an agent harness"
+        }
+      ],
+      "guidance": "Always qualify which hyperagent is meant; none is a drop-in self-hosted Craft harness.",
+      "evidence_uris": [
+        "https://www.hyperagent.com/",
+        "https://api.github.com/repos/hyperbrowserai/HyperAgent",
+        "https://raw.githubusercontent.com/hyperbrowserai/HyperAgent/main/LICENSE",
+        "https://api.github.com/repos/facebookresearch/HyperAgents"
+      ]
+    }
+  ],
+
+  "capability_matrix": {
+    "dimensions": [
+      "orchestration",
+      "native_app_tools",
+      "vision_computer_use",
+      "durable_memory",
+      "eval",
+      "human_approval",
+      "self_hostability",
+      "craft_fit"
+    ],
+    "scale": "strong | partial | none | n/a",
+    "rows": {
+      "deerflow": {
+        "orchestration": "strong",
+        "native_app_tools": "partial",
+        "vision_computer_use": "none",
+        "durable_memory": "strong",
+        "eval": "partial",
+        "human_approval": "partial",
+        "self_hostability": "strong",
+        "craft_fit": "4/5",
+        "notes": "Subagents (isolated/snapshot) + DeerMem + MCP + sandbox; no creative-app tools or vision; already deployed on target VPS"
+      },
+      "harness2": {
+        "orchestration": "strong (design)",
+        "native_app_tools": "none",
+        "vision_computer_use": "none",
+        "durable_memory": "strong (design)",
+        "eval": "strong",
+        "human_approval": "none",
+        "self_hostability": "partial",
+        "craft_fit": "3/5",
+        "notes": "Blueprint: 8 components + Propose-Probe-Compose + improvement harness; benchmark harness only"
+      },
+      "hermes-agent": {
+        "orchestration": "strong",
+        "native_app_tools": "partial",
+        "vision_computer_use": "partial",
+        "durable_memory": "strong",
+        "eval": "partial",
+        "human_approval": "partial",
+        "self_hostability": "strong",
+        "craft_fit": "3/5",
+        "notes": "Best built-in learning loop; heavy for 2 vCPU / 8 GB alongside DeerFlow"
+      },
+      "browser-use": {
+        "orchestration": "none",
+        "native_app_tools": "none",
+        "vision_computer_use": "partial",
+        "durable_memory": "none",
+        "eval": "partial",
+        "human_approval": "none",
+        "self_hostability": "strong",
+        "craft_fit": "2/5",
+        "notes": "Browser-only; strong at its niche"
+      },
+      "agent-s": {
+        "orchestration": "none",
+        "native_app_tools": "strong",
+        "vision_computer_use": "strong",
+        "durable_memory": "partial",
+        "eval": "strong",
+        "human_approval": "none",
+        "self_hostability": "partial",
+        "craft_fit": "2/5",
+        "notes": "Real desktop GUI; needs display this VPS lacks; memory unverified in code"
+      },
+      "ui-tars-desktop": {
+        "orchestration": "none",
+        "native_app_tools": "strong",
+        "vision_computer_use": "strong",
+        "durable_memory": "none",
+        "eval": "none",
+        "human_approval": "none",
+        "self_hostability": "partial",
+        "craft_fit": "2/5",
+        "notes": "GUI-first; no memory/eval/approval"
+      },
+      "openadapt": {
+        "orchestration": "none",
+        "native_app_tools": "strong",
+        "vision_computer_use": "partial",
+        "durable_memory": "strong",
+        "eval": "strong",
+        "human_approval": "strong",
+        "self_hostability": "strong",
+        "craft_fit": "3/5",
+        "notes": "Best verification/approval pattern; procedural memory; not an orchestrator"
+      },
+      "playwright-mcp": {
+        "orchestration": "none",
+        "native_app_tools": "none",
+        "vision_computer_use": "none",
+        "durable_memory": "none",
+        "eval": "none",
+        "human_approval": "partial",
+        "self_hostability": "strong",
+        "craft_fit": "2/5",
+        "notes": "Deterministic a11y-tree browser tools; read-only hints only"
+      },
+      "eko": {
+        "orchestration": "strong",
+        "native_app_tools": "partial",
+        "vision_computer_use": "partial",
+        "durable_memory": "none",
+        "eval": "none",
+        "human_approval": "strong",
+        "self_hostability": "strong",
+        "craft_fit": "1/5",
+        "notes": "Dormant since 2026-03-03; no eval/memory/learning; JS-only"
+      }
+    },
+    "unverified_cells": [
+      "agent-s durable memory (README/topic claim only)",
+      "deerflow first-class approval queue (interrupts exist, approval queue not documented)",
+      "hermes-agent eval promotion gate and VPS approval flow",
+      "ui-tars human approval ('human-in-the-loop' search hit not opened; not claimed here)"
+    ]
+  },
+
+  "recommendation": {
+    "decision": "Integrate DeerFlow 2.2.x as the agent runtime; build the Craft control plane (verification, episode ledger, skill promotion, cost/approval) around it. Do not build a new orchestration engine; do not adopt a GUI/browser agent as the base.",
+    "rationale": [
+      "DeerFlow is MIT, Python-native, actively developed, and already deployed on the target VPS (task-1).",
+      "It already provides LangGraph runtime/checkpoints, durable subagents, DeerMem, sandbox, and MCP both ways — the hardest primitives to rebuild.",
+      "Craft CLIs expose headless MCP stdio servers (task-1), matching DeerFlow's extension mechanism.",
+      "No candidate has Craft-specific verification, eval/promotion, or an episode ledger; those are the build surface and the product's defensibility."
+    ],
+    "ranked": [
+      {
+        "rank": 1,
+        "action": "Integrate DeerFlow 2.2.x as hosted runtime; register vectorcraft/photocraft MCP servers; add Craft skills",
+        "effort": "M",
+        "risk": "Version drift (2.3.0-dev moves daily); container/host path isolation; 2 vCPU/8 GB headroom"
+      },
+      {
+        "rank": 2,
+        "action": "Build 'Forge Conductor' control plane: episode ledger, artifact/hash lineage, verification gates, skill library, eval/promotion, rollback, token/cost ledger",
+        "effort": "L",
+        "risk": "Scope creep; must stay additive, not a DeerFlow fork"
+      },
+      {
+        "rank": 3,
+        "action": "Adopt Harness^2 design (8 components, Propose-Probe-Compose, improvement harness/EXPERIENCE.md), adapted to disposable Craft copies and verification-gated promotion",
+        "effort": "M",
+        "risk": "Its executors/benchmarks are OpenCode/Codex + Vertex; only the method transfers"
+      },
+      {
+        "rank": 4,
+        "action": "Copy OpenAdapt verification discipline: read back the artifact/system of record; stop-before-final-save repair with human approval",
+        "effort": "S-M",
+        "risk": "Craft has no REST read-back for every artifact; needs per-tool verifiers"
+      },
+      {
+        "rank": 5,
+        "action": "Use Hermes Agent only if priorities shift to a personal always-on learning agent, and only on a larger host",
+        "effort": "L",
+        "risk": "Duplicates DeerFlow; resource pressure; two gateways/memory systems"
+      },
+      {
+        "rank": 6,
+        "action": "Optional browser tier: playwright-mcp (deterministic, read-only hints) or browser-use for web research skills",
+        "effort": "S",
+        "risk": "Tool sprawl; extra supervised process"
+      },
+      {
+        "rank": 7,
+        "action": "Defer GUI/vision fallback (Agent-S / UI-TARS-desktop) unless a Craft operation has no CLI/MCP equivalent, on a larger host with a virtual display",
+        "effort": "XL",
+        "risk": "High OOM/brittleness; no display/GPU on this VPS"
+      }
+    ],
+    "do_not_use": [
+      {
+        "item": "facebookresearch/HyperAgents",
+        "reason": "CC BY-NC-SA 4.0 non-commercial share-alike; research code executing model-generated code"
+      },
+      {
+        "item": "hyperbrowserai/HyperAgent",
+        "reason": "AGPL-3.0 network copyleft; closed VPS service would trigger source-disclosure obligations; last push 2026-05-11"
+      },
+      {
+        "item": "hyperagent.com",
+        "reason": "Closed hosted product; no source; cannot self-host"
+      },
+      {
+        "item": "FellouAI/eko as new base",
+        "reason": "Dormant since 2026-03-03; no durable memory/eval/learning; JS-only"
+      },
+      {
+        "item": "deepseek-ai/dsh-superagent-prototype in production",
+        "reason": "README: 'Research prototype for reference only, not an official DeepSeek product... not production-ready software'"
+      },
+      {
+        "item": "google-research/harness2 as production runtime",
+        "reason": "Benchmark/experiment harness (Vertex AI, OpenCode/Codex, Linux, uv); not an officially supported Google product; no service/memory store/approval API"
+      },
+      {
+        "item": "browser-use / Agent-S / UI-TARS-desktop as Craft execution base",
+        "reason": "Browser-only or GUI-only; no orchestration/memory/approval; GUI ones need a display this VPS lacks"
+      },
+      {
+        "item": "Unlicensed artifacts (alex-hyperagent/hyperagent-public-skills, stanford-iris-lab/meta-harness-tbench2-artifact)",
+        "reason": "No license file found; no default reuse rights"
+      }
+    ],
+    "integration_sketch": {
+      "vps": "179.197.88.181, 2 vCPU / 7.9 GB (small), Ubuntu 26.04.1",
+      "runtime": "DeerFlow 2.2.x (already running: container deer-flow-gateway) with Gateway, LangGraph, checkpoints, subagents, DeerMem, MCP registry",
+      "mcp_registry": ["vectorcraft mcp (stdio, headless)", "photocraft mcp (stdio, --bridge)"],
+      "control_plane": {
+        "name": "Forge Conductor (build)",
+        "components": [
+          "Postgres episode ledger: episode -> steps -> artifact hashes -> verdicts",
+          "verification gates: parse/validate project file, re-render hash, command exit + artifact diff",
+          "skill library + promotion (Propose-Probe-Compose adapted; EXPERIENCE.md analog)",
+          "rollback: artifact snapshots + DeerFlow thread checkpoint",
+          "cost/usage ledger + approval queue for destructive steps"
+        ]
+      },
+      "untouched": "Existing pipeline/console; Conductor calls the same MCP surface"
+    },
+    "hard_constraints_from_task1": [
+      "2 vCPU / 7.9 GB with swap already in use",
+      "No display/GPU; QT_QPA_PLATFORM=offscreen forced; GUI critic not viable",
+      "Craft binaries on host while DeerFlow gateway is containerized (needs bind mount or host-side MCP bridge)",
+      "Unauthenticated MCP currently bound on 0.0.0.0:8765",
+      "No durable Craft-run state model yet; no learning loop; no cost control",
+      "Only vectorcraft + photocraft vendor binaries present; 3 of 5 craft tools absent (DesignCraft, EffectCraft, FilmCraft)"
+    ]
+  },
+
+  "candidate_questions": [
+    {
+      "n": 1,
+      "question": "When you wrote 'Harness 2', did you mean Google's google-research/harness2 (Harness^2, arXiv 2610.14224), or the second version of our own harness?",
+      "answered_by": "USR"
+    },
+    {
+      "n": 2,
+      "question": "'metas hyperagent': Meta's facebookresearch/HyperAgents (CC BY-NC-SA), the Stanford 'Meta-Harness' Terminal-Bench artifact, or something else you saw?",
+      "answered_by": "USR"
+    },
+    {
+      "n": 3,
+      "question": "'Hermes hyperagent': Hermes Agent (Nous, MIT, 260k stars) or Hyperagent (hyperagent.com, closed) - or the Hermes model family?",
+      "answered_by": "USR"
+    },
+    {
+      "n": 4,
+      "question": "'superagent': DeerFlow's category name, DeepSeek's dsh-superagent-prototype, or a different product?",
+      "answered_by": "USR"
+    },
+    {
+      "n": 5,
+      "question": "DeerFlow: pin v2.2.0 or track main (2.3.0-dev), and what breaks for us between the two?",
+      "answered_by": "SRC"
+    },
+    {
+      "n": 6,
+      "question": "DeerFlow: can DeerMem use a Postgres/retrieval backend shared with the pipeline DB, or is Markdown + SQLite FTS5 the only durable path?",
+      "answered_by": "SRC"
+    },
+    {
+      "n": 7,
+      "question": "Are Craft operations exposed to the agent as MCP tools, CLI commands via a shell tool, or both?",
+      "answered_by": "DES"
+    },
+    {
+      "n": 8,
+      "question": "Can the DeerFlow gateway container see /opt/craft/** today, or must Craft MCP run host-side behind the stdio<->HTTP bridge?",
+      "answered_by": "VPS"
+    },
+    {
+      "n": 9,
+      "question": "What is measured memory headroom after one concurrent DeerFlow run on 2 vCPU / 7.9 GB (swap already used)? Is a second run safe?",
+      "answered_by": "VPS"
+    },
+    {
+      "n": 10,
+      "question": "What is the artifact-of-record per Craft app (project file? rendered PNG? PDF?) and how do we read it back for verification?",
+      "answered_by": "DES"
+    },
+    {
+      "n": 11,
+      "question": "Which destructive Craft operations require human approval, and where does that approval live (DeerFlow interrupt, web panel, CLI prompt)?",
+      "answered_by": "DES"
+    },
+    {
+      "n": 12,
+      "question": "What does 'promotion' mean for a Craft skill: eval score threshold, N successful episodes, or human sign-off? Who can promote?",
+      "answered_by": "DES"
+    },
+    {
+      "n": 13,
+      "question": "Eko: is there an actively maintained fork or a v5 announcement after 2026-03-03? If not, it is reference-only.",
+      "answered_by": "SRC"
+    },
+    {
+      "n": 14,
+      "question": "Hermes Agent: is there a first-party production guide for a 2 vCPU / 8 GB VPS with a non-Nous model (DeepSeek API), and what is its measured idle RSS?",
+      "answered_by": "SRC"
+    },
+    {
+      "n": 15,
+      "question": "License policy: are AGPL (HyperAgent) and CC BY-NC-SA (Meta HyperAgents) acceptable anywhere in our stack, even as dev-time tooling?",
+      "answered_by": "DES"
+    }
+  ],
+
+  "bibliography": {
+    "access_date": "2026-11-05",
+    "note": "Every URL listed here was actually fetched on 2026-11-05. README-referenced URLs that were not fetched are excluded and listed under failed_retrievals.unfetched_docs_sites.",
+    "github_api_records_E1": [
+      "https://api.github.com/repos/FellouAI/eko",
+      "https://api.github.com/repos/FellouAI/eko/releases",
+      "https://api.github.com/repos/FellouAI/eko/tags",
+      "https://api.github.com/repos/FellouAI/eko/commits",
+      "https://api.github.com/repos/FellouAI/eko/contents/",
+      "https://api.github.com/repos/bytedance/deer-flow",
+      "https://api.github.com/repos/bytedance/deer-flow/releases",
+      "https://api.github.com/repos/bytedance/deer-flow/tags",
+      "https://api.github.com/repos/bytedance/deer-flow/commits",
+      "https://api.github.com/repos/browser-use/browser-use",
+      "https://api.github.com/repos/browser-use/browser-use/releases",
+      "https://api.github.com/repos/simular-ai/Agent-S",
+      "https://api.github.com/repos/simular-ai/Agent-S/releases",
+      "https://api.github.com/repos/bytedance/UI-TARS-desktop",
+      "https://api.github.com/repos/bytedance/UI-TARS-desktop/releases",
+      "https://api.github.com/repos/OpenAdaptAI/OpenAdapt",
+      "https://api.github.com/repos/OpenAdaptAI/OpenAdapt/releases",
+      "https://api.github.com/repos/microsoft/playwright-mcp",
+      "https://api.github.com/repos/microsoft/playwright-mcp/releases",
+      "https://api.github.com/repos/google-research/harness2",
+      "https://api.github.com/repos/google-research/harness2/readme",
+      "https://api.github.com/repos/google-research/harness2/releases",
+      "https://api.github.com/repos/google-research/harness2/tags",
+      "https://api.github.com/repos/facebookresearch/HyperAgents",
+      "https://api.github.com/repos/deepseek-ai/dsh-superagent-prototype",
+      "https://api.github.com/repos/hyperbrowserai/HyperAgent",
+      "https://api.github.com/repos/hyperbrowserai/HyperAgent/license",
+      "https://api.github.com/repos/alex-hyperagent/hyperagent-public-skills",
+      "https://api.github.com/repos/stanford-iris-lab/meta-harness-tbench2-artifact",
+      "https://api.github.com/repos/NousResearch/hermes-agent",
+      "https://api.github.com/repos/NousResearch/hermes-agent/readme",
+      "https://api.github.com/repos/NousResearch/hermes-agent/releases",
+      "https://api.github.com/search/repositories?q=harness+2+in%3Aname",
+      "https://api.github.com/search/repositories?q=hyperagent+in%3Aname",
+      "https://api.github.com/search/repositories?q=superagent+in%3Aname",
+      "https://api.github.com/search/repositories?q=hermes-agent+in%3Aname",
+      "https://api.github.com/search/repositories?q=hermes+hyperagent",
+      "https://api.github.com/search/repositories?q=metas+hyperagent",
+      "https://api.github.com/rate_limit"
+    ],
+    "repository_source_files_E2": [
+      "https://raw.githubusercontent.com/FellouAI/eko/main/README.md",
+      "https://raw.githubusercontent.com/FellouAI/eko/main/package.json",
+      "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/package.json",
+      "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/memory/memory.ts",
+      "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/memory/snapshot.ts",
+      "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/agent/eko.ts",
+      "https://raw.githubusercontent.com/FellouAI/eko/main/packages/eko-core/src/tools/index.ts",
+      "https://raw.githubusercontent.com/bytedance/deer-flow/main/README.md",
+      "https://raw.githubusercontent.com/bytedance/deer-flow/main/backend/pyproject.toml",
+      "https://raw.githubusercontent.com/bytedance/deer-flow/main/config.example.yaml",
+      "https://raw.githubusercontent.com/bytedance/deer-flow/main/CHANGELOG.md",
+      "https://raw.githubusercontent.com/browser-use/browser-use/main/README.md",
+      "https://raw.githubusercontent.com/browser-use/browser-use/main/pyproject.toml",
+      "https://raw.githubusercontent.com/browser-use/browser-use/main/server.json",
+      "https://raw.githubusercontent.com/simular-ai/Agent-S/main/README.md",
+      "https://raw.githubusercontent.com/simular-ai/Agent-S/main/setup.py",
+      "https://raw.githubusercontent.com/simular-ai/Agent-S/main/agent_s4/README.md",
+      "https://raw.githubusercontent.com/bytedance/UI-TARS-desktop/main/README.md",
+      "https://raw.githubusercontent.com/bytedance/UI-TARS-desktop/main/package.json",
+      "https://raw.githubusercontent.com/OpenAdaptAI/OpenAdapt/main/README.md",
+      "https://raw.githubusercontent.com/OpenAdaptAI/OpenAdapt/main/CAPABILITIES.md",
+      "https://raw.githubusercontent.com/OpenAdaptAI/OpenAdapt/main/pyproject.toml",
+      "https://raw.githubusercontent.com/microsoft/playwright-mcp/main/README.md",
+      "https://raw.githubusercontent.com/microsoft/playwright-mcp/main/package.json",
+      "https://raw.githubusercontent.com/google-research/harness2/main/README.md",
+      "https://raw.githubusercontent.com/facebookresearch/HyperAgents/main/README.md",
+      "https://raw.githubusercontent.com/deepseek-ai/dsh-superagent-prototype/main/README.md",
+      "https://raw.githubusercontent.com/hyperbrowserai/HyperAgent/main/README.md",
+      "https://raw.githubusercontent.com/hyperbrowserai/HyperAgent/main/LICENSE",
+      "https://raw.githubusercontent.com/NousResearch/hermes-agent/main/README.md"
+    ],
+    "official_papers_and_sites_E3": [
+      "https://arxiv.org/abs/2610.14224",
+      "https://harness2.github.io/",
+      "https://www.deepseek.com/en/harness/",
+      "https://hermes-agent.nousresearch.com/",
+      "https://www.hyperagent.com/",
+      "https://registry.npmjs.org/@eko-ai%2Feko"
+    ],
+    "secondary_leads_E4": [
+      "https://arize.com/blog/how-hermes-implements-open-source-agent-harness-architecture/ (fetched 200 but truncated; excluded from evidence)"
+    ]
+  },
+
+  "failed_retrievals": [
+    {
+      "target": "https://eko.fellou.ai/docs/release/versions/",
+      "result": "cross-origin redirect to https://fellou.ai not followed by the fetcher",
+      "consequence": "Eko version history taken from GitHub releases + npm registry; docs site not cited"
+    },
+    {
+      "target": "https://api.github.com/search/repositories (first attempt)",
+      "result": "HTTP 403 (transient); identical call succeeded seconds later; rate_limit showed search 10/10",
+      "consequence": "searches re-run with delays; final counts from successful calls"
+    },
+    {
+      "target": "https://api.github.com/repos/alex-hyperagent/hyperagent-public-skills/readme",
+      "result": "HTTP 404 - no README in repo",
+      "consequence": "recorded as unlicensed with README absent; not used"
+    },
+    {
+      "target": "https://arize.com/blog/how-hermes-implements-open-source-agent-harness-architecture/",
+      "result": "HTTP 200 but body truncated",
+      "consequence": "excluded from evidence"
+    },
+    {
+      "target": "bytedance/deer-flow README / CHANGELOG / config.example.yaml full read",
+      "result": "not attempted end-to-end (380,614 / 1,024,197 / 194,493 bytes)",
+      "consequence": "selective reads only; unquoted sections remain unread"
+    },
+    {
+      "target": "metas hyperagent / Hermes hyperagent exact projects",
+      "result": "NOT FOUND",
+      "consequence": "not invented; reported as unresolved terminology with closest primary sources"
+    }
+  ],
+  "failed_retrievals_note": {
+    "unfetched_docs_sites": [
+      "https://docs.openadapt.ai",
+      "https://hermes-agent.nousresearch.com/docs",
+      "https://docs.browser-use.com",
+      "https://agent-tars.com",
+      "https://playwright.dev",
+      "https://eko.fellou.ai/docs"
+    ],
+    "statement": "None of these was opened; no claim in this report depends on them."
+  },
+
+  "unresolved_items": [
+    "Which 'metas hyperagent' the user means",
+    "Which 'Hermes hyperagent' the user means",
+    "Which 'superagent' the user means",
+    "Agent-S durable memory in code",
+    "DeerFlow first-class approval queue",
+    "Hermes Agent eval/promotion and VPS approval flow",
+    "Craft-specific artifact-of-record definitions (task-3 scope)"
+  ],
+
+  "license_flags": [
+    {
+      "project": "facebookresearch/HyperAgents",
+      "license": "CC BY-NC-SA 4.0",
+      "flag": "NON-COMMERCIAL + SHARE-ALIKE; not usable in a commercial product"
+    },
+    {
+      "project": "hyperbrowserai/HyperAgent",
+      "license": "AGPL-3.0",
+      "flag": "NETWORK COPYLEFT; closed SaaS use triggers source disclosure"
+    },
+    {
+      "project": "alex-hyperagent/hyperagent-public-skills",
+      "license": "NONE",
+      "flag": "no license; no reuse rights"
+    },
+    {
+      "project": "stanford-iris-lab/meta-harness-tbench2-artifact",
+      "license": "NONE",
+      "flag": "no license; artifact only"
+    },
+    {
+      "project": "hyperagent.com",
+      "license": "proprietary",
+      "flag": "hosted product; not self-hostable"
+    }
+  ]
+}

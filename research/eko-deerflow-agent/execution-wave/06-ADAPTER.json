@@ -1,0 +1,153 @@
+{
+  "schema": "forge-adapter-prototype/1.0",
+  "task": {
+    "id": "task-13",
+    "title": "Adapter prototype: ordered re-entrant operation pipeline",
+    "wave": "execution-wave",
+    "status": "prototype-complete",
+    "date": "2026-11-05",
+    "host": { "os": "Windows", "node": "v26.7.0", "dependencies": "none" },
+    "productionEdits": false,
+    "onlyWrites": [
+      "research/eko-deerflow-agent/execution-wave/06-ADAPTER.md",
+      "research/eko-deerflow-agent/execution-wave/06-ADAPTER.json",
+      "research/eko-deerflow-agent/execution-wave/adapter/**"
+    ]
+  },
+  "donor": {
+    "selectedMechanism": "M1",
+    "sourceDoc": "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md §M1",
+    "repo": "block/goose",
+    "files": [
+      { "path": "crates/goose/src/agents/state_machine/mod.rs", "lines": "1-6, 8-39" },
+      { "path": "crates/goose/src/agents/state_machine/mod.rs", "lines": "44-58" }
+    ],
+    "license": "Apache-2.0",
+    "treeSha": "609d3432d397e0a35b4c6b95afbd3d99fe694811",
+    "borrowed": "mechanism only: a step is the first applicable operation in an ordered list; policies are re-entrant operations over persisted state",
+    "copiedCode": false,
+    "donorCorpusReReadDuringThisTask": false
+  },
+  "files": [
+    { "path": "adapter/src/envelope.mjs", "lines": 223, "role": "command envelope, status vocabulary, plan validation, idempotency key, capability profiles" },
+    { "path": "adapter/src/store.mjs", "lines": 178, "role": "MemoryStore + FileStore atomic commit, schema fail-closed, initial session" },
+    { "path": "adapter/src/ports.mjs", "lines": 208, "role": "Craft port, approval policy, verifier, continuation note; reference doubles" },
+    { "path": "adapter/src/operations.mjs", "lines": 500, "role": "the eight ordered operations" },
+    { "path": "adapter/src/machine.mjs", "lines": 238, "role": "step/apply/run, resume, recordDecision, view" },
+    { "path": "adapter/src/gateway.mjs", "lines": 86, "role": "createCraftConductor wiring, PIPELINE order, summarizeRun" },
+    { "path": "adapter/test/envelope.test.mjs", "lines": 107, "role": "boundary validation" },
+    { "path": "adapter/test/machine.test.mjs", "lines": 110, "role": "pipeline mechanics" },
+    { "path": "adapter/test/approval-compaction-retry.test.mjs", "lines": 152, "role": "policy steps" },
+    { "path": "adapter/test/duplicate.test.mjs", "lines": 87, "role": "duplicate suppression" },
+    { "path": "adapter/test/crash-resume.test.mjs", "lines": 215, "role": "crash/resume/fail-closed" },
+    { "path": "adapter/test/fixtures/harness.mjs", "lines": 84, "role": "shared plans + conductor factory" },
+    { "path": "adapter/test/fixtures/file-craft-port.mjs", "lines": 121, "role": "file-backed Craft boundary double (survives process exit)" },
+    { "path": "adapter/test/fixtures/crash-child.mjs", "lines": 50, "role": "real crash child: exit 9 after effect, before result" },
+    { "path": "adapter/README.md", "lines": 45, "role": "run instructions + invariant" },
+    { "path": "adapter/package.json", "lines": 15, "role": "test scripts; no dependencies" }
+  ],
+  "totals": { "files": 16, "lines": 2419 },
+  "pipeline": [
+    { "order": 1, "name": "reconcile", "applicable": "inFlight non-empty", "externalEffect": "craft.inspect, else verifier.check", "events": ["reconciled", "reconcile_required"], "terminal": "halt MANUAL_RECONCILE when outcome unprovable" },
+    { "order": 2, "name": "approval", "applicable": "next step gated and undecided, or require_human pending", "externalEffect": "approval.decide", "events": ["approval_decided", "approval_required"], "terminal": "halt DENIED_BY_POLICY on deny; yields on require_human" },
+    { "order": 3, "name": "retry", "applicable": "a failed step exists with feedback", "externalEffect": "none", "events": ["repair_scheduled", "halted"], "terminal": "halt REPAIR_BUDGET_EXHAUSTED or TERMINAL_<status>" },
+    { "order": 4, "name": "compaction", "applicable": "tail tokens > threshold", "externalEffect": "none", "events": ["compaction"], "terminal": "none" },
+    { "order": 5, "name": "checkpoint", "applicable": "N events since last checkpoint", "externalEffect": "none", "events": ["checkpoint"], "terminal": "none" },
+    { "order": 6, "name": "verify", "applicable": "step ok with unchecked postconditions", "externalEffect": "verifier.check", "events": ["verification"], "terminal": "marks step failed so retry decides" },
+    { "order": 7, "name": "dispatch", "applicable": "pending approved step", "externalEffect": "craft.execute (only side effect)", "events": ["command_result", "duplicate_suppressed"], "terminal": "failure feeds retry" },
+    { "order": 8, "name": "finalize", "applicable": "no pending/failed steps and no inFlight", "externalEffect": "none", "events": ["episode_finished", "awaiting_evidence"], "terminal": "yields awaiting_evidence when a required criterion is unverified" }
+  ],
+  "stateSchema": {
+    "version": 1,
+    "keys": [
+      { "name": "schemaVersion", "purpose": "fail closed on mismatch; never silently resume" },
+      { "name": "writerId", "purpose": "refuse a session written by another adapter" },
+      { "name": "episodeId", "purpose": "refuse cross-episode resume; scopes idempotency keys" },
+      { "name": "config", "purpose": "compactionThresholdTokens, repairBudget, maxSteps, checkpointEveryEvents, headEvents" },
+      { "name": "plan", "purpose": "ordered steps with request, requiresApproval, status, attempts, lastFeedback" },
+      { "name": "events", "purpose": "append-only log, one event per step, contiguous seq" },
+      { "name": "inFlight", "purpose": "write-ahead intents (idempotencyKey, planStepId, commandId, attempt, startedAt)" },
+      { "name": "ledgerEntries", "purpose": "outcome history per idempotency key (status, observation, undoToken, reconciledVia)" },
+      { "name": "evidence", "purpose": "verification rows: kind, holds, label V/U, evidence payload, source" },
+      { "name": "approvals", "purpose": "decision + decidedBy + reason per plan step" },
+      { "name": "counters", "purpose": "dispatches, duplicates, repairs, compactions, checkpoints, failures" },
+      { "name": "compaction", "purpose": "generation, consumedSeq, lastNote, estTokens" },
+      { "name": "lastCheckpointSeq/lastCheckpointHash", "purpose": "hash chain" },
+      { "name": "halt/finished", "purpose": "terminal states that block further work" }
+    ]
+  },
+  "dispatchProtocol": [
+    "validate envelope (defence in depth)",
+    "capability profile check (denied => terminal DENIED)",
+    "duplicate check against ledger: completed/terminal => suppress; repairable => allow retry",
+    "append intent to inFlight and COMMIT (write-ahead)",
+    "craft.execute({commandId, args, idempotencyKey, dryRun, capabilityProfile})",
+    "append result event + ledger entry and COMMIT"
+  ],
+  "idempotency": {
+    "key": "sha256(episodeId|planStepId) truncated, prefix idem_",
+    "stability": "pure function; identical across retries and resumes",
+    "scoping": "episode-scoped; same step id in another episode yields a different key",
+    "duplicateRule": "last ledger entry with status OK or a non-repairable status is final; repairable statuses are attempts and may be re-dispatched"
+  },
+  "crashMatrix": [
+    { "point": "before intent commit", "onDisk": "no intent, no effect", "resume": "dispatch runs normally", "outcome": "executes once", "test": "happy path" },
+    { "point": "after intent, before app call", "onDisk": "intent, no effect", "resume": "inspect unknown, postconditions fail", "outcome": "halt MANUAL_RECONCILE", "test": "unresolvable intent halts with MANUAL_RECONCILE instead of guessing" },
+    { "point": "after effect, before result commit", "onDisk": "intent + effect", "resume": "inspect known, record result", "outcome": "finished; calls and effects unchanged", "test": "crash after the effect: resume reconciles by inspect and never re-executes" },
+    { "point": "app cannot answer, document proves it", "onDisk": "intent + mutated document, no effect log", "resume": "postconditions hold", "outcome": "finished, reconciledVia=verification", "test": "when the app cannot answer, declared postconditions decide the recovery" },
+    { "point": "after result commit", "onDisk": "intent cleared, ledger written", "resume": "normal", "outcome": "no duplicate", "test": "replaying a completed step is suppressed" }
+  ],
+  "tests": {
+    "command": "node --test \"test/*.test.mjs\"",
+    "results": { "tests": 30, "pass": 30, "fail": 0, "durationMs": 1071, "node": "v26.7.0", "date": "2026-11-05" },
+    "suites": [
+      { "file": "test/envelope.test.mjs", "count": 8, "proves": ["closed postcondition set", "malformed fields rejected", "capability projection", "plan validation", "idempotency stability", "digest order independence", "repair taxonomy"] },
+      { "file": "test/machine.test.mjs", "count": 6, "proves": ["happy path finishes with 2 ledger entries", "contiguous event seq", "finished re-run is a no-op", "checkpoint hash chain", "finalize refuses unverified evidence", "halt is terminal"] },
+      { "file": "test/approval-compaction-retry.test.mjs", "count": 8, "proves": ["deny halts before any app call", "require_human yields once and resumes", "operator deny halts", "compaction preserves history and head", "retry repairs NO_MATCH", "repair budget exhaustion halts", "environment failure is terminal"] },
+      { "file": "test/duplicate.test.mjs", "count": 3, "proves": ["completed replay suppressed", "terminal failure not re-executed", "keys episode-scoped"] },
+      { "file": "test/crash-resume.test.mjs", "count": 6, "proves": ["real process crash resumes without double effect", "unresolvable halts", "verification-based recovery", "schema mismatch fails closed", "corrupt file fails closed", "episode mismatch refused"] }
+    ]
+  },
+  "measuredEvidence": {
+    "crash": {
+      "childExitCode": 9,
+      "beforeResume": { "inFlight": 1, "ledgerEntries": 0, "planStatus": "pending", "calls": 1, "effects": 1 },
+      "afterResume": { "finished": true, "reconciledVia": "inspect", "calls": 1, "effects": 1, "journalLines": ">=2", "layers": ["Ink"] }
+    },
+    "duplicate": { "duplicates": 1, "appCallsBefore": 2, "appCallsAfter": 2 },
+    "retry": { "repairs": 1, "attempts": 2, "ledgerStatuses": ["NO_MATCH", "OK"] },
+    "repairBudgetExhaustion": { "halt": "REPAIR_BUDGET_EXHAUSTED", "appCalls": 2 },
+    "environment": { "halt": "TERMINAL_ENVIRONMENT", "appCalls": 1, "repairs": 0 },
+    "compaction": { "fired": true, "headEvents": 2, "omittedEvents": ">0", "commandResultEventsRetained": 8 },
+    "checkpoints": { "count": ">=2", "chainLinked": true },
+    "finalizeRefusal": { "status": "awaiting_evidence", "finished": false }
+  },
+  "commands": [
+    { "cmd": "node --test \"test/*.test.mjs\"", "observed": "tests 30 pass 30 fail 0" },
+    { "cmd": "npm.cmd test", "observed": "same 30/30 via package script" },
+    { "cmd": "node -e \"import('./src/gateway.mjs').then(m=>console.log(Object.keys(m)))\"", "observed": "PIPELINE,createCraftConductor,summarizeRun" },
+    { "cmd": "node test/fixtures/crash-child.mjs <tmpdir>", "observed": "child-exit=9" },
+    { "cmd": "git status --porcelain -- research/eko-deerflow-agent/execution-wave", "observed": "?? research/eko-deerflow-agent/execution-wave/ (only new files)" }
+  ],
+  "stubSweep": {
+    "pattern": "TODO|FIXME|HACK|placeholder|NotImplemented|mock|stub|dummy|lorem|simplified for",
+    "filesScanned": 16,
+    "hits": 0,
+    "note": "the only double is the documented Craft boundary double in test/fixtures/, never imported by src/"
+  },
+  "limits": [
+    "no real Craft transport; craftPort must be bound to Craft IPC/CLI/MCP",
+    "Craft's ability to answer inspect(idempotencyKey) is unverified; postcondition verification is the tested fallback",
+    "continuation note is deterministic, not model-written (single port call to replace)",
+    "token estimate is chars/4, adequate to exercise the pipeline but not to tune production budgets",
+    "verifier covers document-shape assertions only; pixel diff remains secondary",
+    "single-writer assumption: two conductors on one session directory would race; needs a lock",
+    "no subagent runtime, telemetry sink or pixel verification in this wave"
+  ],
+  "nextSteps": [
+    "bind craftPort to a real Craft command surface and re-run the suite",
+    "answer 05 §8 Q1-Q6 against the real app before fixing snapshot depth and postcondition vocabulary",
+    "replace deterministic note with a model call only after the ledger can prove reuse",
+    "add a session lock before embedding the conductor in a long-lived service"
+  ]
+}

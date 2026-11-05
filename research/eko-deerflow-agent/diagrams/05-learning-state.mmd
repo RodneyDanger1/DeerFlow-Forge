@@ -1,0 +1,22 @@
+stateDiagram-v2
+  [*] --> Planned
+  Planned --> Executing: tools available + budget
+  Executing --> Verifying: artifact produced
+  Executing --> Failed: refusal / crash / timeout
+  Verifying --> Verified: gates + artifact + critic agree
+  Verifying --> NeedsHuman: gate/critic disagree or taste
+  Verifying --> Unverified: missing evidence
+  Verifying --> Failed: gate fail / source mutation
+  NeedsHuman --> Verified: human approves
+  NeedsHuman --> Failed: human rejects
+  Unverified --> Executing: evidence repaired
+  Verified --> Archived: episode closed
+  Failed --> Archived: evidence preserved
+  Verified --> Candidate: reflection + evidence
+  Candidate --> Active: ≥3 independent + Wilson + regression + human
+  Candidate --> Rejected: insufficient evidence
+  Active --> RolledBack: regression / drift
+  Active --> Superseded: new version
+  RolledBack --> Archived
+  Superseded --> Archived
+  Archived --> [*]

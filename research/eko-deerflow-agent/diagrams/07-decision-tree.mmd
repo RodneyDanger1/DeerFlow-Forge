@@ -1,0 +1,14 @@
+flowchart TD
+  START["Need an agent for Craft?"] --> Q1{"Do you need<br/>a new model/planner?"}
+  Q1 -->|No| Q2{"Is a Craft app<br/>installed + CLI/MCP working?"}
+  Q1 -->|Yes| BAD1["Do not build a new<br/>generic harness; wrong layer"]
+  Q2 -->|Yes| Q3{"Need cross-run<br/>learning/eval?"}
+  Q2 -->|No| FIX["Phase 0: fix shims/argv<br/>or install app"]
+  FIX --> Q2
+  Q3 -->|No| SIMPLE["DeerFlow + typed tools<br/>+ verification only"]
+  Q3 -->|Yes| Q4{"Need weight training<br/>or RL?"}
+  Q4 -->|No| FORGE["Forge Conductor:<br/>ledger + retrieval + skills"]
+  Q4 -->|Yes| Q5{"GPU + open weights<br/>+ corpus + verifier?"}
+  Q5 -->|No| BLOCK["Blocked: not available<br/>on this VPS; do not claim"]
+  Q5 -->|Yes| RL["Phase 3+ separate program;<br/>still not autonomous publish"]
+  FORGE --> OUT["Hosted, auditable,<br/>human-approved pipeline"]

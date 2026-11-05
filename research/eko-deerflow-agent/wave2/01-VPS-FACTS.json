@@ -1,0 +1,433 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "01-VPS-FACTS",
+  "taskId": "task-1",
+  "producer": "stack-vps-auditor",
+  "generatedAtUtc": "2026-11-05T16:20:00Z",
+  "auditWindowUtc": ["2026-11-05T16:06:13Z", "2026-11-05T16:20:00Z"],
+  "method": {
+    "readOnly": true,
+    "ssh": {
+      "target": "root@179.197.88.181",
+      "identityFile": "~/.ssh/id_ed25519_hostinger",
+      "batchMode": true,
+      "firstAttemptExitCode": 0
+    },
+    "writesPerformedOnHost": ["/tmp probe scratch files only"],
+    "writesPerformedInRepo": [
+      "research/eko-deerflow-agent/wave2/01-STACK-VPS.md",
+      "research/eko-deerflow-agent/wave2/01-VPS-FACTS.json"
+    ],
+    "secretPolicy": "names and presence only; no secret value read into output"
+  },
+  "host": {
+    "hostname": "srv2108523",
+    "publicIpv4": "179.197.88.181",
+    "virtualisation": "kvm",
+    "osPrettyName": "Ubuntu 26.04.1 LTS",
+    "osVersionId": "26.04",
+    "osCodename": "resolute",
+    "kernel": "Linux 7.0.0-38-generic #38-Ubuntu SMP PREEMPT_DYNAMIC Fri Sep 4 09:10:14 UTC 2026 x86_64",
+    "cpuModel": "AMD EPYC 9354P 32-Core Processor",
+    "uptimeAtProbe": "7 days, 1:26",
+    "timezone": "UTC",
+    "evidence": "VERIFIED"
+  },
+  "resources": {
+    "vcpu": 2,
+    "loadAverage": [0.26, 0.61, 0.6],
+    "memory": {
+      "totalMb": 7935,
+      "usedMb": 3076,
+      "freeMb": 2373,
+      "sharedMb": 77,
+      "buffCacheMb": 2860,
+      "availableMb": 4859,
+      "swapTotalMb": 4095,
+      "swapUsedMb": 2532,
+      "swapFreeMb": 1563
+    },
+    "disk": {
+      "filesystem": "/dev/sda1",
+      "sizeGb": 96,
+      "usedGb": 61,
+      "availGb": 36,
+      "usePercent": 63,
+      "inodesUsedPercent": 10
+    },
+    "docker": {
+      "engineVersion": "29.9.2",
+      "composeVersion": "v5.6.1",
+      "images": 71,
+      "imagesActive": 8,
+      "imagesSizeGb": 32.26,
+      "imagesReclaimableGb": 24.55,
+      "buildCacheSizeGb": 15.38,
+      "buildCacheReclaimableGb": 10.06,
+      "containers": 9,
+      "localVolumes": 9
+    },
+    "topProcesses": [
+      { "comm": "next-server (v1", "memPercent": 19.5, "cpuPercent": 24.4 },
+      { "comm": "dockerd", "memPercent": 8.2, "cpuPercent": 1.1 }
+    ],
+    "optFootprintMb": {
+      "craft": 759,
+      "pod-pipeline": 451,
+      "deerflow-forge": 450,
+      "deer-flow": 235,
+      "node22": 203,
+      "uv-python": 110,
+      "containerd": 12
+    },
+    "evidence": "VERIFIED"
+  },
+  "services": [
+    { "name": "pod-mcp.service", "kind": "systemd", "enabled": true, "active": true, "sinceUtc": "2026-11-05T06:00:19Z", "restarts": 0, "bind": "0.0.0.0:8765", "user": "pod", "supplementaryGroups": ["docker"], "evidence": "VERIFIED" },
+    { "name": "pod-worker.timer", "kind": "systemd-timer", "enabled": true, "active": true, "onBootSec": 45, "onUnitActiveSec": 60, "evidence": "VERIFIED" },
+    { "name": "pod-worker.service", "kind": "systemd-oneshot", "enabled": "static", "active": "inactive-between-runs", "exec": "python -m pod_pipeline.worker --drain --scan", "lastRunResult": "drained 0 run(s), 0 failed", "evidence": "VERIFIED" },
+    { "name": "deerflow-forge-console.service", "kind": "systemd", "enabled": true, "active": true, "bind": "127.0.0.1:8091", "user": "forge", "evidence": "VERIFIED" },
+    { "name": "docker.service", "kind": "systemd", "enabled": true, "active": true, "evidence": "VERIFIED" },
+    { "name": "containerd.service", "kind": "systemd", "enabled": true, "active": true, "evidence": "VERIFIED" },
+    { "name": "nginx", "kind": "systemd", "installed": false, "note": "not-found as a systemd unit; nginx runs only as container deer-flow-nginx", "evidence": "VERIFIED" },
+    { "name": "postgresql@16-main", "kind": "systemd", "installed": false, "note": "not-found; Postgres runs only as container pod-postgres", "evidence": "VERIFIED" },
+    { "name": "caddy", "kind": "container", "image": "caddy:2.10-alpine", "container": "ridgeboundia-caddy", "status": "Up", "evidence": "VERIFIED" }
+  ],
+  "failedUnits": 0,
+  "containers": [
+    { "name": "pod-postgres", "image": "postgres:16", "status": "Up (healthy)", "restarts": 0, "ports": ["127.0.0.1:5432->5432/tcp"], "network": "pod-pipeline_default", "ip": "172.20.0.2" },
+    { "name": "deer-flow-gateway", "image": "deer-flow-dev-gateway", "status": "Up", "ports": ["8001/tcp"], "network": "deer-flow-dev_deer-flow-dev", "ip": "192.168.200.4", "gateway": "192.168.200.1" },
+    { "name": "deer-flow-frontend", "image": "deer-flow-dev-frontend", "status": "Up", "ports": ["3000/tcp"] },
+    { "name": "deer-flow-nginx", "image": "nginx:1.31.2-alpine", "status": "Up", "ports": ["80/tcp", "127.0.0.1:2026->2026/tcp"] },
+    { "name": "deer-flow-redis", "image": "redis:7-alpine", "status": "Up (healthy)", "ports": ["6379/tcp"] },
+    { "name": "ridgeboundia-app", "image": "ridgeboundia-app:latest", "status": "Up (healthy)", "ports": ["3000/tcp"] },
+    { "name": "ridgeboundia-postgres", "image": "postgres:16-alpine", "status": "Up (healthy)", "ports": ["5432/tcp"] },
+    { "name": "ridgeboundia-dev-pg", "image": "postgres:16-alpine", "status": "Up", "ports": ["127.0.0.1:5433->5432/tcp"] },
+    { "name": "ridgeboundia-caddy", "image": "caddy:2.10-alpine", "status": "Up", "ports": ["0.0.0.0:80->80/tcp", "0.0.0.0:443->443/tcp"] }
+  ],
+  "ports": [
+    { "port": 22, "bind": "0.0.0.0", "process": "sshd", "public": true, "ufw": "allow" },
+    { "port": 80, "bind": "0.0.0.0", "process": "docker-proxy (ridgeboundia-caddy)", "public": true, "ufw": "allow" },
+    { "port": 443, "bind": "0.0.0.0", "process": "docker-proxy (ridgeboundia-caddy)", "public": true, "ufw": "allow" },
+    { "port": 8091, "bind": "127.0.0.1", "process": "node (deerflow-forge-console)", "public": false, "note": "SSH tunnel only" },
+    { "port": 8765, "bind": "0.0.0.0", "process": "python (pod-mcp)", "public": "restricted", "ufw": ["allow 172.16.0.0/12", "allow 192.168.200.0/24"], "auth": "none", "risk": "R1" },
+    { "port": 5432, "bind": "127.0.0.1", "process": "docker-proxy (pod-postgres)", "public": false },
+    { "port": 5433, "bind": "127.0.0.1", "process": "docker-proxy (ridgeboundia-dev-pg)", "public": false },
+    { "port": 2026, "bind": "127.0.0.1", "process": "docker-proxy (deer-flow-nginx)", "public": false },
+    { "port": 65529, "bind": "127.0.0.1", "process": "monarx-agent", "public": false },
+    { "port": 53, "bind": "127.0.0.53/127.0.0.54", "process": "systemd-resolve", "public": false },
+    { "port": 323, "bind": "127.0.0.1", "process": "chronyd", "public": false, "protocol": "udp" },
+    { "port": 1721, "bind": "127.0.0.1", "process": "monarx-agent", "public": false, "protocol": "udp" }
+  ],
+  "firewall": {
+    "tool": "ufw",
+    "status": "active",
+    "defaultIncoming": "deny",
+    "defaultOutgoing": "allow",
+    "defaultRouted": "deny",
+    "rules": [
+      "22/tcp ALLOW IN Anywhere",
+      "80/tcp ALLOW IN Anywhere",
+      "443/tcp ALLOW IN Anywhere",
+      "8765/tcp ALLOW IN 172.16.0.0/12 (DeerFlow Forge MCP from docker networks)",
+      "8765/tcp ALLOW IN 192.168.200.0/24 (DeerFlow MCP from deer-flow-dev bridge)",
+      "22/80/443 v6 ALLOW IN Anywhere (v6)"
+    ]
+  },
+  "healthEndpoints": [
+    { "url": "http://127.0.0.1:8765/health", "status": 200, "body": "{\"ok\":true}", "evidence": "VERIFIED" },
+    { "url": "http://127.0.0.1:8765/ POST tools/list", "status": 200, "tools": ["list_pending_assets", "trigger_pipeline_job", "get_fourthwall_status"], "evidence": "VERIFIED" },
+    { "url": "http://127.0.0.1:8091/", "status": 200, "evidence": "VERIFIED" },
+    { "url": "http://127.0.0.1:80/", "status": 308, "note": "caddy https redirect", "evidence": "VERIFIED" },
+    { "url": "http://172.17.0.1:8765/health from deer-flow-gateway", "status": 200, "evidence": "VERIFIED" }
+  ],
+  "versions": {
+    "systemPython": "3.14.4",
+    "podVenvPython": "3.12.16",
+    "node": "22.23.4",
+    "nodePrefix": "/opt/node22",
+    "git": "2.53.0",
+    "docker": "29.9.2",
+    "dockerCompose": "v5.6.1",
+    "postgres": "16.15 (Debian 16.15-1.pgdg13+2)",
+    "uv": "not on root PATH (installed Pythons under /opt/uv-python)",
+    "psqlClient": "not installed on host (use docker exec pod-postgres psql)",
+    "deerflowBackend": "2.2.0",
+    "deerflowCommit": "58fc5bd5b8e6ea46538e9481ba06ca2a46e14e2a",
+    "craft": {
+      "vectorcraft": "0.21.1",
+      "photocraft": "0.20.2 (7c12f6471, 2026-11-05)",
+      "designcraft": null,
+      "effectcraft": null,
+      "filmcraft": null
+    },
+    "craftCatalogueEntryCounts": { "vectorcraftCommands": 918, "photocraftCommandLines": 965 },
+    "podVenvPackages": ["asyncpg 0.32.0", "httpx 0.28.1", "pillow 13.0.0", "numpy 2.5.4", "scipy 1.18.1", "scikit-image 0.26.0", "scour 0.38.2", "pytest 9.2.0", "pytest-asyncio 1.4.1.post1"]
+  },
+  "deployedCommits": {
+    "localRepo": { "head": "d9dc2fe8163fe7796aa4acad1e6f75ae78df889b", "committedAt": "2026-11-05T10:03:18-06:00", "subject": "Research: Eko/Craft agent dossier, 200 Q&A, operator skill", "worktree": "clean" },
+    "vpsConsoleCheckout": { "path": "/opt/deerflow-forge", "head": "32fc71f1552bc623f4fc9636228c5cabd178be59", "committedAt": "2026-11-05T02:39:38-06:00", "remote": "https://github.com/RodneyDanger1/DeerFlow-Forge", "worktree": "clean", "commitsBehindLocal": 9, "divergentAreas": ["blueprint/files/skills/**", "blueprint/files/tools/artcraft.py", "blueprint/files/tools/craft_trace.py", "research/**"] },
+    "vpsPipeline": { "path": "/opt/pod-pipeline", "isGitRepo": false, "syncMethod": "cp -a from blueprint/files", "syncProof": "sha256: 26/26 compared files identical to local working tree", "driftedFiles": ["tools/artcraft.py", "tools/craft_trace.py"], "notDeployed": ["skills/ (30+ SKILL.md)"] }
+  },
+  "pipelineCodeHashes": {
+    "algorithm": "sha256",
+    "matchResult": "26/26 identical local vs /opt/pod-pipeline",
+    "files": {
+      "pod_pipeline/config.py": "788070631acfeb312bc2555a246735ef5e8b87b3803abc5ef325e5758ebde578",
+      "pod_pipeline/db.py": "5dc4f3abdf102288c6bdd90f8ac7a08f02d631b9c757a27540dc3ebc3c184f0c",
+      "pod_pipeline/fourthwall.py": "c540b5ba47b31201dc2bd9ebbe602efea939436ba802bf1d1dbfc12e58f1d1ce",
+      "pod_pipeline/ingest.py": "7360e7af2c399badc3fa783b0e973bbca4edcbb45b322edeb29dd2aa8e6b73a9",
+      "pod_pipeline/logfilter.py": "e3e367671c93ffa07f8976fc55bf28ce33c59025bbe48ef22cad883d8b80b6fd",
+      "pod_pipeline/mcp_server.py": "852cd7ce6daebd7d6c96434c82ebc640206ba35d59bbc076d005ce1bd44d7f45",
+      "pod_pipeline/orchestrator.py": "07b890be2164b5367c7eaae3b511e8221d03b1c02fa9a229be1d8ed31338d83b",
+      "pod_pipeline/routes.py": "298ecfac71d66df66dc50d0e4094c90a7a6f0dc8a7b4e8ba5d37c2041ff2639e",
+      "pod_pipeline/runner.py": "bc9a407500689ebd8337a4f975592ce7571713092735a13e126a1c32d4c39154",
+      "pod_pipeline/validators.py": "b2d480868c0c3806044e9cfea43071da31d94fb46a6bb2651a8426ff3255cc83",
+      "pod_pipeline/worker.py": "79f6ebae0ff5879ebb33cf27f68a8e39a58e5a91eaa8ffea64291b211249d376",
+      "pod_pipeline/__init__.py": "5cb2b794bf55954631effa1e7d24e2d955d42fd46d18720a6f4a561164c26f6e",
+      "sql/schema.sql": "a238ecafa8842ae3b24f29d5457925dcaaf11b09bfcaba87d887f1aa9478810a",
+      "deploy/compose.yml": "30198d323787850e38249fcd8f5957b0762a3610e4089a9a9c6e630d6504a054",
+      "deploy/setup-pipeline.sh": "76d8bf8c6e5c02bff1d92a385160c6d38435aeb105078cf013a8a01c15222ede",
+      "deploy/mcp-stdio.mjs": "3f2248b1828299f14419b7e0248a758c10ae04bc889bfb88961aca747b3f2763",
+      "deploy/Dockerfile": "9fb563ec4782cefea30b735aea7da9c2021a85e7b4fcbdca6fbb60bfaee15647",
+      "deploy/systemd/pod-mcp.service": "0b468e1ef16fc1326533a20d25161b8cd733a5acad7d9e1630ad6ff3e9d30375",
+      "deploy/systemd/pod-worker.service": "5b37d575e6bb72363a1f998d7f9e0d96901c08fb5aa5e8b5a2a4bce33aeabf8e",
+      "deploy/systemd/pod-worker.timer": "4b8d67a194c5f250e7983a11dd6abe594712e731c3d925b7b3a7877eeab68b40",
+      "config/pipeline.env.example": "15379f0279e47bbaf2de8d02a30b2d0fb6cc9a4980cfe6afe757dd7051552a4d",
+      "config/products.json": "74a79ea9db35424200d5c4c5cce65ae4b99e4f4989c15413cfda11ec9c8e9573",
+      "requirements.txt": "f3ab36f45ce868e0758c396aa2156ba2b758145b4bb3b5075f00b789a788aaab",
+      "requirements-test.txt": "8a1d047751af7ce2463baf1392fb23934068379992d6939b34fafbaf1ab4f7a7",
+      "pytest.ini": "e4a05f9ff4da74cca161ea95f52f453b42e16270133c4f1646e5f95a9812267e"
+    }
+  },
+  "pipeline": {
+    "productTypes": ["apparel", "knitwear", "accessories", "odd_3d", "stationery"],
+    "stepModules": ["orchestrator", "vectorcraft", "photocraft", "designcraft", "effectcraft", "filmcraft"],
+    "stateMachine": {
+      "run": ["queued", "running", "succeeded", "failed"],
+      "asset": ["pending", "queued", "processing", "processed", "failed", "quarantined"],
+      "trace": ["pending", "tracing", "traced", "raster_fallback", "trace_failed"],
+      "publish": ["draft", "processing", "active", "failed", "needs_manual_upload"]
+    },
+    "retries": { "maxAttempts": 2, "transientExitCodes": [-9, -15, 137, 143, 75], "validationFailuresRetried": false, "traceFallbackExitCodes": [1] },
+    "claimMechanism": "UPDATE processing_jobs ... FOR UPDATE SKIP LOCKED (claim_run)",
+    "idempotencyKey": "partial unique index processing_jobs_one_live_run (asset_id, product_type) WHERE module='orchestrator' AND status IN ('queued','running')",
+    "durability": "flush_to_disk: stable size/mtime x2 then fsync(file) + fsync(parent dir)",
+    "sandboxMode": "native (POD_USE_DOCKER=0): nice -n 10 + ionice -c3; child env allow-list; QT_QPA_PLATFORM=offscreen",
+    "dockerSandboxAvailable": "code path present (--memory/--cpus/--pids-limit 256/--network none/--cap-drop ALL/--read-only) but disabled by config",
+    "mcpTools": [
+      { "name": "list_pending_assets", "readOnly": true, "args": ["account_id?", "limit? (1..200)"] },
+      { "name": "trigger_pipeline_job", "readOnly": false, "args": ["asset_id", "product_type"], "sideEffect": "INSERT run row + spawn detached worker" },
+      { "name": "get_fourthwall_status", "readOnly": true, "args": ["product_id"] }
+    ],
+    "binStubs": [
+      { "path": "/opt/pod-pipeline/bin/vectorcraft-cli", "bytes": 127, "exitCode": 127, "evidence": "VERIFIED" },
+      { "path": "/opt/pod-pipeline/bin/photocraft-cli", "bytes": 123, "exitCode": 127 },
+      { "path": "/opt/pod-pipeline/bin/designcraft-cli", "bytes": 124, "exitCode": 127 },
+      { "path": "/opt/pod-pipeline/bin/effectcraft-cli", "bytes": 124, "exitCode": 127 },
+      { "path": "/opt/pod-pipeline/bin/filmcraft-cli", "bytes": 122, "exitCode": 127 }
+    ]
+  },
+  "database": {
+    "engine": "PostgreSQL 16.15",
+    "container": "pod-postgres",
+    "dsnShape": "postgresql://<redacted>@127.0.0.1:5432/pod",
+    "sizeKb": 8127,
+    "health": "healthy",
+    "tables": ["users_saas_accounts", "ingested_assets", "processing_jobs", "fourthwall_products", "agent_sync_logs"],
+    "rowCounts": {
+      "users_saas_accounts": 0,
+      "ingested_assets": 0,
+      "processing_jobs": 0,
+      "fourthwall_products": 0,
+      "agent_sync_logs": 0
+    },
+    "evidence": "VERIFIED"
+  },
+  "deerflow": {
+    "path": "/opt/deer-flow",
+    "backendVersion": "2.2.0",
+    "composeProject": "deer-flow-dev",
+    "model": {
+      "name": "deepseek-flash",
+      "displayName": "DeepSeek V4.1 Flash",
+      "model": "deepseek-flash",
+      "implementation": "deerflow.models.patched_deepseek:PatchedChatDeepSeek",
+      "contextWindow": 1048576,
+      "maxTokens": 8192,
+      "timeoutSeconds": 600.0,
+      "maxRetries": 2,
+      "supportsVision": true,
+      "supportsThinking": true,
+      "apiKeySource": "env DEEPSEEK_API_KEY",
+      "baseUrlConfigured": false,
+      "baseUrlEvidence": "INFERRED (langchain_deepseek ChatDeepSeek default; no base_url in config.yaml or container env names)",
+      "configEvidence": "READ /opt/deer-flow/config.yaml:18-37"
+    },
+    "mcpServers": [
+      { "name": "forge", "enabled": true, "type": "http", "url": "http://172.17.0.1:8765/", "tools": 3, "reachableFromGateway": true },
+      { "name": "github", "enabled": false },
+      { "name": "parallel-search", "enabled": false },
+      { "name": "openviking", "enabled": false },
+      { "name": "postgres", "enabled": false },
+      { "name": "long-running-reports", "enabled": false }
+    ],
+    "stateDb": {
+      "path": "/opt/deer-flow/backend/.deer-flow/data/deerflow.db",
+      "tables": 45,
+      "checkpoints": 1163,
+      "runs": 0,
+      "runEvents": 0,
+      "agents": 0,
+      "mcpTasks": 0,
+      "projects": 0,
+      "tokenUsageTable": false,
+      "evidence": "VERIFIED (sqlite mode=ro)"
+    },
+    "threadDirs": [
+      "users/default/threads/1f6fb8ef-9a73-4848-a08e-31f1b5ad57be",
+      "users/default/threads/c4e9b80b-aec0-411a-83f8-16d46f8bbb58",
+      "users/default/threads/6b471e9b-a234-4867-8162-071cae121424"
+    ],
+    "gatewayLogDeepseekMentions": 0
+  },
+  "envNames": {
+    "pipelineEnvFile": {
+      "path": "/opt/pod-pipeline/config/pipeline.env",
+      "mode": "0640",
+      "owner": "pod:pod",
+      "names": ["POD_ROOT", "PYTHONPATH", "DATABASE_URL", "POD_DB_PASS", "POD_CREDENTIAL_KEY", "FW_BASE_URL", "FW_API_USER", "FW_API_SECRET", "POD_USE_DOCKER", "POD_DOCKER_IMAGE", "POD_DOCKER_MEMORY", "POD_DOCKER_CPUS", "POD_DOCKER_CPU_SHARES", "POD_NICE_LEVEL", "POD_MAX_CONCURRENCY", "POD_STEP_TIMEOUT_S", "POD_FALLBACK_RASTER_DPI", "POD_MCP_HOST", "POD_MCP_PORT", "POD_LOG_LEVEL"],
+      "secretNames": ["POD_DB_PASS", "POD_CREDENTIAL_KEY", "FW_API_USER", "FW_API_SECRET"],
+      "deepseekNames": [],
+      "nonSecretValues": {
+        "POD_ROOT": "/opt/pod-pipeline",
+        "FW_BASE_URL": "https://api.fourthwall.com",
+        "POD_USE_DOCKER": "0",
+        "POD_DOCKER_IMAGE": "pod-craft-runner:latest",
+        "POD_MAX_CONCURRENCY": "2",
+        "POD_MCP_HOST": "0.0.0.0",
+        "POD_MCP_PORT": "8765"
+      }
+    },
+    "deerflowGatewayContainerEnvNames": ["AUTH_TRUSTED_PROXIES", "CI", "DEEPSEEK_API_KEY", "DEER_FLOW_CHANNELS_GATEWAY_URL", "DEER_FLOW_CHANNELS_LANGGRAPH_URL", "DEER_FLOW_CONFIG_PATH", "DEER_FLOW_CREDENTIALS_KEY", "DEER_FLOW_EXTENSIONS_CONFIG_PATH", "DEER_FLOW_HOME", "DEER_FLOW_HOST_BASE_DIR", "DEER_FLOW_INTERNAL_AUTH_TOKEN", "DEER_FLOW_PROJECT_ROOT", "DEER_FLOW_SANDBOX_HOST", "DEER_FLOW_STREAM_BRIDGE_REDIS_URL", "EXA_API_KEY", "EXA_BASE_URL", "GPG_KEY", "INFOQUEST_API_KEY", "JINA_API_KEY", "LANG", "LC_ALL", "NO_PROXY", "PATH", "PROVISIONER_API_KEY", "PYTHONIOENCODING", "PYTHON_SHA256", "PYTHON_VERSION", "SERPER_API_KEY", "SERPER_BASE_URL", "SERPLY_API_KEY", "SOFYA_API_KEY", "TAVILY_API_KEY", "UNBROWSE_API_KEY", "no_proxy"],
+    "providerKeyNamesPresent": ["DEEPSEEK_API_KEY", "TAVILY_API_KEY", "INFOQUEST_API_KEY", "EXA_API_KEY", "SERPER_API_KEY", "PROVISIONER_API_KEY", "JINA_API_KEY", "DEER_FLOW_CREDENTIALS_KEY", "SOFYA_API_KEY", "DEER_FLOW_INTERNAL_AUTH_TOKEN", "UNBROWSE_API_KEY", "SERPLY_API_KEY"],
+    "providerBaseUrlNamesPresent": ["EXA_BASE_URL", "SERPER_BASE_URL"],
+    "deepseekModelEnvNamePresent": false,
+    "redaction": "all secret values shown as <set>; DATABASE_URL reduced to scheme/host/port/db"
+  },
+  "auth": {
+    "console": "none (VITE_AUTH_ENABLED=false; loopback-only on 127.0.0.1:8091)",
+    "mcpForge": "none (no token check in mcp_server.py; exposure limited only by ufw source ranges)",
+    "deerflow": "internal auth token env name DEER_FLOW_INTERNAL_AUTH_TOKEN present",
+    "fourthwall": "per-tenant pgp_sym_encrypt ciphertext with POD_CREDENTIAL_KEY, env single-tenant fallback"
+  },
+  "publishPath": {
+    "flow": ["skip if fw_product_id set", "route.upload None -> draft", "get_fw_credentials", "template_id from products.json", "upload media", "create_design_product(publish_on_create=false)", "optional set_state(PUBLIC) when auto_publish"],
+    "currentBlocker": "config/products.json fourthwall_template_id = REPLACE_WITH_TEMPLATE_ID for all 5 product types",
+    "credentialsPresent": true,
+    "honestRefusalBehaviour": "missing credentials -> publish_state=draft + last_error, no exception; missing template id -> publish_state=failed + PipelineError"
+  },
+  "tests": {
+    "executedByAuditor": false,
+    "reasonNotExecuted": "pytest writes .pytest_cache to the live deploy and the integration fixture DROP/CREATEs pod_test; outside read-only mandate",
+    "pipelineTestFunctions": 48,
+    "perFile": { "test_prep_print_art.py": 13, "test_mcp_jsonrpc.py": 11, "test_routes.py": 7, "test_craft_trace.py": 5, "test_db_contracts.py": 5, "test_pipeline_integration.py": 4, "test_mcp_spawn.py": 2, "test_artcraft_fixes.py": 1 },
+    "lastFailedCacheLocal": {},
+    "lastFailedCacheVps": {},
+    "readmeClaim": { "pipelineTests": "31 (27 pure, 4 integration)", "consoleTests": "207 (205 pass, 2 skipped)", "label": "UNVERIFIED" }
+  },
+  "craft": {
+    "root": "/opt/craft",
+    "totalMb": 759,
+    "installed": [
+      { "name": "vectorcraft", "version": "0.21.1", "path": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64", "binaries": ["bin/vectorcraft", "bin/vectorcraft-cli"], "sizeMb": 271, "evidence": "VERIFIED --version" },
+      { "name": "photocraft", "version": "0.20.2", "build": "7c12f6471, 2026-11-05", "path": "/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64", "binaries": ["bin/photocraft", "bin/photocraft-cli"], "sizeMb": 229, "evidence": "VERIFIED --version" }
+    ],
+    "missing": ["designcraft", "effectcraft", "filmcraft"],
+    "liveRegistryCounts": { "vectorcraftCommands": 918, "photocraftCommands": 965, "evidence": "VERIFIED live CLI commands output" },
+    "checksumManifest": false,
+    "gpu": { "present": false, "dri": false, "evidence": "/dev/dri absent; no nvidia/amdgpu/i915 modules" },
+    "containerReach": {
+      "gatewayMounts": ["/opt/deer-flow/backend -> /app/backend", "/opt/deer-flow/logs -> /app/logs", "/opt/deer-flow -> /app/project", "/opt/deer-flow/skills -> /app/skills", "deer-flow-dev_gateway-venv -> /app/backend/.venv", "deer-flow-dev_gateway-uv-cache -> /root/.cache/uv", "/opt/deer-flow/docker/dev-entrypoint.sh -> /usr/local/bin/dev-entrypoint.sh"],
+      "anyContainerMountsCraftPath": false,
+      "evidence": "VERIFIED docker inspect mounts across all running containers"
+    },
+    "archives": [
+      { "path": "/opt/craft/pkg/vectorcraft-0.21.1-linux-x86_64.tar.gz", "bytes": 143222440 },
+      { "path": "/opt/craft/pkg/photocraft-0.20.2-linux-x86_64.tar.gz", "bytes": 126621245 }
+    ],
+    "ownership": "root:root /opt/craft 0755; payload binaries uid 1001 (UNKNOWN) 0755 world-executable; pod user can execute",
+    "mcp": {
+      "vectorcraft": { "command": "vectorcraft-cli mcp [--connect ADDR | --headless] [--automation-read-root DIR] [--automation-write-root DIR]", "protocolVersion": "2024-11-05", "serverInfo": { "name": "vectorcraft", "version": "0.21.1" }, "toolsObserved": ["command_list", "command_run", "command_batch", "draw_shape", "draw_path", "set_paint", "render_preview", "doc_inspect"], "resources": ["vectorcraft://object/{id}", "vectorcraft://command/{id}", "vectorcraft://effect/{id}", "vectorcraft://swatch/{name}"], "evidence": "VERIFIED handshake" },
+      "photocraft": { "command": "photocraft-cli mcp [--bridge 127.0.0.1:PORT]", "subcommands": ["convert", "info", "run", "batch", "droplet", "commands", "mcp", "serve", "help"], "evidence": "VERIFIED --help" },
+      "registeredInDeerflow": false
+    },
+    "contractMismatch": [
+      { "contract": "vectorcraft-cli trace --input {src} --svg-out … --pdf-out …", "actualError": "vectorcraft-cli: unknown subcommand `trace`", "source": "blueprint/files/pod_pipeline/routes.py:63-70", "evidence": "VERIFIED" },
+      { "contract": "photocraft-cli --input {art} --trim-alpha true --target-dpi 300 --color-profile srgb --dimensions 14x16in --out-dir …", "actualError": "error: unexpected argument '--input' found", "source": "blueprint/files/pod_pipeline/routes.py:88-96", "evidence": "VERIFIED" }
+    ],
+    "hostTooling": { "ffmpeg": true, "ffprobe": true, "convert": true, "identify": true, "potrace": true, "Xvfb": true, "xvfb-run": true, "glxinfo": false, "gpu": false },
+    "docsPresent": ["mcp.md 633439 B", "image-trace-quality.md 194159 B", "development.md 68455 B", "architecture.md", "image-trace-adjustments.md", "print-tiling.md", "typography-lettering.md", "src/{lib,logo,params,pipeline,quantize,smooth}.rs"]
+  },
+  "gaps": [
+    { "id": "GAP-BIN", "severity": "blocker", "detail": "/opt/pod-pipeline/bin/*-cli are 122-127 byte stubs exiting 127 (ownership pod:pod 0755)", "fix": "install real launchers/symlinks to /opt/craft binaries" },
+    { "id": "GAP-TOOLS", "severity": "blocker", "detail": "designcraft, effectcraft, filmcraft binaries absent host-wide; every one of the 5 routes needs at least one", "fix": "obtain/substitute vendor binaries" },
+    { "id": "GAP-ARGV", "severity": "blocker", "detail": "routes.py argv contracts marked ASSUMPTION do not exist on the installed CLIs", "fix": "rewrite routes against vectorcraft 918-command catalogue / photocraft 965-command registry" },
+    { "id": "GAP-MCP", "severity": "high", "detail": "craft MCP servers (stdio) are not registered in DeerFlow extensions_config.json (only forge is)", "fix": "register stdio servers with automation roots; make host paths container-visible" },
+    { "id": "GAP-PATH", "severity": "high", "detail": "craft binaries/docs are host paths with no bind mount into deer-flow-gateway; craft runs as host user pod", "fix": "explicit bind mount or host-side MCP bridge" },
+    { "id": "GAP-GUI", "severity": "medium", "detail": "headless only: no GPU, glxinfo absent, QT_QPA_PLATFORM=offscreen forced; window-screenshot critic unavailable", "fix": "Xvfb + software GL, or headless MCP rendering (render_preview)" },
+    { "id": "GAP-STATE", "severity": "high", "detail": "no craft-document/command/revision columns in processing_jobs; no artefact lineage in agent_sync_logs", "fix": "schema extension + ledger" },
+    { "id": "GAP-LEARN", "severity": "high", "detail": "no episode/skill/eval/promotion/rollback tables or code", "fix": "implement Experience Ledger + eval gate" },
+    { "id": "GAP-COST", "severity": "medium", "detail": "no token/usage/cost persistence in deerflow.db", "fix": "usage ledger" },
+    { "id": "GAP-CONSOLE", "severity": "low", "detail": "console is read-only viewer, no auth, no job controls", "fix": "operator UI work" },
+    { "id": "GAP-SYNC", "severity": "medium", "detail": "/opt/pod-pipeline has no .git; sync only by cp -a; tools/artcraft.py and tools/craft_trace.py already diverge", "fix": "git-based deploy or manifest+hash check" },
+    { "id": "GAP-PUBLISH", "severity": "medium", "detail": "products.json fourthwall_template_id = REPLACE_WITH_TEMPLATE_ID (all 5)", "fix": "fill ids from downloaded fourthwall-product-templates.json" },
+    { "id": "GAP-DOC", "severity": "low", "detail": "repo AGENTS.md documents a foreign Grok /workspace sandbox (port 8080, startup.sh, Vercel)", "fix": "replace with a DeerFlow Forge VPS contract" }
+  ],
+  "risks": [
+    { "id": "R1", "severity": "high", "title": "Unauthenticated MCP on 0.0.0.0:8765", "detail": "no token check; ufw source-range limited only; trigger_pipeline_job executes craft binaries" },
+    { "id": "R2", "severity": "high", "title": "pod user in docker group", "detail": "host-root-equivalent if a craft binary or MCP call is compromised" },
+    { "id": "R3", "severity": "medium", "title": "disk pressure", "detail": "32.26 GB images (24.55 reclaimable) + 15.38 GB build cache on 96 GB disk at 63%" },
+    { "id": "R4", "severity": "medium", "title": "memory pressure", "detail": "7.9 GB RAM, 2.5 GB swap already used, next-server at 19.5% RSS" },
+    { "id": "R5", "severity": "medium", "title": "uv python permission trap", "detail": "historical pod-mcp crash loop 'Failed to execute .venv/bin/python: Permission denied'; fixed via UV_PYTHON_INSTALL_DIR=/opt/uv-python; recurs on re-provision" },
+    { "id": "R6", "severity": "low", "title": "console starts before build exists", "detail": "historical 'Cannot find module .output/server/index.mjs' loop until build at 08:39" },
+    { "id": "R7", "severity": "medium", "title": "multi-tenant host", "detail": "3 compose projects on one host; port 80/443 owned by caddy; two Postgres instances" },
+    { "id": "R8", "severity": "medium", "title": "secret handling", "detail": "0640 pipeline.env and container env; no vault or rotation evidence" },
+    { "id": "R9", "severity": "low", "title": "unauthenticated loopback console", "detail": "exposes pipeline source and deploy units to any tunnel holder" },
+    { "id": "R10", "severity": "low", "title": "untracked craft ownership", "detail": "craft payloads owned by uid 1001 with no local account" },
+    { "id": "R11", "severity": "low", "title": "no checksum manifest for craft archives", "detail": "258 MB of tarballs in /opt/craft/pkg without recorded digests" },
+    { "id": "R12", "severity": "low", "title": "photocraft-commands.json is not JSON", "detail": "tab-separated text with a .json extension; parsing by extension fails" }
+  ],
+  "localRepo": {
+    "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge",
+    "packageName": "app-builder-workspace",
+    "consoleStack": ["TanStack Start ^1.168.60", "Vite ^8.2.0", "React ^19.2.0", "Nitro 3.0.260610-beta", "Tailwind v4", "Playwright ^1.62.0"],
+    "llmDependencies": [],
+    "deepseekReferences": [{ "file": "src/components/forge/console.tsx", "line": 43, "kind": "ui-label-only", "text": "Fourthwall Open API · DeepSeek V4.1-Flash" }],
+    "blueprintImport": "src/lib/blueprint/sources.ts imports blueprint/files/pod_pipeline/*.py with ?raw (build-time, no runtime fs)",
+    "envFlags": { "VITE_AUTH_ENABLED": "false", "deploy.database": false },
+    "agentsMd": { "bytes": 19005, "nature": "Grok App Builder sandbox contract, not a DeerFlow Forge contract" }
+  },
+  "llmUsage": {
+    "pipeline": "none",
+    "console": "none",
+    "deerflowGateway": "configured deepseek-flash (DeepSeek V4.1 Flash)",
+    "liveCallProven": false,
+    "supportingEvidence": "1163 LangGraph checkpoints in deerflow.db (latest 2026-11-05T03:11:16Z) containing langchain_core.messages state; 3+ thread directories",
+    "counterEvidence": "runs table 0, run_events 0, gateway log 0 deepseek mentions",
+    "label": "INFERRED (turns occurred) / UNVERIFIED (current key validity)"
+  },
+  "unknowns": [
+    "Whether DEEPSEEK_API_KEY is currently valid and a live completion succeeds (not probed: would spend owner quota; not read-only)",
+    "Exact langchain_deepseek default base URL (inferred only; no base_url configured anywhere readable)",
+    "Whether designcraft/effectcraft/filmcraft exist outside this host filesystem (e.g. private artefact store)",
+    "Current test pass/fail (suite deliberately not executed); only cached lastfailed={} evidence",
+    "Console test counts claimed in README (207 / 205+2) not reproduced",
+    "External reachability of 8765/tcp from the public internet (socket + ufw verified; no off-host probe performed)",
+    "Whether Docker prune would actually reclaim the reported 34.6 GB (not run)",
+    "Long-term intention for the /opt/craft pkg archives and the untracked uid 1001 ownership"
+  ],
+  "probeFailures": [],
+  "evidenceLabels": ["VERIFIED", "READ", "INFERRED", "UNVERIFIED"],
+  "companionDocument": "research/eko-deerflow-agent/wave2/01-STACK-VPS.md"
+}

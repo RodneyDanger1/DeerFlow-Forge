@@ -1,0 +1,340 @@
+{
+  "schema": "forge-harness-archaeology/1.0",
+  "task": {
+    "id": "task-5",
+    "title": "Harness code archaeology and adapter mechanisms",
+    "owner": "harness-code-archaeologist",
+    "created": "2026-11-05",
+    "evidenceCaptureDate": "2026-11-05",
+    "outputs": [
+      "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md",
+      "research/eko-deerflow-agent/wave2/05-CODE.json"
+    ],
+    "rules": {
+      "noVerbatimCopyrightedCode": true,
+      "noProductionEdits": true,
+      "noSecrets": true,
+      "citeFileLineAndLicense": true,
+      "separateReadmeClaimsFromCode": true
+    }
+  },
+  "method": {
+    "enumeration": "GitHub REST git/trees?recursive=1 per repo (16 trees)",
+    "retrieval": "raw.githubusercontent.com exact bytes at recorded tree SHA",
+    "extraction": "Select-String on cached files; every pointer is an exact path:line",
+    "readmeCrossCheck": true,
+    "filesInspected": 118,
+    "limitations": [
+      "branch-head trees, not releases, except OpenHands tag 0.60.0",
+      "no harness executed; all behavioural claims are static",
+      "LICENSE bodies not read; licences from GitHub API spdx_id",
+      "claude-code omitted: no public source"
+    ]
+  },
+  "evidenceLabels": {
+    "V": "verified by fetched source, file:line quoted",
+    "R": "read from repo metadata (licence, stars, branch, pushed_at)",
+    "I": "inference from verified facts",
+    "U": "unverified or NOT DOCUMENTED in sources checked",
+    "H": "historical (tag or former layout)",
+    "D": "drift: readme/comment claims disagree with code"
+  },
+  "sources": [
+    { "id": "openhands", "repo": "All-Hands-AI/OpenHands", "url": "https://github.com/All-Hands-AI/OpenHands", "license": "MIT", "stars": 92721, "treeSha": "510173017004ff743bc009f66a7cd2e9406bf218", "ref": "main", "note": "head is an Electron/React control center; agent code moved to software-agent-sdk (V)" },
+    { "id": "oh060", "repo": "All-Hands-AI/OpenHands", "url": "https://github.com/All-Hands-AI/OpenHands/tree/0.60.0", "license": "MIT", "treeSha": "f0f452d1962046907dee27f30ef007973eec2b9d", "ref": "0.60.0", "note": "classic python controller/condenser/security; source of most OpenHands citations" },
+    { "id": "oasdk", "repo": "OpenHands/software-agent-sdk", "url": "https://github.com/OpenHands/software-agent-sdk", "license": "MIT", "stars": 1355, "treeSha": "502f4bd8232fde5aea1c9055dc10148d0cba9edc", "ref": "main", "note": "current OpenHands agent; files exist (V), behaviour not read (U)" },
+    { "id": "sweagent", "repo": "SWE-agent/SWE-agent", "url": "https://github.com/SWE-agent/SWE-agent", "license": "MIT", "stars": 20730, "treeSha": "3ea751c087f32b16e039a2233dd6eefecef325d5", "ref": "main" },
+    { "id": "aider", "repo": "Aider-AI/aider", "url": "https://github.com/Aider-AI/aider", "license": "Apache-2.0", "stars": 49965, "treeSha": "5dc9490bb35f9729ef2c95d00a19ccd30c26339c", "ref": "main", "note": "pushed 2026-05-22; least recently active in corpus (R)" },
+    { "id": "cline", "repo": "cline/cline", "url": "https://github.com/cline/cline", "license": "Apache-2.0", "stars": 71350, "treeSha": "d3ecc4890e8f9bcb77182b96c77fa90575e8e145", "ref": "main", "note": "restructured: apps/ + sdk/; agent runtime is sdk/packages/agents/src/agent-runtime.ts (V)" },
+    { "id": "goose", "repo": "block/goose", "url": "https://github.com/block/goose", "license": "Apache-2.0", "stars": 56253, "treeSha": "609d3432d397e0a35b4c6b95afbd3d99fe694811", "ref": "main", "note": "state_machine ops + crates/goose-agent machine traits" },
+    { "id": "openinterpreter", "repo": "openinterpreter/open-interpreter", "url": "https://github.com/openinterpreter/openinterpreter", "license": "Apache-2.0", "stars": 68798, "treeSha": "f12ce327eeee679d2f2f22ce23018b0db9ae092f", "ref": "main", "note": "renamed; head is a Rust codex-rs fork; python interpreter/ absent (V)" },
+    { "id": "continue", "repo": "continuedev/continue", "url": "https://github.com/continuedev/continue", "license": "Apache-2.0", "stars": 36410, "treeSha": "5522c6f44ca0ac3528b37244818fbfa39b5af470", "ref": "main", "note": "tool registry + mcp:// uri namespace; agent loop not located (U)" },
+    { "id": "codex", "repo": "openai/codex", "url": "https://github.com/openai/codex", "license": "Apache-2.0", "stars": 133315, "treeSha": "d786ff91fad8e7ddab8653ee07bc6313a6fcb03d", "ref": "main", "note": "safety.rs policy engine (V); docs/sandbox.md+execpolicy.md are stubs (V)" },
+    { "id": "playwright-mcp", "repo": "microsoft/playwright-mcp", "url": "https://github.com/microsoft/playwright-mcp", "license": "Apache-2.0", "stars": 39217, "treeSha": "50b004fb3d3ee17f9710f067ed1b6d59fd16e4a1", "ref": "main", "note": "59 blobs; server source lives in microsoft/playwright (V)" },
+    { "id": "playwright", "repo": "microsoft/playwright", "url": "https://github.com/microsoft/playwright", "license": "Apache-2.0", "treeSha": "478f14f29e9bcd5a631ebb27d1aa14add8551720", "ref": "main", "note": "packages/playwright-core/src/tools/** is the MCP implementation" },
+    { "id": "agent-s", "repo": "simular-ai/Agent-S", "url": "https://github.com/simular-ai/Agent-S", "license": "Apache-2.0", "stars": 12882, "treeSha": "0fff0e634869dab72027435b4586e62300185d41", "ref": "main", "note": "head is agent_s4 meta-harness; gui_agents absent (V)" },
+    { "id": "ui-tars", "repo": "bytedance/UI-TARS", "url": "https://github.com/bytedance/UI-TARS", "license": "Apache-2.0", "stars": 11676, "treeSha": "582f3a7ea5d285ee8ed9e2e84048d1ab01453c49", "ref": "main" },
+    { "id": "eko", "repo": "FellouAI/eko", "url": "https://github.com/FellouAI/eko", "license": "MIT", "stars": 4960, "treeSha": "c3de315af2c178826f8b1682b52638d18131252d", "ref": "main" },
+    { "id": "deerflow", "repo": "bytedance/deer-flow", "url": "https://github.com/bytedance/deer-flow", "license": "MIT", "stars": 85028, "treeSha": "2feec9cb09c0d5a092d7b8b82f711c6ffcb86b2b", "ref": "main" }
+  ],
+  "repoStateFindings": [
+    { "id": "RS1", "claim": "OpenHands head no longer contains the python agent controller", "label": "V", "evidence": "All-Hands-AI/OpenHands tree 51017301: 2824 blobs, 1583 under src/, zero openhands/controller/*.py; README.md:7 'developer control center for coding agents'", "drift": true },
+    { "id": "RS2", "claim": "open-interpreter is renamed and rewritten in Rust (codex fork); interpreter/ absent at main and at 0.3.3/v0.3.3/0.3.2", "label": "V", "evidence": "openinterpreter tree f12ce327 (10029 blobs, codex-rs/); 4 probe fetches 404", "drift": true },
+    { "id": "RS3", "claim": "Agent-S head is the Agent-S4 meta-harness, not a GUI agent", "label": "V", "evidence": "agent_s4/{harness/opencode,harness/prime,operators/{mutation,crossover,elimination},driver.py}; no gui_agents paths", "drift": true },
+    { "id": "RS4", "claim": "Cline reorganized into apps/ + sdk/", "label": "V", "evidence": "apps/ 2884 blobs, sdk/ 1207 blobs; sdk/packages/agents/src/agent-runtime.ts", "drift": true },
+    { "id": "RS5", "claim": "Playwright MCP server source lives in microsoft/playwright", "label": "V", "evidence": "playwright-mcp tree 59 blobs (no src/*.ts); playwright packages/playwright-core/src/tools/mcp/* and tools/backend/*", "drift": true },
+    { "id": "RS6", "claim": "Codex sandbox/execpolicy docs are stubs that link off-repo", "label": "V", "evidence": "codex docs/sandbox.md:3, docs/execpolicy.md:3", "drift": true },
+    { "id": "RS7", "claim": "SWE-agent docstring references self._step which does not exist", "label": "V", "evidence": "sweagent/agent/agents.py:1272 vs method step() at :1235 and call at :1285", "drift": true },
+    { "id": "RS8", "claim": "Playwright MCP README claim (accessibility tree, no vision) matches code", "label": "V", "evidence": "README.md:15-16 vs snapshot.ts:40-45", "drift": false }
+  ],
+  "mechanisms": [
+    {
+      "id": "M1",
+      "name": "Ordered re-entrant operation pipeline",
+      "source": "block/goose",
+      "evidence": [
+        { "path": "crates/goose/src/agents/state_machine/mod.rs", "lines": "1-6", "label": "V" },
+        { "path": "crates/goose/src/agents/state_machine/mod.rs", "lines": "8-39", "label": "V" },
+        { "path": "crates/goose/src/agents/state_machine/mod.rs", "lines": "44-58", "label": "V" },
+        { "path": "crates/goose-agent/src/machine.rs", "lines": "20-44", "label": "V" },
+        { "path": "crates/goose/src/agents/state_machine/ops_llm.rs", "lines": "23-30", "label": "V" },
+        { "path": "crates/goose/src/agents/state_machine/ops_toolcalling.rs", "lines": "11-15", "label": "V" }
+      ],
+      "mechanism": "One step = first applicable Operation over persisted session state (applied / not_applicable / yielded + effects). Approval, compaction, retry, steering, subagents are all steps in the ordered pipeline, not branches in a loop.",
+      "borrow": "Forge Conductor step engine with applicable(state)->outcome; policies as operations; every policy visible as a ledger step.",
+      "risk": "re-entrancy requires idempotent effects; otherwise replay double-drives Craft",
+      "provenance": { "license": "Apache-2.0", "consulted": "2026-11-05", "treeSha": "609d3432" }
+    },
+    {
+      "id": "M2",
+      "name": "Single-step contract + append-only trajectory",
+      "source": "SWE-agent/SWE-agent",
+      "evidence": [
+        { "path": "sweagent/agent/agents.py", "lines": "1281-1294", "label": "V" },
+        { "path": "sweagent/agent/agents.py", "lines": "1235-1263", "label": "V" },
+        { "path": "sweagent/agent/agents.py", "lines": "415", "label": "V" }
+      ],
+      "mechanism": "Each step returns a typed StepOutput (thought, action, observation, done, submission, exit_status); the trajectory record, not the chat, is the unit persisted each iteration.",
+      "borrow": "Episode Ledger row schema; done is a field, never a control-flow side effect.",
+      "risk": "trajectory must be bounded and rolled/compacted",
+      "provenance": { "license": "MIT", "consulted": "2026-11-05", "treeSha": "3ea751c0" }
+    },
+    {
+      "id": "M3",
+      "name": "Bounded repair on format errors, abort on environment errors",
+      "source": "SWE-agent + Aider",
+      "evidence": [
+        { "path": "sweagent/agent/agents.py", "lines": "1062-1100", "label": "V" },
+        { "path": "sweagent/agent/agents.py", "lines": "1076-1086", "label": "V" },
+        { "path": "aider/coders/editblock_coder.py", "lines": "41-62", "label": "V" },
+        { "path": "aider/coders/editblock_coder.py", "lines": "84-120", "label": "V" }
+      ],
+      "mechanism": "Model-format failures get a targeted correction quoting the offending artifact, under a hard requery budget; environment failures stop and salvage. Aider applies the good blocks and explains the failed ones.",
+      "borrow": "Gateway error taxonomy SCHEMA_INVALID / PRECONDITION_UNMET / NO_MATCH / TIMEOUT / DENIED / ENVIRONMENT with per-step and per-episode repair budgets; partial-apply semantics for batches.",
+      "risk": "repair loops burn budget on impossible tasks; bound and record counts",
+      "provenance": { "license": "MIT + Apache-2.0", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M4",
+      "name": "Tools as declarative records from one authoritative definition",
+      "source": "SWE-agent + Continue",
+      "evidence": [
+        { "path": "sweagent/tools/commands.py", "lines": "15", "label": "V" },
+        { "path": "sweagent/tools/commands.py", "lines": "52-96", "label": "V" },
+        { "path": "sweagent/tools/tools.py", "lines": "168-194", "label": "V" },
+        { "path": "continue/core/tools/builtIn.ts", "lines": "1-31", "label": "V" }
+      ],
+      "mechanism": "One record per tool (name, prose, typed args, terminator) generates both prompt documentation and machine schema, so they cannot drift.",
+      "borrow": "Command Atlas generates gateway JSON schema + prompt docs mechanically, with CI parity check.",
+      "risk": "doc-derived schemas are fragile; validate at build time and fail the build",
+      "provenance": { "license": "MIT + Apache-2.0", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M5",
+      "name": "One tool namespace across native, CLI and MCP",
+      "source": "Continue + OpenHands",
+      "evidence": [
+        { "path": "continue/core/tools/callTool.ts", "lines": "52-62", "label": "V" },
+        { "path": "continue/core/tools/callTool.ts", "lines": "26", "label": "V" },
+        { "path": "openhands/mcp/tool.py", "lines": "5-21", "label": "V" }
+      ],
+      "mechanism": "Origin is encoded in the tool id (mcp://server/tool) and schemas normalized at the boundary, so the model sees one flat list regardless of transport.",
+      "borrow": "craft://family/command id resolved to in-app IPC, CLI, or MCP; policy enforced once at the gateway.",
+      "risk": "name collisions across servers; require deterministic prefixes + hard collision error",
+      "provenance": { "license": "Apache-2.0 + MIT", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M6",
+      "name": "Capability-gated tool exposure",
+      "source": "microsoft/playwright",
+      "evidence": [
+        { "path": "packages/playwright-core/src/tools/backend/tool.ts", "lines": "33", "label": "V" },
+        { "path": "packages/playwright-core/src/tools/backend/tools.ts", "lines": "51", "label": "V" },
+        { "path": "packages/playwright-core/src/tools/backend/tools.ts", "lines": "83", "label": "V" }
+      ],
+      "mechanism": "Advertised tools are a projection of the session's capability set; one switch cuts schema tokens, blast radius and destructive choice risk.",
+      "borrow": "Craft capability profiles (inspect / edit / export / batch) selecting gateway commands, recorded per episode.",
+      "risk": "hand-maintained capability lists rot; derive from atlas families with coverage assertions",
+      "provenance": { "license": "Apache-2.0", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M7",
+      "name": "Composable condenser pipeline over a view, with pinned head",
+      "source": "All-Hands-AI/OpenHands (0.60.0)",
+      "evidence": [
+        { "path": "openhands/memory/condenser/condenser.py", "lines": "44-104", "label": "V" },
+        { "path": "openhands/memory/condenser/impl/pipeline.py", "lines": "12-38", "label": "V" },
+        { "path": "openhands/memory/condenser/impl/llm_summarizing_condenser.py", "lines": "17-29", "label": "V" },
+        { "path": "openhands/memory/condenser/impl/llm_summarizing_condenser.py", "lines": "54", "label": "V" },
+        { "path": "openhands/memory/condenser/impl/llm_summarizing_condenser.py", "lines": "67-72", "label": "V" }
+      ],
+      "mechanism": "History is immutable; memory is a View; condensation is a recorded event replacing a range; condensers chain and the first Condensation short-circuits; a small head is always preserved.",
+      "borrow": "ledger -> view -> condensers -> prompt; condensation as an event so resume rebuilds the exact view.",
+      "risk": "event-count trigger is not a token budget; replace trigger with measured tokens",
+      "provenance": { "license": "MIT", "consulted": "2026-11-05", "treeSha": "f0f452d1" }
+    },
+    {
+      "id": "M8",
+      "name": "Continuation-note compaction with an epistemic contract",
+      "source": "cline/cline",
+      "evidence": [
+        { "path": "sdk/packages/core/src/extensions/context/summarize-conversation.ts", "lines": "26", "label": "V" },
+        { "path": "sdk/packages/core/src/extensions/context/summarize-conversation.ts", "lines": "53", "label": "V" },
+        { "path": "sdk/packages/core/src/extensions/context/agentic-compaction.ts", "lines": "52-83", "label": "V" }
+      ],
+      "mechanism": "Summary is written for the successor agent: goal, state, decisions, unfinished work, verification status, facts vs assumptions, injection guard, bounded length; previous summary carried forward.",
+      "borrow": "Episode Ledger compaction record shape; write original prompt to this shape.",
+      "risk": "fact/assumption split unenforceable by prompt; pair with machine checks; note is a lossy view",
+      "provenance": { "license": "Apache-2.0", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M9",
+      "name": "Token-budget compaction with cost-tier headroom + preserved recent tokens",
+      "source": "block/goose + cline/cline",
+      "evidence": [
+        { "path": "crates/goose/src/context_mgmt/mod.rs", "lines": "23-38", "label": "V" },
+        { "path": "sdk/packages/core/src/extensions/context/compaction.ts", "lines": "26-29", "label": "V" }
+      ],
+      "mechanism": "Trigger = min(ratio x context, limit - headroom) where limit is a cost tier boundary; a reserve of recent tokens stays verbatim.",
+      "borrow": "Craft computes budget from real window and cost tier, config-overridable, emits telemetry when compaction fires.",
+      "risk": "provider constants rot; test that threshold stays below window",
+      "provenance": { "license": "Apache-2.0", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M10",
+      "name": "Assertions as first-class tools over stable element refs",
+      "source": "microsoft/playwright",
+      "evidence": [
+        { "path": "packages/playwright-core/src/tools/backend/verify.ts", "lines": "24-29", "label": "V" },
+        { "path": "packages/playwright-core/src/tools/backend/verify.ts", "lines": "51-58", "label": "V" },
+        { "path": "packages/playwright-core/src/tools/backend/verify.ts", "lines": "77-86", "label": "V" },
+        { "path": "packages/playwright-core/src/tools/backend/snapshot.ts", "lines": "23-30", "label": "V" },
+        { "path": "packages/playwright-core/src/tools/backend/snapshot.ts", "lines": "35-45", "label": "V" }
+      ],
+      "mechanism": "Postconditions are asserted by tools that return a normal tool result; targets come from a structured snapshot with stable refs; structured snapshot preferred over pixels.",
+      "borrow": "Craft document-model snapshot with refs, assertion vocabulary, postcondition registry per command; pixels secondary.",
+      "risk": "accessibility tree is not a canvas; Craft needs an object-model projection",
+      "provenance": { "license": "Apache-2.0", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M11",
+      "name": "Decidable acceptance checks with explicit UNVERIFIED",
+      "source": "bytedance/deer-flow",
+      "evidence": [
+        { "path": "backend/packages/harness/deerflow/subagents/acceptance_checks.py", "lines": "1-6", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/subagents/acceptance_checks.py", "lines": "14", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/subagents/acceptance_checks.py", "lines": "25", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/subagents/acceptance_checks.py", "lines": "40", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/subagents/acceptance_checks.py", "lines": "51-57", "label": "V" }
+      ],
+      "mechanism": "Acceptance decided in code over decidable criteria; undecidable or cross-sandbox criteria return checked=false (UNVERIFIED) rather than pass; vocabulary reserves satisfied/verified/passed for execution evidence.",
+      "borrow": "Conductor refuses to finish an episode while a required criterion is UNVERIFIED; Craft checks are file exists, artifact opens, layer delta, colour applied, document saved.",
+      "risk": "model-authored criteria are an injection surface; whitelist check kinds and validate args",
+      "provenance": { "license": "MIT", "consulted": "2026-11-05" }
+    },
+    {
+      "id": "M12",
+      "name": "Fail-closed dual-mode checkpoints + state-only rollback",
+      "source": "bytedance/deer-flow",
+      "evidence": [
+        { "path": "backend/packages/harness/deerflow/runtime/checkpoint_mode.py", "lines": "1-9", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/runtime/checkpoint_mode.py", "lines": "22", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/runtime/checkpoint_state.py", "lines": "1-12", "label": "V" },
+        { "path": "backend/packages/harness/deerflow/runtime/checkpoint_state.py", "lines": "37-63", "label": "V" }
+      ],
+      "mechanism": "Checkpoints carry their storage mode and fail closed on mismatch instead of materializing empty state; rollback goes through the same state accessor as normal writes.",
+      "borrow": "Craft checkpoints carry schema_version + writer id; mismatch refuses; undo is a recorded ledger replay.",
+      "risk": "borrow the invariant, not the LangGraph plumbing",
+      "provenance": { "license": "MIT", "consulted": "2026-11-05" }
+    }
+  ],
+  "antiPatterns": [
+    { "id": "A1", "name": "README-as-architecture", "label": "V/D", "evidence": "OpenHands README.md:7,32 vs head with zero controller files; OI renamed+rewritten; Agent-S head is a meta-harness; Cline moved to sdk/; Playwright MCP source in another repo", "harm": "design doc cites behaviour no reviewer can find", "fix": "cite repo:path:line at a pinned SHA" },
+    { "id": "A2", "name": "Comment/docstring drift", "label": "V/D", "evidence": "sweagent/agent/agents.py:1272 says self._step; method is step() at :1235", "harm": "comments copied into docs as verified fact", "fix": "read the line, not the docstring" },
+    { "id": "A3", "name": "VCS-coupled checkpoints", "label": "V", "evidence": "cline sdk/packages/core/src/session/checkpoint-restore.ts:45-46 (stash --include-untracked; restore runs git clean -fd), :59 throws when not a git repo, :68 private refs", "harm": "unusable for non-git app workspaces; destructive", "fix": "own snapshot store with schema version" },
+    { "id": "A4", "name": "Interactive approval assumed available", "label": "V", "evidence": "cline runtime/tools/tool-approval.ts:101 timeout=>reject; codex core/src/safety.rs:85-93 AskUser/UnlessTrusted tiers; openhands controller/state/control_flags.py:29 human-driven increase_limit", "harm": "headless runs stall or silently deny", "fix": "policy resolves from config; require_human is a recorded outcome" },
+    { "id": "A5", "name": "Character/event-count truncation as memory policy", "label": "V", "evidence": "sweagent/agent/agents.py:79-81,733-743 100k chars; openhands llm_summarizing_condenser.py:28 max_size=100 events", "harm": "unknown token size; can delete the task statement", "fix": "token budget + pinned head + typed eviction priority" },
+    { "id": "A6", "name": "Self-reported completion", "label": "V (contrast)", "evidence": "deerflow acceptance_checks.py:5-6 and :51-57 explicitly reverse it", "harm": "false success reaches the ledger", "fix": "decidable checks + UNVERIFIED refusal path" }
+  ],
+  "craftBuild": [
+    {
+      "id": "B1",
+      "name": "Command Gateway",
+      "purpose": "single dispatch chokepoint for every Craft mutation",
+      "inputs": "episode_id, step, command_id craft://family/name, args, capability_profile, idempotency_key, budget, dry_run",
+      "outputs": "status (OK|SCHEMA_INVALID|PRECONDITION_UNMET|NO_MATCH|DENIED|TIMEOUT|ENVIRONMENT), observation, artifacts, postcondition_checks, undo_token",
+      "mechanisms": ["M1", "M3", "M4", "M5", "M6"],
+      "tests": ["unknown command rejected", "wrong arg type rejected", "inspect-only profile denies export", "same idempotency key twice => one side effect", "false postcondition => result not OK"],
+      "failureMode": "transport-level success without document change; only the postcondition check catches it"
+    },
+    {
+      "id": "B2",
+      "name": "Visual Verification",
+      "purpose": "machine-checkable 'did the edit land' evidence",
+      "inputs": "document-model snapshot request, assertion requests",
+      "outputs": "snapshot tree with stable refs; per-assertion {holds, evidence_path, label}",
+      "mechanisms": ["M10", "M11"],
+      "tests": ["assertion on missing ref fails cleanly", "assertion passes only on real match", "canvas project still yields usable snapshot"],
+      "failureMode": "model narrates a screenshot instead of tool-returned holds"
+    },
+    {
+      "id": "B3",
+      "name": "Episode Ledger",
+      "purpose": "append-only evidence chain that makes resume, undo and evaluation possible",
+      "inputs": "ledger events (episode_started, plan_set, step, command_result, verification, checkpoint, compaction, approval_decided, subagent_result, episode_finished)",
+      "outputs": "rebuildable view, checkpoint records, hash chain, evidence labels V/R/I/U",
+      "mechanisms": ["M2", "M7", "M8", "M12"],
+      "tests": ["replay reproduces the same view", "compaction keeps pinned head", "restore with bumped schema_version fails closed", "doctored row breaks hash chain"],
+      "failureMode": "silent success from a subagent with no decidable check"
+    }
+  ],
+  "notToBuild": [
+    "another general-purpose agent framework (ports/adapters exist to avoid it)",
+    "a pixel-only computer-use agent for a graphics-canvas app",
+    "durable 'learning' claims before the ledger demonstrates reuse"
+  ],
+  "questions": [
+    { "id": "Q1", "question": "Does Craft expose a stable object model over IPC projectable into a snapshot with refs?", "why": "B2 depends on it", "cheapestEvidence": "list layers/objects twice and diff ids" },
+    { "id": "Q2", "question": "What is the minimum stable ref scheme that survives undo/redo and layer reordering?", "why": "ref churn breaks assertions and undo", "cheapestEvidence": "reorder a layer, assert ref resolves" },
+    { "id": "Q3", "question": "Which Craft commands are irreversible and need require_human or a pre-checkpoint?", "why": "drives ApprovalPolicy tiers", "cheapestEvidence": "enumerate commands; dry-run each" },
+    { "id": "Q4", "question": "Can every Craft command be undone via document history, and is undo_token stable across save/load?", "why": "decides whether ledger owns snapshots", "cheapestEvidence": "undo a command, save, load, undo again" },
+    { "id": "Q5", "question": "Token cost of a 1000-object snapshot vs a screenshot description?", "why": "decides snapshot depth/compression", "cheapestEvidence": "one fixture, both encodings" },
+    { "id": "Q6", "question": "Per command family: is the postcondition checkable in document state, pixels, or not at all?", "why": "unknown checks must be UNVERIFIED, not OK", "cheapestEvidence": "classify families, implement decidable first" },
+    { "id": "Q7", "question": "What error taxonomy actually occurs in Craft command failures?", "why": "M3 taxonomy is a hypothesis", "cheapestEvidence": "30 malformed commands, classify" },
+    { "id": "Q8", "question": "What repair budget per step and per episode?", "why": "aider caps reflections at 3; Craft needs its own number", "cheapestEvidence": "instrument real malformed-arg episodes" },
+    { "id": "Q9", "question": "Is subagent delegation useful for Craft, and for what?", "why": "deerflow caps exist for a task we may not have", "cheapestEvidence": "one parallel style-exploration pilot" },
+    { "id": "Q10", "question": "What checkpoint granularity keeps undo cheap without a huge ledger?", "why": "ledger size vs undo precision", "cheapestEvidence": "measure 100-command episode at 3 granularities" },
+    { "id": "Q11", "question": "What compaction trigger and preserve-recent budget fits short, observation-heavy Craft episodes?", "why": "masking old snapshots may beat summarising history", "cheapestEvidence": "replay a recorded episode at 3 thresholds" },
+    { "id": "Q12", "question": "How do we evaluate art outcomes without a human?", "why": "honest answer may be partially 'we cannot'", "cheapestEvidence": "split decidable checks from a human rubric" },
+    { "id": "Q13", "question": "Can Playwright MCP be the verifier for a web build of Craft, and where does it diverge from native?", "why": "wrap-in candidate", "cheapestEvidence": "10 workflows, compare verdicts" },
+    { "id": "Q14", "question": "What provenance record satisfies audit for Apache-2.0 mechanisms?", "why": "licence hygiene", "cheapestEvidence": "read Apache-2.0 section 4; legal review (U)" },
+    { "id": "Q15", "question": "What is the smallest end-to-end episode that proves the Conductor works?", "why": "first acceptance gate", "cheapestEvidence": "one command, one verification, one ledger row, one replay" }
+  ],
+  "gaps": [
+    "No harness was executed; all behaviour claims are static",
+    "oasdk, Continue agent loop, most of Codex tool layer only enumerated (U)",
+    "LICENSE bodies not read; SPDX ids only",
+    "Claude Code has no public source and is deliberately not characterised",
+    "Tree SHAs are branch heads except OpenHands tag 0.60.0",
+    "Repo-wide behaviour never asserted from a single file read"
+  ],
+  "bibliography": [
+    "https://github.com/All-Hands-AI/OpenHands",
+    "https://github.com/All-Hands-AI/OpenHands/tree/0.60.0",
+    "https://github.com/OpenHands/software-agent-sdk",
+    "https://github.com/SWE-agent/SWE-agent",
+    "https://github.com/Aider-AI/aider",
+    "https://github.com/cline/cline",
+    "https://github.com/block/goose",
+    "https://github.com/openinterpreter/openinterpreter",
+    "https://github.com/continuedev/continue",
+    "https://github.com/openai/codex",
+    "https://github.com/microsoft/playwright-mcp",
+    "https://github.com/microsoft/playwright",
+    "https://github.com/simular-ai/Agent-S",
+    "https://github.com/bytedance/UI-TARS",
+    "https://github.com/FellouAI/eko",
+    "https://github.com/bytedance/deer-flow",
+    "https://arxiv.org/abs/2501.12326 (README claim only; not fetched; U)"
+  ]
+}

@@ -1,0 +1,304 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "01-REPAIR",
+  "taskId": "task-8",
+  "subject": "Repair Craft execution path (GAP-BIN, GAP-ARGV, GAP-MCP)",
+  "producer": "stack-vps-auditor",
+  "preparedAtUtc": "2026-11-05T16:48:00Z",
+  "mode": "PLAN_ONLY",
+  "productionEditsMade": false,
+  "hostWritesMade": ["/tmp/audit_probe.png", "/tmp/audit_probe2.png", "/tmp/audit_traced.svg", "/tmp/audit_traced.pdf", "/tmp/audit_pc.png", "/tmp/audit_pc2.png", "/tmp/audit_pc3.png", "/tmp/audit_trim.png", "/tmp/audit_trim_out.png", "/tmp/audit_sized.png", "/tmp/audit_from_svg.png", "/tmp/audit_svg_trim.png", "/tmp/nodir/", "/tmp/vcnest/"],
+  "predecessor": {
+    "document": "research/eko-deerflow-agent/wave2/01-STACK-VPS.md",
+    "facts": "research/eko-deerflow-agent/wave2/01-VPS-FACTS.json",
+    "gapsAddressed": ["GAP-BIN", "GAP-ARGV", "GAP-MCP"],
+    "gapsTouchedNotClosed": ["GAP-TOOLS", "GAP-PUBLISH", "GAP-SYNC"]
+  },
+  "scope": {
+    "inScope": [
+      "absolute /opt/craft launchers for vectorcraft + photocraft, loud refusal stubs for the other three",
+      "routes.py argv rewritten to the measured VectorCraft 0.21.1 / PhotoCraft 0.20.2 contracts",
+      "preflight E_TOOL_NOT_INSTALLED refusal (fast, named, non-retryable)",
+      "DeerFlow stdio MCP registration for both installed craft tools, with bind mounts",
+      "tests (unit argv contract, stub update, real-binary marker), staging-first rollout, rollback with exercised inverse"
+    ],
+    "outOfScope": [
+      "obtaining DesignCraft / EffectCraft / FilmCraft binaries",
+      "filling products.json Fourthwall template ids",
+      "experience ledger / eval / learning loop",
+      "visual critic or GUI automation (headless only on this host)"
+    ],
+    "postRepairCapability": "Only the apparel route can pass both craft steps it has installed tooling for, and it still stops at effectcraft_distress. No route is publishable after this repair."
+  },
+  "measuredContracts": {
+    "vectorcraft": {
+      "version": "0.21.1",
+      "binary": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli",
+      "subcommands": ["mcp", "run", "commands", "convert"],
+      "batchForm": "vectorcraft-cli run [--in FILE] [--cmd ID [--params JSON] | --commands FILE|-]... [--export FILE]... [--scale N]",
+      "noTraceSubcommand": true,
+      "traceProbe": {
+        "command": "vectorcraft-cli run --in /tmp/audit_probe2.png --cmd select.all --cmd imageTrace.make --params '{\"params\":{...}}' --cmd imageTrace.expand --export /tmp/audit_traced.svg",
+        "exitCode": 0,
+        "stdoutLines": [
+          "{\"command\":\"select.all\",\"result\":{\"count\":1},\"step\":\"cmd\"}",
+          "{\"command\":\"imageTrace.make\",\"result\":{\"anchors\":4,\"colors\":1,\"id\":4,\"paths\":1,\"warnings\":[]},\"step\":\"cmd\"}",
+          "{\"command\":\"imageTrace.expand\",\"result\":{\"ids\":[4]},\"step\":\"cmd\"}",
+          "{\"result\":{\"bytes\":334,\"format\":\"svg\",\"path\":\"/tmp/audit_traced.svg\",\"warnings\":[]},\"step\":\"export\"}"
+        ],
+        "evidence": "VERIFIED"
+      },
+      "pdfExportProbe": { "command": "--export /tmp/audit_traced.pdf", "result": "{\"format\":\"pdf\",\"bytes\":4626}", "evidence": "VERIFIED" },
+      "nestedExportDir": { "command": "--export /tmp/vcnest/a/b.svg", "stderr": "vectorcraft-cli: step 1: export /tmp/vcnest/a/b.svg: /tmp/vcnest/a/b.svg: No such file or directory (os error 2)", "createsParentDirs": false, "evidence": "VERIFIED" },
+      "commandIds": { "select.all": "{}", "imageTrace.make": "{\"id?\",\"preset?\",\"savedPreset?\",\"enhanced?\",\"params?\":{mode,palette,colors,paths,corners,noise,ignoreWhite,method,fills,strokes,shapes,autoGrouping,gradients}}", "imageTrace.expand": "{}" }
+    },
+    "photocraft": {
+      "version": "0.20.2",
+      "build": "7c12f6471, 2026-11-05",
+      "binary": "/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli",
+      "subcommands": ["convert", "info", "run", "batch", "droplet", "commands", "mcp", "serve", "help"],
+      "batchForm": "photocraft-cli run <FILE|--new JSON> --cmd ID [--params JSON] --out FILE",
+      "opensSvg": { "probe": "photocraft-cli run /tmp/audit_traced.svg --cmd image.imageSize --params {\"width\":1400,\"height\":1600,\"resolution\":300} --out /tmp/audit_from_svg.png", "result": "{\"command\":\"image.imageSize\",\"result\":{\"height\":1600,\"width\":1400}}", "stderr": "warning: 1 layer(s) flattened; layers, masks and blend modes are not kept", "evidence": "VERIFIED" },
+      "trimProbe": { "command": "--cmd image.trim --params {\"basedOn\":\"transparent\"}", "result": "{\"command\":\"image.trim\",\"result\":{\"height\":121,\"width\":161,\"x\":20,\"y\":20}}", "outputMode": "RGBA", "evidence": "VERIFIED" },
+      "resizeProbe": { "command": "--cmd image.imageSize --params {\"width\":1400,\"height\":1600,\"resolution\":300,\"resample\":\"lanczos\"}", "result": "1400x1600 at dpi (299.9994, 299.9994)", "evidence": "VERIFIED" },
+      "createsParentDirs": true,
+      "parentDirProbe": { "command": "--out /tmp/nodir/sub/out.png", "result": "file written", "evidence": "VERIFIED" },
+      "commandIds": {
+        "image.trim": "{\"basedOn\":\"transparent|topLeft|bottomRight\",\"top\":bool,\"bottom\":bool,\"left\":bool,\"right\":bool}",
+        "image.imageSize": "{\"width\":number,\"height\":number,\"units\":\"px|pt\",\"percent\":%?,\"resolution\":ppi,\"keepPrintSize\":bool,\"scaleStyles\":bool,\"resample\":\"automatic|preserveDetails|bicubicSmoother|bicubicSharper|bicubicAutomatic|bicubic|nearest|bilinear|lanczos|none\"}",
+        "edit.convertToProfile": "{\"profile\":\"srgb|display-p3|adobe-rgb-compat|prophoto-compat|linear-srgb|rec2020|gray-gamma-2.2|sgray|lab-d50|coated-cmyk|working\",\"intent\":\"perceptual|relative|saturation|absolute\",\"bpc\":bool,\"dither\":bool,\"flatten\":bool}",
+        "image.canvasSize": "{\"width\",\"height\",\"units\",\"relative\",\"anchor\",\"extensionColor\"}"
+      }
+    },
+    "commandCatalogueCounts": { "vectorcraft": 918, "photocraft": 965, "cataloguePath": "blueprint/files/skills/artcraft-command-atlas/references/catalogues/", "evidence": "VERIFIED live CLI + READ repo JSON" },
+    "mcpFlags": {
+      "vectorcraft": "mcp [--connect ADDR | --headless] [--automation-read-root DIR]... [--automation-write-root DIR]...",
+      "photocraft": "mcp [--bridge ADDR] [--automation-read-root DIR]... [--automation-write-root DIR]...",
+      "photocraftHasHeadlessFlag": false,
+      "omittedRootDeniesDirection": true,
+      "evidence": "VERIFIED --help"
+    },
+    "escapedBraceProof": {
+      "why": "render() uses str.format_map, so the JSON --params token must escape braces as {{ }}",
+      "proof": "escaped template '{{...}}' rendered through str.format_map produced valid JSON accepted by json.loads (see companion MD R2.1)",
+      "renderedJson": "{\"params\":{\"colors\":12}}",
+      "where": "system Python 3.14.0 on the workstation, 2026-11-05",
+      "evidence": "VERIFIED"
+    },
+    "containerCompatibility": {
+      "binaries": "ELF 64-bit PIE, dynamically linked, x86-64",
+      "maxGlibcSymbol": "GLIBC_2.35",
+      "hostGlibc": "2.43",
+      "gatewayContainerGlibc": "2.36 (Debian 12)",
+      "dynamicDeps": ["libgcc_s.so.1", "libm.so.6", "libc.so.6"],
+      "prediction": "bind-mount into gateway is viable",
+      "evidence": "VERIFIED by file/ldd/strings, not yet by execution"
+    }
+  },
+  "actions": [
+    {
+      "id": "R1",
+      "gap": "GAP-BIN",
+      "title": "Replace the five exit-127 shims with absolute version-pinned launchers",
+      "files": [
+        { "path": "blueprint/files/deploy/craft-launchers/vectorcraft-cli", "action": "create", "mode": "0755" },
+        { "path": "blueprint/files/deploy/craft-launchers/photocraft-cli", "action": "create", "mode": "0755" },
+        { "path": "blueprint/files/deploy/craft-bin/designcraft-cli", "action": "edit-message-only" },
+        { "path": "blueprint/files/deploy/craft-bin/effectcraft-cli", "action": "edit-message-only" },
+        { "path": "blueprint/files/deploy/craft-bin/filmcraft-cli", "action": "edit-message-only" },
+        { "path": "blueprint/files/deploy/setup-pipeline.sh", "line": 88, "action": "prefer craft-launchers when present" }
+      ],
+      "launcherTemplate": "#!/bin/sh\n# Pinned absolute launcher — <NAME> <VERSION> (GAP-BIN repair).\nBIN=<ABSOLUTE_BINARY>\nif [ ! -x \"$BIN\" ]; then\n  echo \"E_TOOL_NOT_INSTALLED <NAME> expected=$BIN\" >&2\n  exit 127\nfi\nexec \"$BIN\" \"$@\"\n",
+      "installCommands": [
+        "install -d -m 0755 /opt/pod-pipeline/deploy/craft-launchers",
+        "install -m 0755 -o pod -g pod /opt/pod-pipeline/deploy/craft-launchers/vectorcraft-cli /opt/pod-pipeline/bin/vectorcraft-cli",
+        "install -m 0755 -o pod -g pod /opt/pod-pipeline/deploy/craft-launchers/photocraft-cli /opt/pod-pipeline/bin/photocraft-cli",
+        "install -m 0755 -o pod -g pod /opt/pod-pipeline/deploy/craft-bin/designcraft-cli /opt/pod-pipeline/bin/designcraft-cli",
+        "install -m 0755 -o pod -g pod /opt/pod-pipeline/deploy/craft-bin/effectcraft-cli /opt/pod-pipeline/bin/effectcraft-cli",
+        "install -m 0755 -o pod -g pod /opt/pod-pipeline/deploy/craft-bin/filmcraft-cli /opt/pod-pipeline/bin/filmcraft-cli"
+      ],
+      "expectedOutputs": [
+        "/opt/pod-pipeline/bin/vectorcraft-cli --version -> vectorcraft-cli 0.21.1",
+        "/opt/pod-pipeline/bin/photocraft-cli --version -> photocraft-cli 0.20.2 (7c12f6471, 2026-11-05)",
+        "su -s /bin/sh pod -c '<vc> --version' -> vectorcraft-cli 0.21.1",
+        "/opt/pod-pipeline/bin/designcraft-cli -> E_TOOL_NOT_INSTALLED designcraft-cli (exit 127)",
+        "minimal-env run -> vectorcraft-cli 0.21.1 (runner._env compatible)"
+      ],
+      "preconditions": ["pod user can exec /opt/craft binaries (VERIFIED)", "/opt/craft payload mode 0755 (VERIFIED)"],
+      "failureCases": ["setup-pipeline.sh no-op because bin/$tool exists -> use explicit install", "version dir bumped -> re-pin path", "ownership lost -> chmod 0755", "missing +x -> chmod 0755"],
+      "rollback": "install -m 0755 -o pod -g pod /opt/deerflow-forge/blueprint/files/deploy/craft-bin/<tool> /opt/pod-pipeline/bin/<tool>"
+    },
+    {
+      "id": "R2",
+      "gap": "GAP-ARGV",
+      "title": "Rewrite routes.py argv to the measured CLI contracts",
+      "file": "blueprint/files/pod_pipeline/routes.py",
+      "productionCopySha256": "298ecfac71d66df66dc50d0e4094c90a7a6f0dc8a7b4e8ba5d37c2041ff2639e",
+      "edits": [
+        {
+          "target": "trace_step",
+          "lines": "73-82",
+          "newArgv": ["vectorcraft-cli", "run", "--in", "{src}", "--cmd", "select.all", "--cmd", "imageTrace.make", "--params", "<TRACE_PARAMS>", "--cmd", "imageTrace.expand", "--export", "{work}/traced.svg", "--export", "{work}/traced.pdf"],
+          "newOutputs": ["{work}/traced.svg", "{work}/traced.pdf"],
+          "traceParamsTemplate": "'{{\"params\":{{\"mode\":\"{cfg[trace_mode]}\",\"palette\":\"{cfg[trace_palette]}\",\"colors\":{cfg[trace_colors]},\"paths\":{cfg[trace_paths]},\"corners\":{cfg[trace_corners]},\"noise\":{cfg[trace_noise]},\"ignoreWhite\":true,\"method\":\"abutting\",\"fills\":true,\"strokes\":false,\"shapes\":false,\"autoGrouping\":false,\"gradients\":false}}}}'",
+          "configAdded": { "apparel": { "trace_mode": "color", "trace_palette": "limited", "trace_colors": 12, "trace_paths": 65, "trace_corners": 45, "trace_noise": 16 }, "knitwear": { "trace_colors": 6 } },
+          "removed": ["Route.trace_extra field", "knitwear trace_extra ('--palette-limit', '{cfg[palette_limit]}')"],
+          "reason": "vectorcraft-cli has no trace subcommand and no --palette-limit flag; colour cap now travels in the JSON params"
+        },
+        {
+          "target": "raster_fallback_step",
+          "lines": "84-93",
+          "newArgv": ["photocraft-cli", "run", "{src}", "--cmd", "image.imageSize", "--params", "{{\"resolution\":{fallback_dpi},\"resample\":\"lanczos\"}}", "--cmd", "edit.convertToProfile", "--params", "{{\"profile\":\"srgb\"}}", "--out", "{work}/raster.png"],
+          "newOutputs": ["{work}/raster.png"],
+          "reason": "photocraft-cli has no --input/--out-dir/--target-dpi flags; flat output avoids the VC no-mkdir constraint"
+        },
+        {
+          "target": "apparel.steps[0] photocraft_trim",
+          "lines": "102-108",
+          "newArgv": ["photocraft-cli", "run", "{art}", "--cmd", "image.trim", "--params", "{{\"basedOn\":\"transparent\"}}", "--cmd", "image.imageSize", "--params", "{{\"width\":{cfg[trim_width_px]},\"height\":{cfg[trim_height_px]},\"resolution\":300,\"resample\":\"lanczos\"}}", "--cmd", "edit.convertToProfile", "--params", "{{\"profile\":\"srgb\"}}", "--out", "{work}/trimmed.png"],
+          "newOutputs": ["{work}/trimmed.png"],
+          "configAdded": { "apparel": { "trim_width_px": 4200, "trim_height_px": 4800 } },
+          "reason": "PhotoCraft opens traced.svg directly (flatten warning is benign for a flat trace)"
+        },
+        {
+          "target": "blocked steps (no substitute)",
+          "lines": "109-113, 122-128, 138-143, 153-162, 171-183",
+          "action": "keep argv; rely on R3 preflight refusal",
+          "constraint": "knitwear step[0] must keep {cfg[knit_grid]} and --grid-scale so test_routes.py:40-47 stays meaningful",
+          "reason": "DesignCraft/EffectCraft/FilmCraft binaries do not exist on this host; substituting PhotoCraft filters would change product semantics and fabricate output"
+        }
+      ],
+      "verifyCommand": "cd /opt/pod-pipeline-staging && .venv/bin/python -c \"from pod_pipeline.routes import *; from pod_pipeline.routes import merged_cfg, render_argv, trace_step, raster_fallback_step; v={'src':'/in.png','art':'/in.png','work':'/w','build':'/b','run_id':'r','asset_id':1,'fallback_dpi':600,'cfg':merged_cfg('apparel',{})}; print(render_argv(trace_step(ROUTES['apparel']),v)); print(render_argv(raster_fallback_step(),v)); print(render_argv(ROUTES['apparel'].steps[0],v))\"",
+      "expectedVerify": "three argv lists; every --params token parses as JSON; export paths directly under /w",
+      "failureCases": ["stale module in pod-mcp -> restart pod-mcp", "VC version drift -> re-read run --help", "nested export dir -> os error 2", "empty cfg value -> ConfigError from render_argv guard"],
+      "rollback": "install -m 0644 /opt/deerflow-forge/blueprint/files/pod_pipeline/routes.py /opt/pod-pipeline/pod_pipeline/routes.py && systemctl restart pod-mcp.service"
+    },
+    {
+      "id": "R3",
+      "gap": "GAP-TOOLS (containment)",
+      "title": "Fast, named, non-retryable refusal when a step's binary is absent",
+      "file": "blueprint/files/pod_pipeline/orchestrator.py",
+      "lines": "167-177 (insert after argv = render_argv at 170)",
+      "snippet": "tool_bin = Path(s.bin_dir) / argv[0] if \"/\" not in argv[0] else Path(argv[0])\nif \"/\" not in argv[0] and not os.access(tool_bin, os.X_OK):\n    raise PipelineError(f\"E_TOOL_NOT_INSTALLED {step.module} ({argv[0]} not executable in {s.bin_dir})\")",
+      "expectedBehaviour": {
+        "runSummary": "ok:false, error contains E_TOOL_NOT_INSTALLED and the module name",
+        "rows": "processing_jobs orchestrator row failed; no step row created; ingested_assets.status=failed",
+        "retries": "none (raised before start_step; max_attempts untouched)",
+        "expectedLog": "E_TOOL_NOT_INSTALLED designcraft (designcraft-cli not executable in /opt/pod-pipeline/bin)"
+      },
+      "failureCases": ["real binary with broken shebang no longer reaches the 127 path (message still names the step)", "POD_ROOT change can make bin_dir wrong -> check settings.bin_dir"],
+      "rollback": "same as R2 (orchestrator.py restored from /opt/deerflow-forge checkout)"
+    },
+    {
+      "id": "R4",
+      "gap": "GAP-MCP",
+      "title": "Register VectorCraft + PhotoCraft MCP stdio servers in DeerFlow",
+      "steps": [
+        { "id": "R4.1", "commands": ["install -d -m 0775 /opt/pod-pipeline/craft-agent", "install -d -m 0775 /opt/pod-pipeline/craft-agent/out"], "precondition": "/opt/pod-pipeline/craft-agent does not exist today (VERIFIED)" },
+        { "id": "R4.2", "file": "/opt/deer-flow/docker/docker-compose-dev.yaml", "anchor": "volumes: at line 213; insert after line 230 (gateway-uv-cache)", "yaml": ["- /opt/craft:/opt/craft:ro", "- /opt/pod-pipeline/sandbox:/opt/pod-pipeline/sandbox:ro", "- /opt/pod-pipeline/build:/opt/pod-pipeline/build:ro", "- /opt/pod-pipeline/craft-agent:/opt/pod-pipeline/craft-agent:rw"] },
+        { "id": "R4.3", "file": "/opt/deer-flow/extensions_config.json", "backup": "cp -p <file> <file>.bak-before-craft-mcp-$(date -u +%Y%m%dT%H%M%SZ)", "entries": { "vectorcraft": { "enabled": true, "type": "stdio", "command": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli", "args": ["mcp", "--headless", "--automation-read-root", "/opt/pod-pipeline/sandbox", "--automation-read-root", "/opt/pod-pipeline/build", "--automation-write-root", "/opt/pod-pipeline/craft-agent"], "tool_name_prefix": true, "session_init_timeout": 120, "tool_call_timeout": 600, "description": "VectorCraft 0.21.1 headless engine (draw, trace, export) for DeerFlow Forge" }, "photocraft": { "enabled": true, "type": "stdio", "command": "/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli", "args": ["mcp", "--automation-read-root", "/opt/pod-pipeline/sandbox", "--automation-read-root", "/opt/pod-pipeline/build", "--automation-write-root", "/opt/pod-pipeline/craft-agent"], "tool_name_prefix": true, "session_init_timeout": 120, "tool_call_timeout": 600, "description": "PhotoCraft 0.20.2 headless engine (raster prep, export) for DeerFlow Forge" } }, "keepExisting": ["mcpServers.forge (http://172.17.0.1:8765/)"] },
+        { "id": "R4.4", "commands": ["cd /opt/deer-flow/docker && docker compose -p deer-flow-dev -f docker-compose-dev.yaml up -d gateway"], "expected": ["Container deer-flow-gateway Recreating/Started"] },
+        { "id": "R4.5", "verifyCommands": ["docker inspect deer-flow-gateway --format '{{range .Mounts}}{{.Source}} {{end}}'", "docker exec deer-flow-gateway /opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli --version", "docker exec deer-flow-gateway /opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli --version", "curl -sS -o /dev/null -w '%{http_code}' http://127.0.0.1:2026/"], "expected": ["mount list contains /opt/craft, sandbox, build, craft-agent", "vectorcraft-cli 0.21.1", "photocraft-cli 0.20.2 (7c12f6471, 2026-11-05)", "200 or 30x"] }
+      ],
+      "preconditions": ["gateway container uid=0 (VERIFIED)", "container glibc 2.36 >= binary max 2.35 (VERIFIED static)", "deerflow.db runs=0 so a restart cannot orphan a run (VERIFIED)"],
+      "failureCases": ["exec format error -> wrong path", "GLIBC > 2.36 needed -> revert, host bridge needed", "invalid JSON -> enabled:false silently", "write root not 0775 -> permission denied", "destructive edit -> forge tools vanish -> restore .bak"],
+      "deferredAlternative": "host-side stdio->HTTP MCP bridge (new code; not planned here)",
+      "rollback": "cp -p /opt/deer-flow/extensions_config.json.bak-before-craft-mcp-<ts> /opt/deer-flow/extensions_config.json && cd /opt/deer-flow/docker && docker compose -p deer-flow-dev -f docker-compose-dev.yaml up -d gateway"
+    },
+    {
+      "id": "R5",
+      "gap": "gate",
+      "title": "Tests: argv contract, stub update, real-binary marker",
+      "newTests": [
+        { "path": "blueprint/files/tests/test_route_argv_contracts.py", "kind": "pure", "asserts": ["exact rendered argv for trace/raster/apparel-trim", "every --params token parses as JSON", "every --cmd id exists in the checked-in catalogues (918 VC / 965 PC)", "Route has no trace_extra attribute", "module -> binary name mapping"] },
+        { "path": "blueprint/files/tests/test_craft_binaries.py", "kind": "marker (skip when /opt/craft absent)", "asserts": ["real VC run produces svg+pdf, exit 0, JSON step lines", "real PC trim/resize produces png, exit 0", "PC opens traced.svg (flatten warning tolerated)", "absent tool -> E_TOOL_NOT_INSTALLED before spawn"] }
+      ],
+      "modifiedTests": [
+        { "path": "blueprint/files/tests/stubs/craft_stub.py", "lines": "72-80 (vectorcraft branch)", "change": "accept `run --in --cmd --export...`; write svg from .svg target and PDF otherwise; keep STUB_VECTOR_EXIT for the fallback test" },
+        { "path": "blueprint/files/tests/stubs/craft_stub.py", "lines": "81-91 (photocraft branch)", "change": "accept positional FILE + --cmd/--params/--out; image.trim -> art(out); otherwise raster art" }
+      ],
+      "unchanged": ["blueprint/files/tests/conftest.py:26 CRAFT_TOOLS", "blueprint/files/tests/conftest.py:68 stubs_env", "blueprint/files/tests/test_routes.py:40-47 knitwear grid test", "blueprint/files/tests/test_pipeline_integration.py:55,86,100,120"],
+      "commands": ["cd /opt/pod-pipeline-staging && .venv/bin/python -m pytest tests/ -q -k 'not integration'", "TEST_DATABASE_URL=postgresql://pod_app:<POD_DB_PASS>@127.0.0.1:5432/pod_test .venv/bin/python -m pytest tests/ -q"],
+      "expected": ["27 passed (5 skipped) for the pure run", "31 passed with the staging DB"],
+      "caveat": "counts UNVERIFIED; staging DSN must never be the production `pod` database",
+      "rollback": "restore tests/*.py and tests/stubs/craft_stub.py from the /opt/deerflow-forge checkout"
+    },
+    {
+      "id": "R6",
+      "gap": "GAP-SYNC (mitigation)",
+      "title": "Staging-first rollout",
+      "order": [
+        "baseline: systemctl is-active pod-mcp; all pod tables 0",
+        "cp -a /opt/pod-pipeline /opt/pod-pipeline-staging",
+        "apply R1+R2+R3+R5 in staging; R5 commands green",
+        "tar -C /opt -cpf /opt/backups/pod-pipeline-pre-repair-$(date -u +%Y%m%dT%H%M%SZ).tar pod-pipeline",
+        "install routes.py / orchestrator.py / launchers / bin/* / tests into production; sha256 compare with staging",
+        "systemctl restart pod-mcp.service; curl 127.0.0.1:8765/health -> {\"ok\":true}",
+        "insert account+asset (owner-approved), trigger apparel run",
+        "expect failure at effectcraft_distress with E_TOOL_NOT_INSTALLED, product_state=draft"
+      ],
+      "expectedRows": { "processing_jobs": "orchestrator + vector_trace + photocraft_trim succeeded, effectcraft step never inserted (preflight)", "fourthwall_products": "draft with named last_error", "publish": "never attempted" }
+    },
+    {
+      "id": "R7",
+      "gap": "safety",
+      "title": "Rollback with exercised inverse",
+      "layers": [
+        { "layer": "pipeline code", "command": "install -m 0644 /opt/deerflow-forge/blueprint/files/pod_pipeline/{routes,orchestrator,runner}.py /opt/pod-pipeline/pod_pipeline/ && systemctl restart pod-mcp.service", "proof": "deployed tree byte-identical to checkout 32fc71f (26/26 sha256, wave2 §12)" },
+        { "layer": "launchers", "command": "install -m 0755 -o pod -g pod /opt/deerflow-forge/blueprint/files/deploy/craft-bin/<tool> /opt/pod-pipeline/bin/<tool>" },
+        { "layer": "tests+stub", "command": "install -m 0644 /opt/deerflow-forge/blueprint/files/tests/{*.py,stubs/craft_stub.py} /opt/pod-pipeline/tests/" },
+        { "layer": "extensions_config", "command": "restore .bak-before-craft-mcp-<ts> then docker compose -p deer-flow-dev -f docker-compose-dev.yaml up -d gateway" },
+        { "layer": "compose", "command": "restore docker-compose-dev.yaml backup then up -d gateway" },
+        { "layer": "whole tree", "command": "systemctl stop pod-mcp; tar -C /opt -xpf /opt/backups/pod-pipeline-pre-repair-<ts>.tar; systemctl start pod-mcp" },
+        { "layer": "database", "command": "none (no migration); step-6 rows only with owner approval" }
+      ],
+      "inverseExercise": "after R4 verified: restore extensions_config .bak, recreate gateway, confirm craft tools gone and forge tools/list intact, then re-apply R4; record both outcomes"
+    }
+  ],
+  "failureMatrix": [
+    { "id": "F1", "symptom": "unknown subcommand 'trace'", "cause": "R2 not loaded / stale module", "fix": "install + systemctl restart pod-mcp" },
+    { "id": "F2", "symptom": "E_TOOL_NOT_INSTALLED designcraft", "cause": "expected: GAP-TOOLS", "fix": "stop; needs vendor artefacts" },
+    { "id": "F3", "symptom": "vendor binary not installed", "cause": "launcher not installed (setup no-op)", "fix": "explicit install R1.5" },
+    { "id": "F4", "symptom": "export ... No such file or directory (os error 2)", "cause": "nested export path; VC creates no dirs", "fix": "flat export under {work}/{build}" },
+    { "id": "F5", "symptom": "trim fails on .svg", "cause": "PhotoCraft < 0.20.2", "fix": "pin 0.20.2; check `photocraft-cli info <svg>`" },
+    { "id": "F6", "symptom": "--params JSON parse error", "cause": "empty cfg value rendered into JSON", "fix": "render_argv empty-token guard + R5.1 test" },
+    { "id": "F7", "symptom": "craft tools missing from agent", "cause": "gateway not recreated / invalid JSON / init timeout", "fix": "docker logs, validate JSON, raise session_init_timeout" },
+    { "id": "F8", "symptom": "container cannot exec binary", "cause": "future glibc > 2.36", "fix": "revert mounts; host bridge (R4.6)" },
+    { "id": "F9", "symptom": "tests fail only in production tree", "cause": "POD_ROOT/.pytest_cache confusion", "fix": "always test from staging" },
+    { "id": "F10", "symptom": "E_TOOL_NOT_INSTALLED for an installed tool", "cause": "settings.bin_dir wrong", "fix": "verify POD_ROOT=/opt/pod-pipeline" }
+  ],
+  "gapClosure": {
+    "GAP-BIN": { "closedBy": "R1", "residual": "none for vectorcraft/photocraft; named refusal for designcraft/effectcraft/filmcraft" },
+    "GAP-ARGV": { "closedBy": "R2", "residual": "blocked steps keep unverifiable argv (no binary to test)" },
+    "GAP-MCP": { "closedBy": "R4", "residual": "runtime proof pending (stdio MCP path untested in this deployment)" },
+    "GAP-TOOLS": { "closedBy": null, "residual": "vendor binaries for designcraft/effectcraft/filmcraft must be obtained" },
+    "GAP-PUBLISH": { "closedBy": null, "residual": "products.json template ids still REPLACE_WITH_TEMPLATE_ID" }
+  },
+  "unverified": [
+    "runtime exec of craft binaries inside the gateway container (static glibc/deps analysis only)",
+    "DeerFlow stdio MCP path: all working servers today are type http; stdio entries are disabled examples",
+    "PhotoCraft MCP tool inventory (only --help checked; VectorCraft was handshaked)",
+    "two --export flags in one vectorcraft run (each verified separately)",
+    "SVG flatten fidelity into PhotoCraft (warning observed; no pixel comparison)",
+    "test counts after the rewrite (README 31 / 207 never reproduced)",
+    "availability of DesignCraft/EffectCraft/FilmCraft outside this host",
+    "publish path completion (template ids)",
+    "craft step latency under 900s timeout on 2 vCPU / 8 GB",
+    "POD_MAX_CONCURRENCY=2 with headless craft processes on 2 vCPU"
+  ],
+  "commandsRunToProducePlan": [
+    "vectorcraft-cli --version/--help/commands",
+    "vectorcraft-cli run --in <png> --cmd select.all --cmd imageTrace.make --params <json> --cmd imageTrace.expand --export <svg|pdf>",
+    "vectorcraft-cli run --export /tmp/vcnest/a/b.svg (mkdir failure probe)",
+    "photocraft-cli --version/--help/commands/convert/info/mcp --help/serve --help",
+    "photocraft-cli run <png|svg> --cmd image.trim|image.imageSize|edit.convertToProfile --params <json> --out <path>",
+    "photocraft-cli run --new '{\"width\":1400,\"height\":1600,\"resolution\":300}' --cmd image.imageSize --out <path>",
+    "file / ldd / strings|grep GLIBC_ on both binaries",
+    "su -s /bin/sh pod -c '<vc> --version'; env -i PATH=... /opt/pod-pipeline/bin/*-cli --version",
+    "docker inspect (mounts, project labels, container user); docker exec ld --version / ldd",
+    "python3 JSON walks of vectorcraft/photocraft catalogues; PIL fixture creation via pod venv",
+    "sed/awk/grep line-anchoring of docker-compose-dev.yaml, routes.py, craft_stub.py, setup-pipeline.sh, conftest.py"
+  ],
+  "companionDocument": "research/eko-deerflow-agent/execution-wave/01-EXECUTION-REPAIR.md",
+  "evidenceLabels": ["VERIFIED", "READ", "EXPECTED", "UNVERIFIED"]
+}

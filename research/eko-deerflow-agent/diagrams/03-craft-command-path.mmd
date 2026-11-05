@@ -1,0 +1,39 @@
+sequenceDiagram
+  participant U as Operator
+  participant F as Forge Conductor
+  participant G as Tool Gateway
+  participant V as VectorCraft
+  participant A as Artifact Store
+  participant R as Verifier
+  participant C as Blind Critic
+  participant L as Ledger
+
+  U->>F: brief + rights + output contract
+  F->>L: create episode (planned)
+  F->>G: command id + params + idempotency key
+  G->>G: validate id, root, schema, role
+  alt command invalid or outside root
+    G-->>F: E_PARAM / E_ROOT_DENIED
+    F-->>U: named refusal
+  else command accepted
+    G->>V: absolute-path CLI / MCP call
+    V-->>A: artifact written BEFORE gates
+    V-->>G: exit + JSON result
+    G-->>F: normalized result + artifact path
+    F->>R: artifact hash + gate request
+    R-->>F: gates + dimensions + source mutation
+    alt gate failed or missing
+      F->>L: episode failed / unverified
+      F-->>U: no ship: evidence preserved
+    else gates pass
+      F->>C: rendered image + brief (no gate info)
+      C-->>F: crop-cited critique
+      alt critic disagrees or cannot assess
+        F->>L: needs_human
+        F-->>U: human review
+      else critic agrees
+        F->>L: verified + evidence
+        F-->>U: artifact ready for approval
+      end
+    end
+  end

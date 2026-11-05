@@ -1,0 +1,54 @@
+flowchart TB
+  subgraph Front["Front door"]
+    DF["DeerFlow 2.2<br/>sessions · subagents · DeerMem · checkpoints"]
+  end
+
+  subgraph Forge["Forge Conductor · third plane"]
+    SUP["Supervisor<br/>plan · budget · arbitration"]
+    ART["Art Director"]
+    VEC["Vector Operator"]
+    RAS["Raster Operator"]
+    PRT["Print Verifier"]
+    VIS["Blind Visual Critic"]
+    MEM["Memory Curator"]
+    GW["Typed Tool Gateway"]
+    VER["Verifier"]
+    LED["Episode Ledger"]
+    EVAL["Eval / Promotion"]
+  end
+
+  subgraph Craft["Craft execution"]
+    VC["VectorCraft CLI/MCP"]
+    PC["PhotoCraft CLI/MCP"]
+    FC["FilmCraft absent"]
+  end
+
+  subgraph Data["Durable state"]
+    PG["Postgres forge<br/>episode/event/artifact/gate/eval/skill"]
+    AS["Artifact store<br/>content-addressed"]
+  end
+
+  DF -->|TaskEnvelope| SUP
+  SUP --> ART
+  SUP --> VEC
+  SUP --> RAS
+  SUP --> PRT
+  SUP --> VIS
+  SUP --> MEM
+  ART --> GW
+  VEC --> GW
+  RAS --> GW
+  PRT --> GW
+  GW --> VC
+  GW --> PC
+  GW -.-> FC
+  GW --> AS
+  AS --> VER
+  VER --> VIS
+  VER --> EVAL
+  VIS --> EVAL
+  EVAL --> LED
+  LED --> PG
+  MEM --> LED
+  EVAL -->|candidate → active| MEM
+  MEM -->|bounded cases/skills| SUP

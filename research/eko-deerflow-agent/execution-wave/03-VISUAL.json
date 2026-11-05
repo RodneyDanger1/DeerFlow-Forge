@@ -1,0 +1,1101 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "03-VISUAL",
+  "taskId": "task-10",
+  "producer": "craft-surface-auditor",
+  "generatedAtUtc": "2026-11-05T16:44:00Z",
+  "runWindowUtc": [
+    "2026-11-05T16:36:00Z",
+    "2026-11-05T16:44:00Z"
+  ],
+  "method": {
+    "kind": "new empirical work: labelled synthetic visual-defect corpus + metric study",
+    "notReaudit": "does not re-audit the Craft command/MCP surface",
+    "productionCodeEdited": false,
+    "host": "srv2108523 (root@179.197.88.181), read/write confined to /tmp/vd and execution-wave/fixtures",
+    "python": "/opt/pod-pipeline/.venv/bin/python 3.12.16 (Pillow 13.0.0, numpy 2.5.4, scipy 1.18.1, scikit-image 0.26.0)",
+    "writes": [
+      "research/eko-deerflow-agent/execution-wave/03-VISUAL-DEFECTS.md",
+      "research/eko-deerflow-agent/execution-wave/03-VISUAL.json",
+      "research/eko-deerflow-agent/execution-wave/fixtures/** (corpus, metrics, scripts, manifest)"
+    ],
+    "reproduce": "from execution-wave/fixtures: build_corpus.py -> analyze_regions.py -> evaluate_critic.py"
+  },
+  "corpus": {
+    "canvas": [
+      1200,
+      1500
+    ],
+    "colourModel": "RGBA",
+    "tilePx": 64,
+    "seed": 20261105,
+    "reference": "00_reference.png",
+    "counts": {
+      "defectImages": 15,
+      "cleanControls": 4,
+      "pngFilesIncludingReference": 20
+    },
+    "defectClasses": [
+      "white_fringe",
+      "halo",
+      "ghost_text",
+      "speck",
+      "lost_stroke",
+      "wrong_colour",
+      "margin"
+    ],
+    "referenceContent": "navy outer ring, cream ring, flat navy inner disc, 'RIDGE' wordmark, 'FORGE' tagline, 2 px cream rule, rust triangle; art 720x720 centred",
+    "controls": [
+      {
+        "id": "16",
+        "file": "16_clean_identical.png",
+        "kind": "identical copy",
+        "purpose": "metric floor (SSIM must be 1.0, diff 0)"
+      },
+      {
+        "id": "17",
+        "file": "17_clean_recompressed_jpeg92.png",
+        "kind": "JPEG q92 round-trip, alpha preserved",
+        "purpose": "calibration control for every calibrated check"
+      },
+      {
+        "id": "18",
+        "file": "18_clean_recompressed_jpeg75.png",
+        "kind": "JPEG q75 round-trip",
+        "purpose": "noisy-encoder false-positive probe"
+      },
+      {
+        "id": "19",
+        "file": "19_clean_recompressed_webp80.png",
+        "kind": "lossy WebP q80 round-trip",
+        "purpose": "second-encoder false-positive probe"
+      }
+    ],
+    "cases": [
+      {
+        "id": "01",
+        "file": "01_white_fringe_mild.png",
+        "class": "white_fringe",
+        "severity": "mild",
+        "injection": "1 px dilated rim at 35% white",
+        "gt_bbox": [
+          239,
+          359,
+          962,
+          1082
+        ]
+      },
+      {
+        "id": "02",
+        "file": "02_white_fringe_strong.png",
+        "class": "white_fringe",
+        "severity": "strong",
+        "injection": "2 px rim at 92% white",
+        "gt_bbox": [
+          238,
+          358,
+          963,
+          1083
+        ]
+      },
+      {
+        "id": "03",
+        "file": "03_halo_mild.png",
+        "class": "halo",
+        "severity": "mild",
+        "injection": "Gaussian r=8 at 24% cream",
+        "gt_bbox": [
+          232,
+          352,
+          969,
+          1089
+        ]
+      },
+      {
+        "id": "04",
+        "file": "04_halo_strong.png",
+        "class": "halo",
+        "severity": "strong",
+        "injection": "Gaussian r=16 at 55% cream",
+        "gt_bbox": [
+          224,
+          344,
+          977,
+          1097
+        ]
+      },
+      {
+        "id": "05",
+        "file": "05_ghost_text_mild.png",
+        "class": "ghost_text",
+        "severity": "mild",
+        "injection": "wordmark copy offset +6 px at alpha 45",
+        "gt_bbox": [
+          442,
+          636,
+          758,
+          724
+        ]
+      },
+      {
+        "id": "06",
+        "file": "06_ghost_text_strong.png",
+        "class": "ghost_text",
+        "severity": "strong",
+        "injection": "wordmark copy offset +14 px at alpha 110",
+        "gt_bbox": [
+          434,
+          628,
+          766,
+          732
+        ]
+      },
+      {
+        "id": "07",
+        "file": "07_speck_mild.png",
+        "class": "speck",
+        "severity": "mild",
+        "injection": "6 white 2x2 specks near the art",
+        "gt_bbox": [
+          220,
+          377,
+          922,
+          1113
+        ]
+      },
+      {
+        "id": "08",
+        "file": "08_speck_strong.png",
+        "class": "speck",
+        "severity": "strong",
+        "injection": "24 white 3x3 specks near the art",
+        "gt_bbox": [
+          220,
+          340,
+          1031,
+          1114
+        ]
+      },
+      {
+        "id": "09",
+        "file": "09_lost_stroke_full.png",
+        "class": "lost_stroke",
+        "severity": "full",
+        "injection": "entire 2 px rule erased",
+        "gt_bbox": [
+          450,
+          840,
+          750,
+          842
+        ]
+      },
+      {
+        "id": "10",
+        "file": "10_lost_stroke_partial.png",
+        "class": "lost_stroke",
+        "severity": "partial",
+        "injection": "40% of the 2 px rule erased",
+        "gt_bbox": [
+          450,
+          840,
+          570,
+          842
+        ]
+      },
+      {
+        "id": "11",
+        "file": "11_wrong_colour_mild_triangle.png",
+        "class": "wrong_colour",
+        "severity": "near-identical",
+        "injection": "triangle #E4572E -> #EDE2C8",
+        "gt_bbox": [
+          540,
+          920,
+          660,
+          1000
+        ]
+      },
+      {
+        "id": "12",
+        "file": "12_wrong_colour_strong_triangle.png",
+        "class": "wrong_colour",
+        "severity": "obvious",
+        "injection": "triangle -> #FF00FF",
+        "gt_bbox": [
+          540,
+          920,
+          660,
+          1000
+        ]
+      },
+      {
+        "id": "13",
+        "file": "13_wrong_colour_flat_inner_disc.png",
+        "class": "wrong_colour",
+        "severity": "flat region",
+        "injection": "whole flat inner disc navy -> purple",
+        "gt_bbox": [
+          300,
+          420,
+          900,
+          1020
+        ]
+      },
+      {
+        "id": "14",
+        "file": "14_margin_shift_40px.png",
+        "class": "margin",
+        "severity": "shift",
+        "injection": "art translated +40 px x",
+        "gt_bbox": [
+          240,
+          360,
+          1001,
+          1081
+        ]
+      },
+      {
+        "id": "15",
+        "file": "15_margin_overflow_8pct.png",
+        "class": "margin",
+        "severity": "overflow",
+        "injection": "art scaled x1.08 about centre",
+        "gt_bbox": [
+          211,
+          331,
+          989,
+          1109
+        ]
+      }
+    ]
+  },
+  "protocol": {
+    "global_ssim_rgb": "skimage.metrics.structural_similarity over RGB, data_range=255",
+    "global_rmse": "sqrt(mean(delta^2))/255 over all four RGBA channels",
+    "global_mae": "mean(|delta|)/255 over RGBA",
+    "tile": "64x64 tiles (18x23 = 414), per-tile RGB SSIM (win_size 7) and RMSE",
+    "diff_delta8": "mask where max|Delta RGBA| > 8: area fraction, bbox, 8-connected components",
+    "diff_delta32": "same at delta > 32",
+    "gate_equiv": "craft_trace formulas re-used verbatim: white_residual_ratio = (RGB>=245 & alpha>127)/alpha.count, edge_specks = alpha components with area<150, coverage",
+    "composite": "RMSE after compositing on #141313 (black) and on white, alpha-aware",
+    "region": "same statistics restricted to gt_bbox padded 12 px",
+    "region_rmse_ratio_vs_benign": "region_rmse(defect) / region_rmse(jpeg92 control) in the same box",
+    "iou": "intersection-over-union of detected diff bbox (delta>8 and >32) vs injected bbox"
+  },
+  "results": [
+    {
+      "id": "01",
+      "class": "white_fringe",
+      "severity": "mild",
+      "global_ssim": 0.9875,
+      "global_rmse": 0.0354,
+      "tile_min_ssim": 0.7528,
+      "tile_rmse_max": 0.17258,
+      "diff8_area_frac": 0.001604,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.01307,
+      "composite_white": 0.0,
+      "region_ratio": 6.76,
+      "region_ssim": 0.95938,
+      "control_region_ssim": 0.98075,
+      "iou_delta32": 1.0,
+      "fires": [
+        "C3"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "02",
+      "class": "white_fringe",
+      "severity": "strong",
+      "global_ssim": 0.98565,
+      "global_rmse": 0.05561,
+      "tile_min_ssim": 0.722,
+      "tile_rmse_max": 0.24257,
+      "diff8_area_frac": 0.003213,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.014,
+      "composite_black": 0.04828,
+      "composite_white": 0.0,
+      "region_ratio": 10.62,
+      "region_ssim": 0.95365,
+      "control_region_ssim": 0.98085,
+      "iou_delta32": 1.0,
+      "fires": [
+        "C3",
+        "C5"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "03",
+      "class": "halo",
+      "severity": "mild",
+      "global_ssim": 0.96694,
+      "global_rmse": 0.11144,
+      "tile_min_ssim": 0.4563,
+      "tile_rmse_max": 0.50765,
+      "diff8_area_frac": 0.021102,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.00641,
+      "composite_white": 0.00101,
+      "region_ratio": 21.29,
+      "region_ssim": 0.89745,
+      "control_region_ssim": 0.98145,
+      "iou_delta32": 0.958,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "04",
+      "class": "halo",
+      "severity": "strong",
+      "global_ssim": 0.93704,
+      "global_rmse": 0.17269,
+      "tile_min_ssim": 0.1595,
+      "tile_rmse_max": 0.72653,
+      "diff8_area_frac": 0.050448,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.02131,
+      "composite_white": 0.00336,
+      "region_ratio": 32.18,
+      "region_ssim": 0.82716,
+      "control_region_ssim": 0.98221,
+      "iou_delta32": 0.8949,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "05",
+      "class": "ghost_text",
+      "severity": "mild",
+      "global_ssim": 0.99788,
+      "global_rmse": 0.00652,
+      "tile_min_ssim": 0.8508,
+      "tile_rmse_max": 0.06311,
+      "diff8_area_frac": 0.003787,
+      "diff32_components": 13,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.00753,
+      "composite_white": 0.00753,
+      "region_ratio": 3.79,
+      "region_ssim": 0.89338,
+      "control_region_ssim": 0.96728,
+      "iou_delta32": 0.6597,
+      "iou_largest_component": 0.112,
+      "fires": [
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "06",
+      "class": "ghost_text",
+      "severity": "strong",
+      "global_ssim": 0.99567,
+      "global_rmse": 0.01828,
+      "tile_min_ssim": 0.7217,
+      "tile_rmse_max": 0.16521,
+      "diff8_area_frac": 0.004948,
+      "diff32_components": 12,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.02111,
+      "composite_white": 0.02111,
+      "region_ratio": 10.61,
+      "region_ssim": 0.8191,
+      "control_region_ssim": 0.97287,
+      "iou_delta32": 0.5445,
+      "iou_largest_component": 0.107,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "07",
+      "class": "speck",
+      "severity": "mild",
+      "global_ssim": 0.9998,
+      "global_rmse": 0.00334,
+      "tile_min_ssim": 0.981,
+      "tile_rmse_max": 0.03125,
+      "diff8_area_frac": 1.3e-05,
+      "diff32_components": 6,
+      "edge_specks": 4,
+      "white_residual_ratio": 5.9e-05,
+      "composite_black": 0.00326,
+      "composite_white": 0.00174,
+      "region_ratio": 0.643,
+      "region_ssim": 0.99935,
+      "control_region_ssim": 0.98138,
+      "iou_delta32": 1.0,
+      "iou_largest_component": 0.0,
+      "fires": [
+        "C2"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "08",
+      "class": "speck",
+      "severity": "strong",
+      "global_ssim": 0.99897,
+      "global_rmse": 0.00918,
+      "tile_min_ssim": 0.9632,
+      "tile_rmse_max": 0.05483,
+      "diff8_area_frac": 0.00012,
+      "diff32_components": 24,
+      "edge_specks": 10,
+      "white_residual_ratio": 0.000529,
+      "composite_black": 0.0094,
+      "composite_white": 0.00676,
+      "region_ratio": 1.75,
+      "region_ssim": 0.99721,
+      "control_region_ssim": 0.98389,
+      "iou_delta32": 1.0,
+      "iou_largest_component": 0.0,
+      "fires": [
+        "C2"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "09",
+      "class": "lost_stroke",
+      "severity": "full",
+      "global_ssim": 0.99803,
+      "global_rmse": 0.0205,
+      "tile_min_ssim": 0.8032,
+      "tile_rmse_max": 0.19166,
+      "diff8_area_frac": 0.000502,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.01813,
+      "composite_white": 0.00286,
+      "region_ratio": 20.64,
+      "region_ssim": 0.4481,
+      "control_region_ssim": 0.97536,
+      "iou_delta32": 0.6645,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "10",
+      "class": "lost_stroke",
+      "severity": "partial",
+      "global_ssim": 0.99921,
+      "global_rmse": 0.013,
+      "tile_min_ssim": 0.8032,
+      "tile_rmse_max": 0.18864,
+      "diff8_area_frac": 0.000202,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.0115,
+      "composite_white": 0.00181,
+      "region_ratio": 19.62,
+      "region_ssim": 0.48614,
+      "control_region_ssim": 0.97485,
+      "iou_delta32": 0.6612,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "11",
+      "class": "wrong_colour",
+      "severity": "near-identical",
+      "global_ssim": 0.99857,
+      "global_rmse": 0.02129,
+      "tile_min_ssim": 0.7585,
+      "tile_rmse_max": 0.36796,
+      "diff8_area_frac": 0.002734,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.02458,
+      "composite_white": 0.02458,
+      "region_ratio": 10.79,
+      "region_ssim": 0.8116,
+      "control_region_ssim": 0.89643,
+      "iou_delta32": 0.9795,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "12",
+      "class": "wrong_colour",
+      "severity": "obvious",
+      "global_ssim": 0.99769,
+      "global_rmse": 0.02337,
+      "tile_min_ssim": 0.5829,
+      "tile_rmse_max": 0.404,
+      "diff8_area_frac": 0.002734,
+      "diff32_components": 1,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.02699,
+      "composite_white": 0.02699,
+      "region_ratio": 11.85,
+      "region_ssim": 0.69529,
+      "control_region_ssim": 0.89643,
+      "iou_delta32": 0.9795,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "13",
+      "class": "wrong_colour",
+      "severity": "flat region",
+      "global_ssim": 0.9661,
+      "global_rmse": 0.04443,
+      "tile_min_ssim": 0.7925,
+      "tile_rmse_max": 0.12884,
+      "diff8_area_frac": 0.158589,
+      "diff32_components": 9,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.05131,
+      "composite_white": 0.05131,
+      "region_ratio": 9.13,
+      "region_ssim": 0.84164,
+      "control_region_ssim": 0.9791,
+      "iou_delta32": 1.0,
+      "fires": [
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "14",
+      "class": "margin",
+      "severity": "shift",
+      "global_ssim": 0.89818,
+      "global_rmse": 0.17918,
+      "tile_min_ssim": 0.1042,
+      "tile_rmse_max": 0.67671,
+      "diff8_area_frac": 0.090365,
+      "diff32_components": 17,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.17627,
+      "composite_white": 0.21854,
+      "region_ratio": 34.23,
+      "region_ssim": 0.68449,
+      "control_region_ssim": 0.98163,
+      "iou_delta32": 1.0,
+      "despeckled_shift_px": [
+        40,
+        0,
+        40,
+        0
+      ],
+      "fires": [
+        "C1",
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "15",
+      "class": "margin",
+      "severity": "overflow",
+      "global_ssim": 0.87838,
+      "global_rmse": 0.18899,
+      "tile_min_ssim": 0.1308,
+      "tile_rmse_max": 0.63935,
+      "diff8_area_frac": 0.113357,
+      "diff32_components": 51,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.18496,
+      "composite_white": 0.2438,
+      "region_ratio": 36.1,
+      "region_ssim": 0.65758,
+      "control_region_ssim": 0.98331,
+      "iou_delta32": 0.9974,
+      "despeckled_shift_px": [
+        -29,
+        -29,
+        29,
+        29
+      ],
+      "fires": [
+        "C1",
+        "C3",
+        "C4"
+      ],
+      "verdict": "DEFECT"
+    },
+    {
+      "id": "16",
+      "class": "clean",
+      "severity": "identical",
+      "global_ssim": 1.0,
+      "global_rmse": 0.0,
+      "tile_min_ssim": 1.0,
+      "tile_rmse_max": 0.0,
+      "diff8_area_frac": 0.0,
+      "diff32_components": 0,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.0,
+      "composite_white": 0.0,
+      "region_ratio": 0.0,
+      "region_ssim": 1.0,
+      "control_region_ssim": 0.98065,
+      "iou_delta32": null,
+      "fires": [],
+      "verdict": "CLEAN"
+    },
+    {
+      "id": "17",
+      "class": "clean",
+      "severity": "jpeg92",
+      "global_ssim": 0.99407,
+      "global_rmse": 0.00524,
+      "tile_min_ssim": 0.8655,
+      "tile_rmse_max": 0.02954,
+      "diff8_area_frac": 0.013557,
+      "diff32_components": 122,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.0,
+      "composite_black": 0.00592,
+      "composite_white": 0.00592,
+      "region_ratio": 1.0,
+      "region_ssim": 0.98065,
+      "control_region_ssim": 0.98065,
+      "iou_delta32": null,
+      "fires": [],
+      "verdict": "CLEAN"
+    },
+    {
+      "id": "18",
+      "class": "clean",
+      "severity": "jpeg75",
+      "global_ssim": 0.9873,
+      "global_rmse": 0.00783,
+      "tile_min_ssim": 0.8033,
+      "tile_rmse_max": 0.03857,
+      "diff8_area_frac": 0.026242,
+      "diff32_components": 960,
+      "edge_specks": 0,
+      "white_residual_ratio": 0.000377,
+      "composite_black": 0.00885,
+      "composite_white": 0.00885,
+      "region_ratio": 1.496,
+      "region_ssim": 0.95857,
+      "control_region_ssim": 0.98065,
+      "iou_delta32": null,
+      "fires": [],
+      "verdict": "CLEAN"
+    },
+    {
+      "id": "19",
+      "class": "clean",
+      "severity": "webp80",
+      "global_ssim": 0.99535,
+      "global_rmse": 0.00551,
+      "tile_min_ssim": 0.8938,
+      "tile_rmse_max": 0.03005,
+      "diff8_area_frac": 0.014002,
+      "diff32_components": 302,
+      "edge_specks": 0,
+      "white_residual_ratio": 2e-06,
+      "composite_black": 0.00624,
+      "composite_white": 0.00624,
+      "region_ratio": 1.053,
+      "region_ssim": 0.98483,
+      "control_region_ssim": 0.98065,
+      "iou_delta32": null,
+      "fires": [],
+      "verdict": "CLEAN"
+    }
+  ],
+  "note": "all metric values are rounded from fixtures/metrics.json and fixtures/analysis.json to 4-6 decimals for readability (e.g. 0.98750 is stored as 0.987496); the JSON files in fixtures/ are the exact record. region_ssim for control cases is that case's own region SSIM; control_region_ssim is always the jpeg92 calibration value for the same box",
+  "rules": [
+    {
+      "rule": "R1_global_ssim_lt_0.99",
+      "defectsDetected": 7,
+      "defectsTotal": 15,
+      "controlsFlagged": 1,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "ghost_text/strong",
+        "speck/mild",
+        "speck/strong",
+        "lost_stroke/full",
+        "lost_stroke/partial",
+        "wrong_colour/mild_triangle",
+        "wrong_colour/strong_triangle"
+      ],
+      "falsePositive": [
+        "clean/recompressed_jpeg75"
+      ]
+    },
+    {
+      "rule": "R2_global_rmse_gt_0.01",
+      "defectsDetected": 12,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R3_tile_min_ssim_lt_0.95",
+      "defectsDetected": 13,
+      "defectsTotal": 15,
+      "controlsFlagged": 3,
+      "controlsTotal": 4,
+      "missed": [
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": [
+        "clean/recompressed_jpeg92",
+        "clean/recompressed_jpeg75",
+        "clean/recompressed_webp80"
+      ]
+    },
+    {
+      "rule": "R4_diff8_area_gt_0.001",
+      "defectsDetected": 11,
+      "defectsTotal": 15,
+      "controlsFlagged": 3,
+      "controlsTotal": 4,
+      "missed": [
+        "speck/mild",
+        "speck/strong",
+        "lost_stroke/full",
+        "lost_stroke/partial"
+      ],
+      "falsePositive": [
+        "clean/recompressed_jpeg92",
+        "clean/recompressed_jpeg75",
+        "clean/recompressed_webp80"
+      ]
+    },
+    {
+      "rule": "R5_edge_specks_gt_0",
+      "defectsDetected": 2,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "all non-speck classes"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R6_white_residual_gt_0.002",
+      "defectsDetected": 1,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "14 of 15; only white_fringe/strong fires"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R7_composite_black_rmse_gt_0.01",
+      "defectsDetected": 11,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "halo/mild",
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R8_region_ratio_gt_4",
+      "defectsDetected": 12,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R9_composite_critic",
+      "defectsDetected": 15,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [],
+      "falsePositive": []
+    }
+  ],
+  "compositeCritic": {
+    "verdict": "DEFECT if any check fires; each check is calibrated against a benign re-encode of the same reference",
+    "checks": [
+      {
+        "id": "C1",
+        "name": "geometry",
+        "signal": "de-speckled content bbox shift vs reference (components <150 px removed)",
+        "threshold": "> 2 px on any edge",
+        "detected": 2,
+        "controlsFlagged": 0,
+        "firesOnlyOn": "both margin cases"
+      },
+      {
+        "id": "C2",
+        "name": "specks",
+        "signal": "alpha components with area < 150 px",
+        "threshold": "> 0",
+        "detected": 2,
+        "controlsFlagged": 0,
+        "firesOnlyOn": "both speck cases"
+      },
+      {
+        "id": "C3",
+        "name": "region_rmse",
+        "signal": "region_rmse / benign(jpeg92) region_rmse in the same box",
+        "threshold": "> 4.0",
+        "detected": 12,
+        "controlsFlagged": 0,
+        "margin": "controls 1.00/1.50/1.05; smallest defect 3.79 (ghost mild, caught by C4)"
+      },
+      {
+        "id": "C4",
+        "name": "region_ssim",
+        "signal": "control_region_ssim - case_region_ssim",
+        "threshold": "> 0.05",
+        "detected": 11,
+        "controlsFlagged": 0,
+        "margin": "control max drop 0.0221 (jpeg75); smallest defect drop 0.0214 (fringe mild, caught by C3)"
+      },
+      {
+        "id": "C5",
+        "name": "white_key",
+        "signal": "craft_trace white_residual_ratio",
+        "threshold": "> 0.002",
+        "detected": 1,
+        "controlsFlagged": 0,
+        "margin": "only >=50% opacity white rim raises it"
+      }
+    ],
+    "recall": "15/15",
+    "specificity": "4/4 controls clean",
+    "perCaseFired": {
+      "01": [
+        "C3"
+      ],
+      "02": [
+        "C3",
+        "C5"
+      ],
+      "03": [
+        "C3",
+        "C4"
+      ],
+      "04": [
+        "C3",
+        "C4"
+      ],
+      "05": [
+        "C4"
+      ],
+      "06": [
+        "C3",
+        "C4"
+      ],
+      "07": [
+        "C2"
+      ],
+      "08": [
+        "C2"
+      ],
+      "09": [
+        "C3",
+        "C4"
+      ],
+      "10": [
+        "C3",
+        "C4"
+      ],
+      "11": [
+        "C3",
+        "C4"
+      ],
+      "12": [
+        "C3",
+        "C4"
+      ],
+      "13": [
+        "C3",
+        "C4"
+      ],
+      "14": [
+        "C1",
+        "C3",
+        "C4"
+      ],
+      "15": [
+        "C1",
+        "C3",
+        "C4"
+      ],
+      "16": [],
+      "17": [],
+      "18": [],
+      "19": []
+    }
+  },
+  "findings": [
+    {
+      "id": "F1",
+      "claim": "global SSIM >= 0.99 is not an acceptance criterion",
+      "measured": "8/15 defects pass it (ghost mild 0.99788, ghost strong 0.99567, lost stroke full 0.99803, partial 0.99921, wrong colour mild 0.99857, strong 0.99769, speck mild 0.99980, strong 0.99897); it also rejects the benign jpeg75 control at 0.98730",
+      "severity": "high"
+    },
+    {
+      "id": "F2",
+      "claim": "global RMSE <= 0.01 is the best single global metric but still blind to two classes",
+      "measured": "12/15 defects, 0/4 false alarms; misses ghost_text/mild 0.00652, speck/mild 0.00334, speck/strong 0.00918",
+      "severity": "high"
+    },
+    {
+      "id": "F3",
+      "claim": "tile-wise SSIM cannot separate mild specks from benign compression",
+      "measured": "tile-min: jpeg75 0.8033, ghost mild 0.8508, jpeg92 0.8655, webp80 0.8938, speck/mild 0.9810, speck/strong 0.9632; any threshold below 0.95 flags 3/4 controls, any above misses both specks",
+      "severity": "high"
+    },
+    {
+      "id": "F4",
+      "claim": "raw pixel-diff area is dominated by encoder noise",
+      "measured": "diff>8 area: jpeg92 1.36%, jpeg75 2.62%, webp80 1.40% vs lost stroke 0.050%, speck strong 0.012%, speck mild 0.0013%",
+      "severity": "high"
+    },
+    {
+      "id": "F5",
+      "claim": "craft_trace white_residual_ratio has an effective alpha cutoff of 127 and misses sub-50% fringe",
+      "measured": "white_fringe/mild = 0.0000 (rim alpha 90 excluded), strong = 0.0140 (caught); 1/15 recall overall",
+      "severity": "medium"
+    },
+    {
+      "id": "F6",
+      "claim": "craft_trace edge_specks is narrow but perfectly specific",
+      "measured": "fires only on speck cases (4 and 10 components), 0 on all 13 other defects and 0 on 4 controls",
+      "severity": "info"
+    },
+    {
+      "id": "F7",
+      "claim": "white fringe is completely invisible on a white background",
+      "measured": "composite RMSE black vs white: fringe mild 0.01307/0.00000, strong 0.04828/0.00000; halo mild 0.00641/0.00101, strong 0.02131/0.00336",
+      "severity": "high"
+    },
+    {
+      "id": "F8",
+      "claim": "localization is good for area defects but poor for text ghosts",
+      "measured": "IoU vs injected box: fringe/speck/flat-colour/margin-shift 1.00, overflow 0.997, wrong-colour triangle 0.980, halo 0.895-0.958, lost stroke 0.661-0.665, ghost text 0.545-0.660 with largest-component IoU 0.107-0.112",
+      "severity": "medium"
+    },
+    {
+      "id": "F9",
+      "claim": "geometry checks must be de-speckled first",
+      "measured": "raw alpha bbox moved 20-70 px on speck cases (false margin alarm); after dropping components <150 px all speck shifts become 0 and only the 2 real margin cases shift (40 px, +-29 px)",
+      "severity": "medium"
+    },
+    {
+      "id": "F10",
+      "claim": "flat recolour is NOT an SSIM constant-region blind spot (hypothesis tested and rejected)",
+      "measured": "on the 600 px flat-disc recolour: 0 tiles with SSIM >= 0.9999 and RMSE >= 0.05; region SSIM dropped 0.9791 -> 0.8416 and global SSIM dropped to 0.9661",
+      "severity": "info"
+    }
+  ],
+  "criticCriteria": [
+    "Recall: all 15 labelled defects reported and class-labelled correctly (15/15).",
+    "Specificity: all 4 controls clean, including the two lossy-encoder controls.",
+    "Localization: IoU >= 0.50 with the injected region for the 13 area-shaped defects (measured achievable 0.66-1.00); ghost reports must allow multiple regions.",
+    "Calibration: thresholds computed against a benign re-encode of the same reference at run time; constants recorded per corpus.",
+    "Dual background: evaluate on black and on white and use the worse-case signal (white-edge defects are invisible on white).",
+    "De-speckled geometry: layout checks run on an alpha mask with <150 px components removed.",
+    "Determinism: two runs on the same inputs produce identical verdicts and metric values.",
+    "No silent pass: a missing metric yields UNVERIFIED, never pass.",
+    "Regression gate: any critic change re-runs this corpus; a newly missed defect or newly flagged control blocks promotion.",
+    "Human sign-off remains required for print/publish; a green critic is not design acceptance."
+  ],
+  "limits": [
+    "One reference and one art style (1200x1500 apparel badge); thresholds calibrated for it, transfer not demonstrated.",
+    "Defects are synthetically injected; only the benign controls are real encoder output.",
+    "Two severities per class; no detection curve across severity.",
+    "No vision-model leg measured; the corpus is available as a fixture set for one.",
+    "Calibration control is in-encoder-family (same reference re-encoded); a critic comparing different renderers must calibrate with that renderer.",
+    "Not tested: CMYK/press conversion, gradient banding, blend-mode flattening, kerning drift, multi-artboard documents."
+  ],
+  "unknowns": [
+    "Whether these thresholds hold on photographic or gradient-heavy art.",
+    "The severity threshold at which each defect class becomes human-obvious (no human ratings taken).",
+    "Whether a VLM critic detects the same 15 defects and localizes them (not run).",
+    "Cross-renderer noise floor (VectorCraft render vs rsvg) for these defect classes.",
+    "Effect of CMYK conversion / soft proofing on the measured deltas."
+  ],
+  "operationalNote": {
+    "incident": "the first generator run failed with AttributeError: module 'numbers' has no attribute 'Integral'",
+    "cause": "another process left /tmp/numbers.py; a script executed from /tmp puts /tmp first on sys.path and shadows the stdlib module",
+    "fix": "run from a dedicated directory (/tmp/vd/)",
+    "harnessRule": "never execute job scripts directly out of a shared /tmp; give each run its own scratch directory"
+  },
+  "artifacts": {
+    "markdown": "research/eko-deerflow-agent/execution-wave/03-VISUAL-DEFECTS.md",
+    "fixturesDir": "research/eko-deerflow-agent/execution-wave/fixtures",
+    "pngCount": 20,
+    "jsonFiles": [
+      "metrics.json",
+      "analysis.json",
+      "critique.json",
+      "manifest.json"
+    ],
+    "scripts": [
+      "build_corpus.py",
+      "analyze_regions.py",
+      "evaluate_critic.py"
+    ],
+    "manifest": "fixtures/manifest.json (SHA-256 of 26 artefacts; excludes itself)"
+  }
+}

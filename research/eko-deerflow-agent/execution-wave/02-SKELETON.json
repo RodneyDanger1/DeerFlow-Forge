@@ -1,0 +1,351 @@
+{
+  "schema": "forge-skeleton/1.0",
+  "task": "task-9",
+  "title": "Forge Conductor executable skeleton contract",
+  "status": "executable-skeleton-validated",
+  "generated": "2026-11-05",
+  "owner": "Riley",
+  "author": "harness-architect",
+  "design_input": "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md",
+  "deliverable_md": "research/eko-deerflow-agent/execution-wave/02-FORGE-SKELETON.md",
+  "deliverable_json": "research/eko-deerflow-agent/execution-wave/02-SKELETON.json",
+  "non_claims": [
+    "No service, daemon, systemd unit, container, HTTP listener or migration was created.",
+    "No production database, table, role or file was changed; the scratch database forge_scratch was created and dropped inside this task.",
+    "No Craft CLI was executed and no artifact was verified; the executor boundary is a test double.",
+    "The guard labels in forge_transition are documentation; the database enforces topology and verdict rules, not semantic guard truth.",
+    "Nothing here proves design quality, learning, retrieval lift or cost; those remain open gaps and later tasks."
+  ],
+  "environment": {
+    "postgres": "PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2), container pod-postgres on srv2108523",
+    "scratch_database": "forge_scratch (created and dropped; production pod database never connected)",
+    "python": "3.14.7 (stdlib only)",
+    "typescript": "5.9.3 (repo node_modules/typescript, read-only)",
+    "node": "v26.7.0",
+    "evidence_labels": {
+      "RUN": "executed in this task, output in the design doc section 10",
+      "READ": "read from the repo with path",
+      "DESIGN": "carried from wave2/04 as an unexecuted statement",
+      "GAP": "unresolved, listed in gaps"
+    }
+  },
+  "executable_artifacts": [
+    {
+      "name": "forge_schema.sql",
+      "language": "sql",
+      "lines": 663,
+      "embedded_section": "3",
+      "status": "verified",
+      "proof": "applied twice to PostgreSQL 16.15 scratch DB (exit 0 both times); 18 assertions pass; 2-worker SKIP LOCKED claim does not block"
+    },
+    {
+      "name": "forge_gateway.py",
+      "language": "python",
+      "lines": 310,
+      "embedded_section": "7",
+      "status": "verified",
+      "proof": "py_compile exit 0; 33/33 unittest tests pass"
+    },
+    {
+      "name": "test_forge_gateway.py",
+      "language": "python",
+      "lines": 255,
+      "embedded_section": "8.5",
+      "status": "verified",
+      "proof": "Ran 33 tests in 0.032s — OK"
+    },
+    {
+      "name": "contracts.d.ts",
+      "language": "typescript",
+      "lines": 217,
+      "embedded_section": "9",
+      "status": "verified",
+      "proof": "tsc --noEmit --strict exit 0 with check.ts"
+    },
+    {
+      "name": "check.ts",
+      "language": "typescript",
+      "lines": 132,
+      "embedded_section": "9",
+      "status": "verified",
+      "proof": "positive compile exit 0; removing a required field yields TS2741 exit 2"
+    }
+  ],
+  "tables": [
+    {
+      "name": "forge_transition",
+      "purpose": "reference data: legal episode edges plus guard labels",
+      "key_constraints": ["PK (from_state, to_state)", "CHECK both states in the 15-state set", "36 seeded edges"],
+      "append_only": false
+    },
+    {
+      "name": "forge_episode",
+      "purpose": "one episode one row with status/verdict/budget/plan",
+      "key_constraints": ["id uuid PK", "UNIQUE idempotency_key", "CHECK status in 15 states", "CHECK verdict set", "CHECK accepted implies verdict pass or pass_with_notes", "brief length 1..32768", "reason codes <= 32"],
+      "append_only": false
+    },
+    {
+      "name": "forge_event",
+      "purpose": "hash-chained append-only evidence log",
+      "key_constraints": ["UNIQUE (episode_id, seq)", "prev_hash/hash 64 hex", "payload <= 32768 bytes", "BEFORE UPDATE OR DELETE trigger raises 42501"],
+      "append_only": true
+    },
+    {
+      "name": "forge_handoff",
+      "purpose": "typed specialist handoffs claimed with a lease",
+      "key_constraints": ["state set created/claimed/completed/failed/expired", "CHECK failed implies refusal_code present", "attempts >= 0", "payload <= 32768 bytes"],
+      "append_only": false
+    },
+    {
+      "name": "forge_tool_call",
+      "purpose": "tool audit and idempotent replay",
+      "key_constraints": ["UNIQUE idempotency_key", "idempotency_key matches ^sha256:[0-9a-f]{64}$", "CHECK refused implies refusal_code", "CHECK succeeded implies exit_code 0", "params <= 65536 bytes"],
+      "append_only": false
+    },
+    {
+      "name": "forge_artifact",
+      "purpose": "artifact index backed by a content-addressed store",
+      "key_constraints": ["UNIQUE (episode_id, sha256, kind)", "sha256 64 hex", "bytes > 0", "dimensions/dpi positive when present", "append-only trigger"],
+      "append_only": true
+    },
+    {
+      "name": "forge_gate",
+      "purpose": "domain gate evidence per artifact hash",
+      "key_constraints": ["sha256 64 hex", "ok boolean", "checks/non_vacuous/source_mutation jsonb", "append-only trigger"],
+      "append_only": true
+    },
+    {
+      "name": "forge_critique",
+      "purpose": "blind critic evidence with crop-cited dimensions",
+      "key_constraints": ["confidence between 0 and 1", "verdict set pass/pass_with_notes/reject/unverifiable", "append-only trigger"],
+      "append_only": true
+    },
+    {
+      "name": "forge_eval",
+      "purpose": "one evaluation per episode per arm",
+      "key_constraints": ["UNIQUE (episode_id, arm)", "arm set baseline/memory", "verdict set", "append-only trigger"],
+      "append_only": true
+    },
+    {
+      "name": "forge_job",
+      "purpose": "Postgres queue with SKIP LOCKED leases and dedupe",
+      "key_constraints": ["UNIQUE dedupe_key", "state set queued/claimed/running/succeeded/failed/abandoned", "attempts/max_attempts bounds", "lease_until and run_after"],
+      "append_only": false
+    },
+    {
+      "name": "forge_skill",
+      "purpose": "versioned procedural skill",
+      "key_constraints": ["PK (skill_id, version)", "one active per skill_id via partial unique index", "active implies promoted_at", "catalogue_hash shape"],
+      "append_only": false
+    },
+    {
+      "name": "forge_budget_ledger",
+      "purpose": "daily token and cost accumulation with hard cap",
+      "key_constraints": ["PK (day, account_id)", "non-negative counters", "charge raises E_BUDGET_EXCEEDED and rolls back over cap"],
+      "append_only": false
+    },
+    {
+      "name": "forge_approval",
+      "purpose": "single-use human approval bound to artifact hash and scope",
+      "key_constraints": ["UNIQUE (artifact_sha256, scope, token_hash)", "scope publish/promotion", "expiry after issue", "consume updates only unused unexpired rows"],
+      "append_only": false
+    }
+  ],
+  "sql_functions": [
+    {"name": "forge_can_transition", "signature": "forge_can_transition(p_from text, p_to text) returns boolean", "purpose": "edge lookup"},
+    {"name": "forge_transition_episode", "signature": "forge_transition_episode(p_episode uuid, p_to text, p_verdict text default null, p_reason text[] default '{}') returns forge_episode", "purpose": "guarded transition; refuses illegal edges, enforces accepted verdict, sets finished_at, appends an episode.transition event"},
+    {"name": "forge_append_event", "signature": "forge_append_event(p_episode uuid, p_kind text, p_payload jsonb) returns forge_event", "purpose": "advisory-locked append computing prev_hash/hash"},
+    {"name": "forge_verify_event_chain", "signature": "forge_verify_event_chain(p_episode uuid) returns table(checked integer, broken integer)", "purpose": "recompute every hash and link"},
+    {"name": "forge_claim_handoff", "signature": "forge_claim_handoff(p_role text, p_lease_s integer default 900) returns forge_handoff", "purpose": "SKIP LOCKED claim; NULL when nothing ready"},
+    {"name": "forge_replay_tool_call", "signature": "forge_replay_tool_call(p_key text) returns forge_tool_call", "purpose": "return the stored result for an idempotency key"},
+    {"name": "forge_claim_job", "signature": "forge_claim_job(p_worker text, p_lease_s integer default 300) returns forge_job", "purpose": "SKIP LOCKED job claim with lease and attempt increment"},
+    {"name": "forge_finish_job", "signature": "forge_finish_job(p_job bigint, p_ok boolean, p_error text default null) returns forge_job", "purpose": "finish only from claimed/running, else E_JOB_STATE"},
+    {"name": "forge_charge", "signature": "forge_charge(p_account bigint, p_day date, p_tokens_in bigint, p_tokens_out bigint, p_cents numeric, p_cap_cents numeric default null) returns forge_budget_ledger", "purpose": "upsert usage; raise E_BUDGET_EXCEEDED over cap"},
+    {"name": "forge_consume_approval", "signature": "forge_consume_approval(p_episode uuid, p_sha text, p_scope text) returns forge_approval", "purpose": "single-use approval consumption"},
+    {"name": "forge_immutability_report", "signature": "forge_immutability_report() returns table(table_name text, has_trigger boolean)", "purpose": "prove append-only trigger coverage"},
+    {"name": "forge_refuse_mutation", "signature": "trigger function", "purpose": "raise 42501 on UPDATE/DELETE of evidence"},
+    {"name": "forge_touch_updated_at", "signature": "trigger function", "purpose": "maintain updated_at"}
+  ],
+  "state_machine": {
+    "states": ["intake", "briefed", "planned", "context_ready", "executing", "verifying", "critiquing", "needs_human", "paused", "accepted", "rejected", "refused", "failed", "cancelled", "quarantined"],
+    "terminal": ["accepted", "rejected", "refused", "failed", "cancelled", "quarantined"],
+    "edge_count": 36,
+    "edges": [
+      "intake->briefed", "intake->refused", "intake->cancelled",
+      "briefed->planned", "briefed->needs_human", "briefed->refused", "briefed->cancelled",
+      "planned->context_ready", "planned->needs_human", "planned->failed", "planned->refused",
+      "context_ready->executing", "context_ready->needs_human", "context_ready->refused", "context_ready->cancelled",
+      "executing->verifying", "executing->paused", "executing->failed", "executing->needs_human", "executing->quarantined", "executing->cancelled",
+      "verifying->critiquing", "verifying->rejected", "verifying->needs_human", "verifying->failed",
+      "critiquing->accepted", "critiquing->rejected", "critiquing->needs_human", "critiquing->failed",
+      "needs_human->accepted", "needs_human->rejected", "needs_human->paused", "needs_human->cancelled",
+      "paused->executing", "paused->needs_human", "paused->cancelled"
+    ],
+    "other_lifecycles": {
+      "handoff": ["created", "claimed", "completed", "failed", "expired"],
+      "job": ["queued", "claimed", "running", "succeeded", "failed", "abandoned"],
+      "skill": ["draft", "candidate", "active", "superseded", "rolled_back"]
+    },
+    "enforced": ["edge topology", "unknown state", "accepted requires pass/pass_with_notes", "terminal states have no outgoing edges", "failed handoff requires refusal_code", "one active skill version"],
+    "not_enforced": ["semantic guard labels such as retrieval_receipt or locks_budget (conductor responsibility; gap G-03)"],
+    "correction": "wave2/04 allowed quarantined->cancelled; the executable test rejected that as contradicting terminal semantics, so the edge was removed (37->36) and quarantined is terminal"
+  },
+  "interfaces": {
+    "python_public": [
+      {"name": "canonical_json", "signature": "canonical_json(value: Any) -> str", "purpose": "sorted-key compact JSON, rejects NaN/inf"},
+      {"name": "sha256_hex", "signature": "sha256_hex(data: str | bytes) -> str", "purpose": "hex digest"},
+      {"name": "idempotency_key", "signature": "idempotency_key(episode_id: str, tool_id: str, params: dict, input_hashes: Sequence[str] = ()) -> str", "purpose": "sha256-prefixed stable key with schema tag forge-idem/1"},
+      {"name": "validate_key", "signature": "validate_key(key: str) -> bool", "purpose": "shape check"},
+      {"name": "can_transition", "signature": "can_transition(current: str, target: str) -> bool", "purpose": "mirror of the 36-edge seed"},
+      {"name": "next_state", "signature": "next_state(current: str, target: str) -> str", "purpose": "raise E_TRANSITION_ILLEGAL / E_EPISODE_STATE_UNKNOWN"},
+      {"name": "resolve_within", "signature": "resolve_within(path: str, roots: Iterable[str]) -> Path", "purpose": "realpath then root containment; E_ROOT_DENIED"},
+      {"name": "is_terminal_refusal", "signature": "is_terminal_refusal(code: str) -> bool", "purpose": "terminal/retry classification; unknown fails closed"},
+      {"name": "may_retry", "signature": "may_retry(code: str, attempt: int, max_attempts: int) -> bool", "purpose": "retry budget"},
+      {"name": "build_verdict", "signature": "build_verdict(ev: Evidence) -> tuple[str, list[str]]", "purpose": "total evidence-ladder verdict"},
+      {"name": "Gateway.execute", "signature": "Gateway.execute(call: ToolCall, token: str) -> ToolResult", "purpose": "ordered checks, replay, execute, classify, store"}
+    ],
+    "protocols": [
+      {"name": "Executor", "signature": "run(spec: ToolSpec, call: ToolCall) -> ExecutionOutcome", "purpose": "real CLI adapter (task-08) or test double"},
+      {"name": "Repo", "signature": "find(key: str) -> ToolResult | None; store(key: str, result: ToolResult) -> None", "purpose": "forge_tool_call table in production, in-memory in tests"}
+    ],
+    "typescript_types": ["EpisodeStatus", "Verdict", "RefusalCode", "Role", "App", "TaskEnvelope", "ArtSpec", "Handoff", "ToolCall", "ToolResult", "ArtifactRecord", "GateReport", "CritiqueReport", "VerificationVerdict", "EpisodeView", "HttpApi"],
+    "http_routes": [
+      {"method": "POST", "path": "/v1/episodes", "purpose": "submit TaskEnvelope", "status": "type-only, not implemented"},
+      {"method": "GET", "path": "/v1/episodes/:id", "purpose": "episode view", "status": "type-only, not implemented"},
+      {"method": "POST", "path": "/v1/tool-calls", "purpose": "gateway invocation", "status": "type-only, not implemented"},
+      {"method": "POST", "path": "/v1/episodes/:id/approve", "purpose": "human approval binding", "status": "type-only, not implemented"},
+      {"method": "GET", "path": "/healthz", "purpose": "liveness", "status": "type-only, not implemented"}
+    ]
+  },
+  "idempotency": {
+    "key_formula": "sha256(canonical_json({episode_id, tool_id, params, input_hashes, schema: forge-idem/1})) prefixed with sha256:",
+    "canonicalisation": "sorted keys, compact separators, UTF-8, NaN/Infinity rejected",
+    "guarantees": [
+      {"property": "same logical call yields same key", "mechanism": "canonical JSON", "tested": true},
+      {"property": "different episode/params/inputs yield different key", "mechanism": "key material includes all", "tested": true},
+      {"property": "at most one execution per key", "mechanism": "UNIQUE idempotency_key", "tested": true},
+      {"property": "lost response is recoverable", "mechanism": "forge_replay_tool_call / Repo.find", "tested": true},
+      {"property": "refusals are idempotent", "mechanism": "refused results stored", "tested": true},
+      {"property": "publish/promotion cannot be replayed for free", "mechanism": "single-use forge_approval", "tested": true}
+    ],
+    "check_order": ["spec", "role", "command allowlist", "roots", "key shape", "replay", "execute", "classify", "store"],
+    "known_race": "find-then-insert is not atomic; the DB unique index is the real guard and a production Repo must catch unique_violation and re-read (gap G-01)"
+  },
+  "refusals": [
+    {"code": "E_TRANSITION_ILLEGAL", "terminal": true, "raised_by": "sql"},
+    {"code": "E_VERDICT_MISSING", "terminal": true, "raised_by": "sql"},
+    {"code": "E_VERDICT_INVALID", "terminal": true, "raised_by": "sql"},
+    {"code": "E_EPISODE_NOT_FOUND", "terminal": true, "raised_by": "sql"},
+    {"code": "E_APPEND_ONLY", "terminal": true, "raised_by": "sql", "sqlstate": "42501"},
+    {"code": "E_BUDGET_EXCEEDED", "terminal": true, "raised_by": "sql"},
+    {"code": "E_PUBLISH_NOT_APPROVED", "terminal": true, "raised_by": "sql"},
+    {"code": "E_JOB_STATE", "terminal": true, "raised_by": "sql"},
+    {"code": "E_ROOT_DENIED", "terminal": true, "raised_by": "gateway"},
+    {"code": "E_ROLE_DENIED", "terminal": true, "raised_by": "gateway"},
+    {"code": "E_COMMAND_UNKNOWN", "terminal": true, "raised_by": "gateway"},
+    {"code": "E_INPLACE_WRITE", "terminal": true, "raised_by": "gateway"},
+    {"code": "E_IDEMPOTENCY_CONFLICT", "terminal": true, "raised_by": "gateway"},
+    {"code": "E_BRIEF_MISSING", "terminal": true, "raised_by": "design"},
+    {"code": "E_RIGHTS_MISSING", "terminal": true, "raised_by": "design"},
+    {"code": "E_APP_DRIFT", "terminal": true, "raised_by": "design"},
+    {"code": "E_CATALOGUE_STALE", "terminal": true, "raised_by": "design"},
+    {"code": "E_SOURCE_MUTATED", "terminal": true, "raised_by": "design"},
+    {"code": "E_UPSCALE_LIMIT", "terminal": true, "raised_by": "design"},
+    {"code": "E_TEXT_TRACE_FORBIDDEN", "terminal": true, "raised_by": "design"},
+    {"code": "E_WHITE_MODE_REFUSED", "terminal": true, "raised_by": "design"},
+    {"code": "E_SURFACE_UNVERIFIABLE", "terminal": true, "raised_by": "design"},
+    {"code": "E_UNSUPPORTED_SURFACE", "terminal": true, "raised_by": "design"},
+    {"code": "E_EVAL_EMPTY", "terminal": true, "raised_by": "design"},
+    {"code": "E_ARTIFACT_MISSING", "terminal": false, "raised_by": "verifier"},
+    {"code": "E_ARTIFACT_EMPTY", "terminal": false, "raised_by": "verifier"},
+    {"code": "E_DOCUMENT_STATE", "terminal": false, "raised_by": "executor"},
+    {"code": "E_GATE_FAILED", "terminal": false, "raised_by": "verifier"},
+    {"code": "E_GATE_MISSING", "terminal": false, "raised_by": "verifier"},
+    {"code": "E_GATE_VACUOUS", "terminal": false, "raised_by": "verifier"},
+    {"code": "E_VISION_UNAVAILABLE", "terminal": false, "raised_by": "critic"},
+    {"code": "E_CRITIQUE_UNGROUNDED", "terminal": false, "raised_by": "critic"},
+    {"code": "E_PARAM_REJECTED", "terminal": false, "raised_by": "gateway"},
+    {"code": "E_TIMEOUT", "terminal": false, "raised_by": "gateway"},
+    {"code": "E_MEMORY_CONFLICT", "terminal": false, "raised_by": "curator"}
+  ],
+  "tests": {
+    "sql": {
+      "count": 18,
+      "ids": ["T01", "T02", "T03", "T04", "T05", "T06", "T07", "T08", "T09", "T10", "T11", "T12", "T13", "T14", "T15", "T16", "T17", "T18"],
+      "concurrency": {"id": "T-SKIPLOCK", "scenario": "worker A claims a job and sleeps 3s while worker B claims", "observed": "distinct jobs, 592 ms, no block", "result": "pass"},
+      "observed": "exit 0; ALL SQL ASSERTIONS PASSED"
+    },
+    "python": {
+      "count": 33,
+      "command": "python -m unittest -v test_forge_gateway.py",
+      "observed": "Ran 33 tests — OK",
+      "groups": [
+        {"group": "Key", "tests": 3},
+        {"group": "Transition", "tests": 6},
+        {"group": "Verdict", "tests": 9},
+        {"group": "Path", "tests": 3},
+        {"group": "Refusal", "tests": 3},
+        {"group": "Gateway", "tests": 9}
+      ]
+    },
+    "typescript": {
+      "positive": {"command": "tsc --noEmit --strict contracts.d.ts check.ts", "observed": "exit 0"},
+      "negative": {"mutation": "remove runner_version from the GateReport literal", "observed": "error TS2741, exit 2 (expected)"}
+    }
+  },
+  "evidence": [
+    {"id": "E1", "check": "DDL applies", "command": "psql -v ON_ERROR_STOP=1 -d forge_scratch -f forge_schema.sql", "observed": "exit=0"},
+    {"id": "E2", "check": "DDL re-applies idempotently", "command": "same command twice", "observed": "exit=0, no errors"},
+    {"id": "E3", "check": "SQL assertions", "command": "psql -v ON_ERROR_STOP=1 -d forge_scratch -f forge_tests.sql", "observed": "T01 PASS tables=13 edges=36 ... T18 PASS; ALL SQL ASSERTIONS PASSED; exit=0"},
+    {"id": "E4", "check": "queue concurrency", "command": "two psql sessions, one holding a claim with pg_sleep(3)", "observed": "A_job=4 B_job=5 elapsed_ms=592; T-SKIPLOCK PASS"},
+    {"id": "E5", "check": "python compiles", "command": "python -m py_compile forge_gateway.py test_forge_gateway.py", "observed": "exit=0"},
+    {"id": "E6", "check": "python tests", "command": "python -m unittest -v test_forge_gateway.py", "observed": "Ran 33 tests in 0.032s — OK; exit=0"},
+    {"id": "E7", "check": "typescript positive", "command": "tsc --noEmit --strict contracts.d.ts check.ts", "observed": "exit=0"},
+    {"id": "E8", "check": "typescript negative", "command": "same with runner_version removed", "observed": "TS2741; exit=2 (expected)"},
+    {"id": "E9", "check": "scratch cleanup", "command": "DROP DATABASE forge_scratch", "observed": "exit=0"}
+  ],
+  "gaps": [
+    {"id": "G-01", "gap": "find-then-insert race in Gateway", "impact": "a race or crash between execute and insert can double-execute", "close_with": "production Repo catches unique_violation and re-reads; two-connection integration test"},
+    {"id": "G-02", "gap": "event hash depends on PostgreSQL jsonb text canonicalisation", "impact": "PG major upgrade may invalidate old chains", "close_with": "pin server_version in the chain or hash an application-canonical string"},
+    {"id": "G-03", "gap": "guard labels are documentation, not enforced", "impact": "a conductor bug can skip a precondition", "close_with": "require a handoff row per guard or validate guards inside the transition function"},
+    {"id": "G-04", "gap": "grants/roles commented, no privilege test; shared cluster roles not created", "impact": "least-privilege unproven", "close_with": "apply on a dedicated instance and test cross-schema denial"},
+    {"id": "G-05", "gap": "no migration tool or schema versioning", "impact": "first ALTER untested", "close_with": "schema_version table plus forward-only migrations and a rollback test"},
+    {"id": "G-06", "gap": "Repo/Executor protocols not wired to psycopg or a real CLI", "impact": "integration behaviour unproven", "close_with": "psycopg adapter passing the same 33 tests"},
+    {"id": "G-07", "gap": "no HTTP server implementation", "impact": "boundary specified only", "close_with": "FastAPI routes plus contract tests"},
+    {"id": "G-08", "gap": "approval issuance/signing unspecified", "impact": "whoever can insert an approval row can authorise a publish", "close_with": "issuer, signature/expiry policy, restricted grant"},
+    {"id": "G-09", "gap": "only two workers, one host, pg_sleep concurrency tested", "impact": "lease recovery and clock skew untested", "close_with": "lease-expiry, crash-without-release and skew tests"},
+    {"id": "G-10", "gap": "event payload capped at 32 KB", "impact": "large refusal context could be truncated", "close_with": "store refusal digest plus log path; boundary test"},
+    {"id": "G-11", "gap": "verdict combination coverage is example-based", "impact": "some rung combinations unenumerated", "close_with": "property-based test over all rung combinations"},
+    {"id": "G-12", "gap": "promotion policy not implemented; only one-active guard", "impact": "promotion cannot be exercised from SQL alone", "close_with": "forge_promote_skill() per design sections 8.5 and task-11 simulation"},
+    {"id": "G-13", "gap": "retrieval, brand facts, lessons, conflicts and role tokens deferred", "impact": "Phase 2-3 memory uncovered", "close_with": "add tables when retrieval work starts, same append-only pattern"},
+    {"id": "G-14", "gap": "TS contracts hand-mirrored, not generated", "impact": "drift possible", "close_with": "codegen from JSON Schema or serialise-and-validate contract test"},
+    {"id": "G-15", "gap": "no Craft CLI executed; Executor tested only with a double", "impact": "real stdout envelope unverified", "close_with": "task-08 CLI adapter replayed through the gateway"},
+    {"id": "G-16", "gap": "pgvector and embeddings unused", "impact": "retrieval would be lexical-only", "close_with": "test CREATE EXTENSION vector on scratch, then decide"}
+  ],
+  "traceability": [
+    {"design_section": "04 section 3 architecture / section 4 roles and handoffs", "artifact": "forge_handoff plus claim function", "proof": "T10"},
+    {"design_section": "04 section 5 data contracts", "artifact": "13 tables", "proof": "T01, T07-T14"},
+    {"design_section": "04 section 5.2 hash-chained ledger", "artifact": "forge_event, append/verify functions, append-only trigger", "proof": "T05, T06, T18"},
+    {"design_section": "04 section 6 tool layer", "artifact": "Gateway, ToolSpec/ToolCall, refusal taxonomy", "proof": "33 python tests"},
+    {"design_section": "04 section 7 evidence ladder / verdict rules", "artifact": "build_verdict(Evidence)", "proof": "9 verdict tests"},
+    {"design_section": "04 section 8 memory and promotion", "artifact": "forge_skill states plus one-active index", "proof": "T11; policy deferred G-12"},
+    {"design_section": "04 section 9 evaluation", "artifact": "forge_eval one-per-arm", "proof": "table census T01; coverage deferred G-13"},
+    {"design_section": "04 section 12 state machine", "artifact": "36-edge seed, guarded transition, python mirror", "proof": "T02-T05, T15, transition tests"}
+  ],
+  "reproduction": [
+    "psql -d postgres -c 'CREATE DATABASE forge_scratch'",
+    "psql -v ON_ERROR_STOP=1 -d forge_scratch -f forge_schema.sql   # twice",
+    "psql -v ON_ERROR_STOP=1 -d forge_scratch -f forge_tests.sql",
+    "python -m py_compile forge_gateway.py test_forge_gateway.py",
+    "python -m unittest -v test_forge_gateway.py",
+    "node node_modules/typescript/bin/tsc --noEmit --strict --target ES2022 --module ESNext --moduleResolution bundler contracts.d.ts check.ts",
+    "psql -d postgres -c 'DROP DATABASE forge_scratch'"
+  ],
+  "non_goals": [
+    "no service, daemon, unit, container or listener",
+    "no production database, role, migration or file change",
+    "no Craft CLI execution and no artifact verification",
+    "no promotion, evaluation, retrieval or auth policy implementation",
+    "no claim that the harness design is implemented"
+  ]
+}

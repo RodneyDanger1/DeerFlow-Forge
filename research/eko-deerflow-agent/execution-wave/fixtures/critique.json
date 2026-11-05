@@ -1,0 +1,750 @@
+{
+  "composite_rule": {
+    "checks": [
+      "C1_geometry(>2px)",
+      "C2_specks(components<150px)",
+      "C3_region_rmse(ratio>4)",
+      "C4_region_ssim(drop>0.05)",
+      "C5_white_key(>0.002)"
+    ],
+    "verdict": "DEFECT if any check fires",
+    "defectsDetected": 15,
+    "defectsTotal": 15,
+    "controlsFlagged": 0,
+    "controlsTotal": 4,
+    "missed": [],
+    "falsePositives": []
+  },
+  "perCheckRecall": {
+    "C1_geometry": {
+      "detected": 2,
+      "controlsFlagged": 0
+    },
+    "C2_specks": {
+      "detected": 2,
+      "controlsFlagged": 0
+    },
+    "C3_region_rmse": {
+      "detected": 12,
+      "controlsFlagged": 0
+    },
+    "C4_region_ssim": {
+      "detected": 11,
+      "controlsFlagged": 0
+    },
+    "C5_white_key": {
+      "detected": 1,
+      "controlsFlagged": 0
+    }
+  },
+  "rows": [
+    {
+      "id": "01",
+      "case": "white_fringe/mild",
+      "class": "white_fringe",
+      "severity": "mild",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 6.763,
+      "region_ssim": 0.959378,
+      "control_region_ssim": 0.980747,
+      "region_ssim_drop": 0.021369,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "02",
+      "case": "white_fringe/strong",
+      "class": "white_fringe",
+      "severity": "strong",
+      "is_defect": true,
+      "despeckled_bbox": [
+        238,
+        358,
+        963,
+        1083
+      ],
+      "despeckled_shift_px": [
+        -2,
+        -2,
+        2,
+        2
+      ],
+      "region_rmse_ratio": 10.623,
+      "region_ssim": 0.953647,
+      "control_region_ssim": 0.980848,
+      "region_ssim_drop": 0.027201,
+      "white_residual_ratio": 0.013973,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": false,
+        "C5_white_key": true
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C5_white_key"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "03",
+      "case": "halo/mild",
+      "class": "halo",
+      "severity": "mild",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 21.288,
+      "region_ssim": 0.897451,
+      "control_region_ssim": 0.981446,
+      "region_ssim_drop": 0.083995,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "04",
+      "case": "halo/strong",
+      "class": "halo",
+      "severity": "strong",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 32.177,
+      "region_ssim": 0.827161,
+      "control_region_ssim": 0.982209,
+      "region_ssim_drop": 0.155048,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "05",
+      "case": "ghost_text/mild",
+      "class": "ghost_text",
+      "severity": "mild",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 3.785,
+      "region_ssim": 0.893382,
+      "control_region_ssim": 0.967282,
+      "region_ssim_drop": 0.0739,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": false,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "06",
+      "case": "ghost_text/strong",
+      "class": "ghost_text",
+      "severity": "strong",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 10.613,
+      "region_ssim": 0.819102,
+      "control_region_ssim": 0.972872,
+      "region_ssim_drop": 0.15377,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "07",
+      "case": "speck/mild",
+      "class": "speck",
+      "severity": "mild",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 0.643,
+      "region_ssim": 0.999353,
+      "control_region_ssim": 0.981377,
+      "region_ssim_drop": -0.017976,
+      "white_residual_ratio": 5.9e-05,
+      "edge_specks": 4,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": true,
+        "C3_region_rmse": false,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C2_specks"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "08",
+      "case": "speck/strong",
+      "class": "speck",
+      "severity": "strong",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 1.753,
+      "region_ssim": 0.997215,
+      "control_region_ssim": 0.983892,
+      "region_ssim_drop": -0.013323,
+      "white_residual_ratio": 0.000529,
+      "edge_specks": 10,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": true,
+        "C3_region_rmse": false,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C2_specks"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "09",
+      "case": "lost_stroke/full",
+      "class": "lost_stroke",
+      "severity": "full",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 20.642,
+      "region_ssim": 0.448097,
+      "control_region_ssim": 0.975358,
+      "region_ssim_drop": 0.527261,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "10",
+      "case": "lost_stroke/partial",
+      "class": "lost_stroke",
+      "severity": "partial",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 19.62,
+      "region_ssim": 0.486143,
+      "control_region_ssim": 0.974846,
+      "region_ssim_drop": 0.488703,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "11",
+      "case": "wrong_colour/mild_triangle",
+      "class": "wrong_colour",
+      "severity": "mild_triangle",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 10.791,
+      "region_ssim": 0.8116,
+      "control_region_ssim": 0.896427,
+      "region_ssim_drop": 0.084827,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "12",
+      "case": "wrong_colour/strong_triangle",
+      "class": "wrong_colour",
+      "severity": "strong_triangle",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 11.848,
+      "region_ssim": 0.695286,
+      "control_region_ssim": 0.896427,
+      "region_ssim_drop": 0.201141,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "13",
+      "case": "wrong_colour/flat_inner_disc",
+      "class": "wrong_colour",
+      "severity": "flat_inner_disc",
+      "is_defect": true,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 9.126,
+      "region_ssim": 0.841644,
+      "control_region_ssim": 0.979104,
+      "region_ssim_drop": 0.13746,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "14",
+      "case": "margin/shift_40px",
+      "class": "margin",
+      "severity": "shift_40px",
+      "is_defect": true,
+      "despeckled_bbox": [
+        280,
+        360,
+        1001,
+        1081
+      ],
+      "despeckled_shift_px": [
+        40,
+        0,
+        40,
+        0
+      ],
+      "region_rmse_ratio": 34.227,
+      "region_ssim": 0.684486,
+      "control_region_ssim": 0.981632,
+      "region_ssim_drop": 0.297146,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": true,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C1_geometry",
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "15",
+      "case": "margin/overflow_8pct",
+      "class": "margin",
+      "severity": "overflow_8pct",
+      "is_defect": true,
+      "despeckled_bbox": [
+        211,
+        331,
+        990,
+        1110
+      ],
+      "despeckled_shift_px": [
+        -29,
+        -29,
+        29,
+        29
+      ],
+      "region_rmse_ratio": 36.104,
+      "region_ssim": 0.657585,
+      "control_region_ssim": 0.983309,
+      "region_ssim_drop": 0.325724,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": true,
+        "C2_specks": false,
+        "C3_region_rmse": true,
+        "C4_region_ssim": true,
+        "C5_white_key": false
+      },
+      "fired": [
+        "C1_geometry",
+        "C3_region_rmse",
+        "C4_region_ssim"
+      ],
+      "verdict": "DEFECT",
+      "correct": true
+    },
+    {
+      "id": "16",
+      "case": "clean/identical",
+      "class": "clean",
+      "severity": "identical",
+      "is_defect": false,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 0.0,
+      "region_ssim": 1.0,
+      "control_region_ssim": 0.980647,
+      "region_ssim_drop": -0.019353,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": false,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [],
+      "verdict": "CLEAN",
+      "correct": true
+    },
+    {
+      "id": "17",
+      "case": "clean/recompressed_jpeg92",
+      "class": "clean",
+      "severity": "recompressed_jpeg92",
+      "is_defect": false,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 1.0,
+      "region_ssim": 0.980647,
+      "control_region_ssim": 0.980647,
+      "region_ssim_drop": 0.0,
+      "white_residual_ratio": 0.0,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": false,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [],
+      "verdict": "CLEAN",
+      "correct": true
+    },
+    {
+      "id": "18",
+      "case": "clean/recompressed_jpeg75",
+      "class": "clean",
+      "severity": "recompressed_jpeg75",
+      "is_defect": false,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 1.496,
+      "region_ssim": 0.958571,
+      "control_region_ssim": 0.980647,
+      "region_ssim_drop": 0.022076,
+      "white_residual_ratio": 0.000377,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": false,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [],
+      "verdict": "CLEAN",
+      "correct": true
+    },
+    {
+      "id": "19",
+      "case": "clean/recompressed_webp80",
+      "class": "clean",
+      "severity": "recompressed_webp80",
+      "is_defect": false,
+      "despeckled_bbox": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "despeckled_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "region_rmse_ratio": 1.053,
+      "region_ssim": 0.984833,
+      "control_region_ssim": 0.980647,
+      "region_ssim_drop": -0.004186,
+      "white_residual_ratio": 2e-06,
+      "edge_specks": 0,
+      "checks": {
+        "C1_geometry": false,
+        "C2_specks": false,
+        "C3_region_rmse": false,
+        "C4_region_ssim": false,
+        "C5_white_key": false
+      },
+      "fired": [],
+      "verdict": "CLEAN",
+      "correct": true
+    }
+  ]
+}

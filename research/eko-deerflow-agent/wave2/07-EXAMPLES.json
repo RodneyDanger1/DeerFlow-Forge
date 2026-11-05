@@ -1,0 +1,958 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "07-EXAMPLES",
+  "taskId": "task-7",
+  "producer": "examples-skills-packager",
+  "generatedAtUtc": "2026-11-05T16:36:31+00:00",
+  "status": "design-only",
+  "companions": {
+    "document": "07-EXAMPLES.md",
+    "skills": "07-SKILL-SPECS.md",
+    "self": "07-EXAMPLES.json"
+  },
+  "scope": "Forge Conductor mechanism examples and five draft skill specifications for the Eko/Craft/DeerFlow research corpus",
+  "evidenceLabels": {
+    "V": "verified this session on the host or from an observed command (quoted in 01/04)",
+    "R": "read from a local repository or skill file, with path",
+    "D": "verified in the prior dossier REPORT.md and not re-executed",
+    "I": "inference or design decision, not yet tested",
+    "U": "unverified; becomes policy only after the named check is run"
+  },
+  "validationEvidence": {
+    "pythonSyntax": "python -m py_compile: 5 sketches, exit 0 (Python 3.14.7)",
+    "typescriptSyntax": "tsc --noEmit with strict: exit 0 (TypeScript 5.9.3, zod 4)",
+    "behavioralHarness": "scratch harness: 35/35 checks passed across Examples 1, 4, 5, 6 (pure logic; test doubles for store/vision; no DB or model call)",
+    "notValidated": [
+      "SQL execution against PostgreSQL 16",
+      "Real Craft CLI calls and JSON envelopes",
+      "Model vision calls",
+      "Host deployment or systemd units",
+      "Package installation"
+    ]
+  },
+  "conventions": {
+    "canonicalJson": "json.dumps(sort_keys=True, separators=(',', ':'), ensure_ascii=False)",
+    "hashFormat": "sha256:<64 lowercase hex>",
+    "refusalEnvelope": [
+      "code",
+      "message",
+      "how_to_fix",
+      "evidence_refs",
+      "terminal"
+    ],
+    "idempotency": "sha256(episode_id | tool_id | canonical(params) | sorted(input_hashes))",
+    "roles": [
+      "conductor",
+      "art_director",
+      "vector_operator",
+      "raster_operator",
+      "print_verifier",
+      "visual_critic",
+      "memory_curator"
+    ],
+    "episodeStates": [
+      "intake",
+      "briefed",
+      "planned",
+      "context_ready",
+      "executing",
+      "verifying",
+      "critiquing",
+      "accepted",
+      "needs_human",
+      "unverified",
+      "rejected",
+      "refused",
+      "failed",
+      "cancelled",
+      "quarantined"
+    ]
+  },
+  "examples": [
+    {
+      "id": "ex1",
+      "name": "Supervisor loop with specialist roles and typed handoffs",
+      "language": "Python 3.11+ (asyncio)",
+      "designAnchors": [
+        "04-HARNESS-DESIGN.md §4",
+        "04-HARNESS-DESIGN.md §12.1"
+      ],
+      "mechanism": "Conductor owns episode lifecycle, budgets and arbitration but executes no tool. Plan nodes become typed handoffs claimed by one specialist with a lease; transient refusals retry once, terminal refusals stop the episode, payload shapes are validated, and the verdict is assembled from gate report + blind critique.",
+      "inputs": [
+        "episode_id",
+        "PlanNode DAG",
+        "Budget(max_tokens, max_wall_s, max_attempts)",
+        "registered specialists",
+        "requires_human/human_approved"
+      ],
+      "outputs": [
+        "EpisodeResult(state, resolution, reason_codes, outputs)",
+        "handoff rows (create/claim/complete/fail)",
+        "events eligible for hash-chained ledger"
+      ],
+      "contracts": [
+        "Handoff",
+        "PlanNode",
+        "EpisodeResult",
+        "Refusal",
+        "Budget"
+      ],
+      "failurePath": [
+        {
+          "failure": "no specialist registered",
+          "code": "E_NO_SPECIALIST",
+          "behavior": "refused, terminal, no dispatch"
+        },
+        {
+          "failure": "transient timeout",
+          "code": "E_TIMEOUT",
+          "behavior": "retried once, then refused"
+        },
+        {
+          "failure": "policy/schema/rights refusal",
+          "code": "E_PARAM_REJECTED (example)",
+          "behavior": "terminal; specialist not called twice"
+        },
+        {
+          "failure": "partial payload",
+          "code": "E_HANDOFF_SCHEMA",
+          "behavior": "refused, not accepted with missing evidence"
+        },
+        {
+          "failure": "budget exceeded",
+          "code": "E_BUDGET_EXCEEDED",
+          "behavior": "hard stop before completion"
+        },
+        {
+          "failure": "gate missing/vacuous",
+          "code": "E_GATE_MISSING / E_GATE_VACUOUS",
+          "behavior": "unverified"
+        },
+        {
+          "failure": "gate failed",
+          "code": "E_GATE_FAILED",
+          "behavior": "rejected"
+        },
+        {
+          "failure": "critic rejects",
+          "code": "E_CRITIQUE_REJECT",
+          "behavior": "rejected"
+        },
+        {
+          "failure": "critic unverifiable",
+          "code": "E_CRITIQUE_UNVERIFIABLE",
+          "behavior": "needs_human"
+        },
+        {
+          "failure": "human approval required",
+          "code": "E_HUMAN_APPROVAL_REQUIRED",
+          "behavior": "needs_human"
+        },
+        {
+          "failure": "plan cycle/stall",
+          "code": "E_PLAN_STALLED",
+          "behavior": "failed; planning defect not retried"
+        }
+      ],
+      "verified": [
+        "[R] Role set, handoff kinds, arbitration rules and episode states come from 04 §4 and §12.1",
+        "[R] Existing pipeline retries transient exits only with max_attempts 2 (01 §6)",
+        "[V] DeerFlow subagent_runtime.max_running = 3 read on host (04 §2.2) informed MAX_IN_FLIGHT = 2",
+        "[V] Sketch compiled (py_compile) and 13/13 Example-1 checks passed in the scratch harness"
+      ],
+      "proposed": [
+        "[I] Lease duration 900 s and heartbeat interval",
+        "[I] PostgreSQL SKIP LOCKED adapter behind the HandoffStore protocol",
+        "[I] Budget accounting per handoff"
+      ],
+      "unverified": [
+        "End-to-end execution with real specialists against a real PostgreSQL database",
+        "Load behaviour of the lease/retry parameters on the 2-vCPU host"
+      ],
+      "skillUses": [
+        "agent-harness-architect",
+        "agent-learning-loop"
+      ]
+    },
+    {
+      "id": "ex2",
+      "name": "Typed tool gateway for Craft CLI/MCP",
+      "language": "TypeScript 5.x (zod 4)",
+      "designAnchors": [
+        "04-HARNESS-DESIGN.md §6",
+        "04-HARNESS-DESIGN.md §2.3"
+      ],
+      "mechanism": "Every tool call passes schema → role allowlist → realpath root confinement → absolute-path binary + version pin → idempotency lookup → spawn → artifact hash/magic verification. Fails closed with a named refusal; never executes when a precondition is unmet.",
+      "inputs": [
+        "ToolCallRequest {episodeId, role, toolId, params, inputHashes, workdir}",
+        "registry entries",
+        "per-command zod schemas",
+        "pinned versions"
+      ],
+      "outputs": [
+        "ToolSuccess {argv, exitCode, durationMs, artifacts[], replayOf}",
+        "Refusal {code, message, howToFix, terminal, evidenceRefs}",
+        "forge_tool_call row"
+      ],
+      "contracts": [
+        "RegistryEntry",
+        "ToolCallRequest",
+        "ToolSuccess",
+        "Refusal",
+        "idempotency key"
+      ],
+      "failurePath": [
+        {
+          "failure": "malformed request",
+          "code": "E_PARAM_REJECTED",
+          "behavior": "no execution"
+        },
+        {
+          "failure": "unknown toolId",
+          "code": "E_COMMAND_UNKNOWN",
+          "behavior": "5 nearest ids, no execution"
+        },
+        {
+          "failure": "role not allowed",
+          "code": "E_ROLE_FORBIDDEN",
+          "behavior": "terminal (proposed code)"
+        },
+        {
+          "failure": "params outside schema",
+          "code": "E_PARAM_REJECTED",
+          "behavior": "no execution"
+        },
+        {
+          "failure": "workdir/symlink escapes roots",
+          "code": "E_ROOT_DENIED",
+          "behavior": "refused, not clamped"
+        },
+        {
+          "failure": "version differs from pin / binary missing",
+          "code": "E_APP_DRIFT",
+          "behavior": "human repin required"
+        },
+        {
+          "failure": "timeout or signal",
+          "code": "E_TOOL_TIMEOUT",
+          "behavior": "no artifact accepted"
+        },
+        {
+          "failure": "non-zero exit",
+          "code": "E_APP_CRASH",
+          "behavior": "stderr digest recorded"
+        },
+        {
+          "failure": "exit 0 with no artifact",
+          "code": "E_ARTIFACT_MISSING",
+          "behavior": "exit 0 treated as claim only"
+        },
+        {
+          "failure": "zero-byte/wrong magic artifact",
+          "code": "E_ARTIFACT_EMPTY",
+          "behavior": "refused"
+        },
+        {
+          "failure": "duplicate idempotency key",
+          "code": "n/a (replay)",
+          "behavior": "stored result returned, tool not re-run"
+        }
+      ],
+      "verified": [
+        "[V] Real binaries live under /opt/craft; bare CLI names on service PATH resolve to 127 shims (04 §2.3)",
+        "[V] VectorCraft 0.21.1 and PhotoCraft 0.20.2 installed; catalogues present (04 §2.3)",
+        "[R] Roots, allowlists, idempotency and refusal-code design from 04 §6",
+        "[V] TypeScript sketch typechecks under strict (tsc --noEmit exit 0)"
+      ],
+      "proposed": [
+        "[I] E_ROLE_FORBIDDEN as a new refusal code",
+        "[I] Role-token issuer (forge_role_token)",
+        "[I] Catalogue-to-zod schema generator"
+      ],
+      "unverified": [
+        "Actual Craft CLI JSON envelope field names and line shape",
+        "MCP transport parity",
+        "Idempotency uniqueness and replay under concurrent calls"
+      ],
+      "skillUses": [
+        "agent-harness-architect",
+        "visual-computer-use-verifier"
+      ]
+    },
+    {
+      "id": "ex3",
+      "name": "Episode ledger, hash chain, write path and retrieval",
+      "language": "Python 3.11+ with PostgreSQL SQL",
+      "designAnchors": [
+        "04-HARNESS-DESIGN.md §5.2",
+        "04-HARNESS-DESIGN.md §8.1–8.2"
+      ],
+      "mechanism": "Append-only hash-chained event log (seq, prev_hash, kind, payload); transactional close that validates the chain, closes the episode and indexes a tsvector case; bounded retrieval with hard filters, lexical rank, rerank and a retrieval receipt. Empty retrieval is recorded honestly.",
+      "inputs": [
+        "EpisodeClose {outcome, cost, artifacts, failure codes}",
+        "RetrievalQuery {text, hard filters}"
+      ],
+      "outputs": [
+        "event hash + ChainCheck",
+        "RetrievalResult {hits, query_hash, injected_tokens, empty, reason}",
+        "forge_event / forge_episode_case / forge_retrieval rows"
+      ],
+      "contracts": [
+        "forge_event chain",
+        "forge_episode_case",
+        "forge_retrieval receipt",
+        "ChainCheck"
+      ],
+      "failurePath": [
+        {
+          "failure": "chain mismatch",
+          "code": "E_LEDGER_CHAIN_MISMATCH",
+          "behavior": "close refused; retrieval refuses; episode quarantined"
+        },
+        {
+          "failure": "concurrent append race",
+          "code": "n/a",
+          "behavior": "advisory lock + unique (episode_id, seq)"
+        },
+        {
+          "failure": "missing episode row",
+          "code": "E_LEDGER_WRITE",
+          "behavior": "no event appended"
+        },
+        {
+          "failure": "accepted with no artifact",
+          "code": "ValueError before DB",
+          "behavior": "invalid close rejected"
+        },
+        {
+          "failure": "zero-byte artifact",
+          "code": "ValueError",
+          "behavior": "not evidence"
+        },
+        {
+          "failure": "no matching case",
+          "code": "empty: true",
+          "behavior": "baseline arm; no invented precedent"
+        },
+        {
+          "failure": "token budget exceeded",
+          "code": "trim",
+          "behavior": "fewer hits; actual tokens recorded"
+        },
+        {
+          "failure": "jsonb number normalisation",
+          "code": "n/a",
+          "behavior": "verify fails closed; store canonical text (open)"
+        }
+      ],
+      "verified": [
+        "[V] PostgreSQL 16 running on host; no ledger/eval tables in the pod DB (04 §2.4; 01 §11)",
+        "[R] Table design, hash-chaining, four stores and retrieval pipeline from 04 §5.2 and §8.1–8.2",
+        "[R] pgvector not assumed; vectors as real[] (04 §5.2)",
+        "[V] Sketch compiled (py_compile exit 0)"
+      ],
+      "proposed": [
+        "[I] SQL execution and advisory-lock behaviour (no Forge DB exists)",
+        "[I] Token estimate len/4 and tsvector ranking weights",
+        "[U] Hash over canonical JSON vs stored canonical text"
+      ],
+      "unverified": [
+        "Migration and integration tests against PostgreSQL 16",
+        "Retrieval lift on the (not yet frozen) 50-golden corpus"
+      ],
+      "skillUses": [
+        "agent-learning-loop",
+        "agent-harness-architect"
+      ]
+    },
+    {
+      "id": "ex4",
+      "name": "Visual critic with rendered evidence, diagnostics and rubric",
+      "language": "Python 3.11+",
+      "designAnchors": [
+        "04-HARNESS-DESIGN.md §7.3–7.4"
+      ],
+      "mechanism": "Blind schema-constrained critic: brief + rubric + rendered images only; every dimension cites an existing crop region and an observation; diagnostics are stored but never sent or allowed to set the verdict; confidence is model-reported, grounding-capped and never presented as accuracy; low confidence routes to a human.",
+      "inputs": [
+        "CritiqueInput {artifact hash, brief, renders[], metrics, rubric[]}",
+        "VisionClient"
+      ],
+      "outputs": [
+        "CritiqueReport {dimensions, defects, reported/effective confidence, unseen, verdict, image hashes, raw hash}",
+        "CritiqueRefused on failure"
+      ],
+      "contracts": [
+        "RenderView",
+        "Diagnostics",
+        "RubricLine",
+        "CritiqueInput",
+        "CritiqueReport"
+      ],
+      "failurePath": [
+        {
+          "failure": "gate/exit/operator keys in input",
+          "code": "E_CRITIQUE_UNBLINDED",
+          "behavior": "refused before model call"
+        },
+        {
+          "failure": "vision call fails/empty",
+          "code": "E_VISION_UNAVAILABLE",
+          "behavior": "retry once, then needs_human"
+        },
+        {
+          "failure": "malformed JSON / missing evidence / bad crop",
+          "code": "E_CRITIQUE_UNGROUNDED",
+          "behavior": "retry once with violations, then refuse"
+        },
+        {
+          "failure": "pass with major defect",
+          "code": "E_CRITIQUE_UNGROUNDED",
+          "behavior": "schema violation"
+        },
+        {
+          "failure": "critic mentions gate/exit value",
+          "code": "E_CRITIQUE_UNGROUNDED",
+          "behavior": "schema violation"
+        },
+        {
+          "failure": "confidence < 0.5",
+          "code": "E_CRITIQUE_LOW_CONFIDENCE",
+          "behavior": "unverifiable → needs_human"
+        },
+        {
+          "failure": "pass with non-empty unseen",
+          "code": "PASS_DOWNGRADED_BY_UNSEEN",
+          "behavior": "pass_with_notes"
+        }
+      ],
+      "verified": [
+        "[R] Render ladder, critic protocol, schema rejection rules and confidence<0.5→human from 04 §7.3–7.4",
+        "[V] deepseek-flash configured with supports_vision: true (04 §2.2)",
+        "[V] Sketch compiled and 9/9 Example-4 checks passed in the scratch harness"
+      ],
+      "proposed": [
+        "[I] effective_confidence cap (0.40 + 0.12 × evidence_count)",
+        "[I] Prompt version critic-v0.3",
+        "[I] 12-character minimum observation"
+      ],
+      "unverified": [
+        "Vision quality and false-pass rate on print defects (no labelled corpus)",
+        "Semantic grounding of crop citations (schema checks geometry only)",
+        "Multiple images per call and resolution limits for this model"
+      ],
+      "skillUses": [
+        "visual-computer-use-verifier"
+      ]
+    },
+    {
+      "id": "ex5",
+      "name": "Skill promotion and rollback: candidate to active, evidence, version pin",
+      "language": "Python 3.11+ with PostgreSQL SQL",
+      "designAnchors": [
+        "04-HARNESS-DESIGN.md §8.4–8.5",
+        "craft-agent-operator/references/memory-ledger.md"
+      ],
+      "mechanism": "Procedural memory changes only through a statistical reversible gate: ≥3 independent episodes with distinct inputs, passing golden regression, named human sign-off; transactional supersede + insert with exactly one active version; rollback flips the pointer to a prior version and records the reason; pins bind skill version to app version and catalogue hash.",
+      "inputs": [
+        "PromotionRequest {candidate, evidence[], golden, signoff}",
+        "EventSink",
+        "environment for kill switch",
+        "rollback reason"
+      ],
+      "outputs": [
+        "PromotionDecision {version, previous_active, pinned}",
+        "RollbackDecision",
+        "forge_skill rows + forge_event"
+      ],
+      "contracts": [
+        "forge_skill",
+        "EvidenceRef",
+        "GoldenRegression",
+        "HumanSignoff",
+        "skill_pin"
+      ],
+      "failurePath": [
+        {
+          "failure": "<3 independent episodes",
+          "code": "E_EVIDENCE_INSUFFICIENT",
+          "behavior": "promotion blocked"
+        },
+        {
+          "failure": "same input repeated",
+          "code": "E_EVIDENCE_NOT_INDEPENDENT",
+          "behavior": "promotion blocked"
+        },
+        {
+          "failure": "golden regression",
+          "code": "E_GOLDEN_REGRESSION",
+          "behavior": "promotion blocked"
+        },
+        {
+          "failure": "no named sign-off",
+          "code": "E_HUMAN_SIGNOFF_MISSING",
+          "behavior": "promotion blocked"
+        },
+        {
+          "failure": "kill switch off",
+          "code": "E_SKILLS_DISABLED",
+          "behavior": "promotion blocked; rollback allowed"
+        },
+        {
+          "failure": "version skip/backwards",
+          "code": "E_SKILL_VERSION",
+          "behavior": "refused under lock"
+        },
+        {
+          "failure": "active pointer not unique",
+          "code": "E_SKILL_STATE",
+          "behavior": "restore previous"
+        },
+        {
+          "failure": "rollback without target",
+          "code": "E_ROLLBACK_NO_TARGET",
+          "behavior": "refused"
+        },
+        {
+          "failure": "rollback without reason",
+          "code": "E_ROLLBACK_REASON_MISSING",
+          "behavior": "refused"
+        },
+        {
+          "failure": "pin mismatch",
+          "code": "E_PIN_MISMATCH",
+          "behavior": "replay refused"
+        }
+      ],
+      "verified": [
+        "[R] Promotion policy and pointer-flip rollback from 04 §8.4–8.5 and the installed memory-ledger reference",
+        "[V] No skill/ledger tables exist in the deployed pod DB (04 §2.4; 01 §11)",
+        "[V] Sketch compiled and 5/5 Example-5 checks passed in the scratch harness"
+      ],
+      "proposed": [
+        "[I] Partial unique index enforcing one active version",
+        "[I] Evidence independence definition (distinct episodes and inputs)",
+        "[I] Human sign-off record shape"
+      ],
+      "unverified": [
+        "SQL and concurrency behaviour on PostgreSQL 16",
+        "Real promotion of three skills (requires goldens and reviewers)"
+      ],
+      "skillUses": [
+        "agent-learning-loop"
+      ]
+    },
+    {
+      "id": "ex6",
+      "name": "RL-shaped eval loop with verifiable gates and anti-reward-hacking",
+      "language": "Python 3.11+",
+      "designAnchors": [
+        "04-HARNESS-DESIGN.md §9.1–9.5",
+        "04-HARNESS-DESIGN.md D10"
+      ],
+      "mechanism": "Evaluate retrieval + active skills as policy arms against a public/private golden set. Reward is a hard conjunction of verified properties, never a scalar proxy. Detectors cover private leakage, baseline-arm contamination, gate authorship, brief drift, input override, shortcuts, cost anomaly, skipped critic and threshold hugging. Lift is tested with Wilson/Newcombe intervals; null result is hold.",
+      "inputs": [
+        "GoldenTask[] (public/private, input hash, brief hash, floors, gates)",
+        "RunRecord[] per arm"
+      ],
+      "outputs": [
+        "EvalReport {baseline, memory, lift, lift_ci, regressions, flags, verdict}",
+        "verdict promote_candidate | hold | reject"
+      ],
+      "contracts": [
+        "GoldenTask",
+        "RunRecord",
+        "ArmMetrics",
+        "EvalReport",
+        "HackFlag"
+      ],
+      "failurePath": [
+        {
+          "failure": "empty golden set",
+          "code": "E_EVAL_EMPTY",
+          "behavior": "no score, promotion blocked"
+        },
+        {
+          "failure": "<3 runs per golden per arm",
+          "code": "E_EVAL_INCOMPLETE",
+          "behavior": "evaluation refuses"
+        },
+        {
+          "failure": "unknown golden",
+          "code": "E_EVAL_UNKNOWN_GOLDEN",
+          "behavior": "refuses"
+        },
+        {
+          "failure": "mixed arms",
+          "code": "E_EVAL_ARM_MISMATCH",
+          "behavior": "refuses"
+        },
+        {
+          "failure": "private id retrieved",
+          "code": "E_EVAL_CONTAMINATED",
+          "behavior": "critical flag → reject"
+        },
+        {
+          "failure": "unsafe effect or regression",
+          "code": "reject",
+          "behavior": "promotion blocked; rollback if active"
+        },
+        {
+          "failure": "CI overlaps zero",
+          "code": "hold",
+          "behavior": "honest null result; memory arm off by default"
+        }
+      ],
+      "verified": [
+        "[R] Golden split, metrics, A/B protocol, anti-hack checks and regression gates from 04 §9",
+        "[R] No fine-tuning/RL in phases 0–2 (04 D10, §8.6)",
+        "[V] Sketch compiled and 8/8 Example-6 checks passed in the scratch harness (Wilson/Newcombe, reward, contamination, empty set)"
+      ],
+      "proposed": [
+        "[I] Threshold hugging thresholds (1% margin, 20% share)",
+        "[I] Verifiable reward as hard conjunction",
+        "[I] Newcombe difference interval for lift"
+      ],
+      "unverified": [
+        "The 50-golden corpus does not exist yet",
+        "Any measured retrieval/skill lift",
+        "RL on weights or reward models (not planned)"
+      ],
+      "skillUses": [
+        "agent-learning-loop",
+        "agent-harness-architect"
+      ]
+    }
+  ],
+  "relationshipToInstalled": {
+    "research-corpus-navigator": "Same name as installed v1.0.0 (101 lines). Draft update adds wave2/08, evidence-packet contract and budgets; diff before replacing.",
+    "agent-harness-architect": "Adjacent to installed forge-harness-architect v1.0.0 (142 lines); triggers overlap. Prefer installed for Forge-specific work until merged; routing test required.",
+    "harness-code-adapter": "Same name as installed v1.0.0 (114 lines). Draft update adds corpus references and licence gate; diff before replacing.",
+    "agent-learning-loop": "Same name as installed v1.0.0 (118 lines). Draft update adds Examples 3/5/6 as mechanism references; diff before replacing.",
+    "visual-computer-use-verifier": "Adjacent to installed visual-verification-critic v1.0.0 (121 lines). Draft adds GUI fallback and read-back; merge or keep one with a routing test."
+  },
+  "skills": [
+    {
+      "name": "research-corpus-navigator",
+      "version": "0.1.0-draft",
+      "status": "not-installed",
+      "description": "Route a question to the narrowest corpus source, read it in bounded slices, and return labelled evidence with exact citations instead of pasting whole reports.",
+      "whenToUse": [
+        "Questions answerable by REPORT.md or wave2 01–07",
+        "Claim checks and decision summaries for the owner",
+        "Feeding the other four skills with evidence"
+      ],
+      "whenNotToUse": [
+        "Live host facts (probe the host; corpus is a 2026-11-05 snapshot)",
+        "Single command/parameter lookup (artcraft-command-atlas)",
+        "New research (deep-research first)"
+      ],
+      "sections": [
+        "Corpus map",
+        "Question routing",
+        "Bounded reading protocol",
+        "Evidence labels and precedence",
+        "Evidence packet contract",
+        "Context budget and progressive disclosure",
+        "Freshness and gaps",
+        "Refusals"
+      ],
+      "references": [
+        "research/eko-deerflow-agent/README.md",
+        "research/eko-deerflow-agent/REPORT.md",
+        "research/eko-deerflow-agent/wave2/01-STACK-VPS.md + 01-VPS-FACTS.json",
+        "research/eko-deerflow-agent/wave2/02-AGENT-REPOS.md + 02-REPOS.json",
+        "research/eko-deerflow-agent/wave2/03-CRAFT-SURFACE.md + 03-SURFACE.json",
+        "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md + 04-DESIGN.json",
+        "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md + 05-CODE.json",
+        "research/eko-deerflow-agent/wave2/06-LEARNING-LOOPS.md + 06-LEARNING.json",
+        "research/eko-deerflow-agent/wave2/07-EXAMPLES.md + 07-EXAMPLES.json + 07-SKILL-SPECS.md",
+        "research/eko-deerflow-agent/wave2/08-200-QUESTIONS.md"
+      ],
+      "dependencies": {
+        "required": [],
+        "optional": [
+          "deep-research",
+          "evidence-gap-audit",
+          "source-verification",
+          "claim-register-builder",
+          "capability-auditor"
+        ]
+      },
+      "acceptanceTests": [
+        "Installed Craft apps question returns ≤800 tokens citing 04 §2.3 and 01 §10, marks absent apps",
+        "393,216-token question returns U / absent, does not adopt the number",
+        "Donor mechanism question routes to 05 + harness-code-adapter when 05 is missing"
+      ]
+    },
+    {
+      "name": "agent-harness-architect",
+      "version": "0.1.0-draft",
+      "status": "not-installed",
+      "description": "Design a harness from verified constraints: architecture, contracts, failure taxonomy, memory/eval plan and phased gates before code.",
+      "whenToUse": [
+        "Designing the Forge Conductor or a comparable agent harness",
+        "Deciding build vs integrate vs reuse",
+        "Writing versioned contracts and refusal taxonomies",
+        "Reviewing an architecture for missing verification/memory"
+      ],
+      "whenNotToUse": [
+        "Single feature/bug fix in an existing harness",
+        "Before the corpus evidence is read",
+        "As a substitute for implementation"
+      ],
+      "sections": [
+        "Intake and requirement map",
+        "Constraint baseline",
+        "Architecture options",
+        "Contracts",
+        "State, failure and refusals",
+        "Memory, verification and evaluation",
+        "Phased plan with gates",
+        "Ops and security"
+      ],
+      "references": [
+        "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md (primary)",
+        "research/eko-deerflow-agent/wave2/01-STACK-VPS.md + 01-VPS-FACTS.json",
+        "research/eko-deerflow-agent/wave2/07-EXAMPLES.md",
+        "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md",
+        "research/eko-deerflow-agent/wave2/06-LEARNING-LOOPS.md",
+        "~/.dsh/skills/craft-agent-operator/SKILL.md",
+        "~/.dsh/skills/craft-mcp-drive/SKILL.md"
+      ],
+      "dependencies": {
+        "required": [
+          "research-corpus-navigator",
+          "harness-code-adapter"
+        ],
+        "optional": [
+          "agent-learning-loop",
+          "visual-computer-use-verifier",
+          "craft-mcp-drive"
+        ]
+      },
+      "acceptanceTests": [
+        "Harness design returns architecture + contracts + failure taxonomy + gated phases and names the 127-shim trap",
+        "Build-vs-fork question answered from 04 §11 with labels",
+        "Supervisor-code request refused in favour of contracts + Example 1 + build task"
+      ]
+    },
+    {
+      "name": "harness-code-adapter",
+      "version": "0.1.0-draft",
+      "status": "not-installed",
+      "description": "Source and adapt mechanisms from donor repositories safely: licence/provenance gate, mechanism extraction, original reimplementation, parity tests, attribution and removal path.",
+      "whenToUse": [
+        "A donor mechanism is genuinely needed (loop, gateway, compaction, checkpoints, sandbox, eval)",
+        "Deciding adapter vs fork vs vendor vs reimplement",
+        "Recording attribution and rollback for adapted code"
+      ],
+      "whenNotToUse": [
+        "The mechanism can be specified from 04/07 without a donor",
+        "Licence is unknown or incompatible",
+        "The request is to copy code verbatim"
+      ],
+      "sections": [
+        "Donor intake",
+        "Licence and provenance gate",
+        "Mechanism extraction",
+        "Integration decision",
+        "Original implementation and parity tests",
+        "Attribution record",
+        "Removal and rollback",
+        "Refusal boundaries"
+      ],
+      "references": [
+        "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md + 05-CODE.json",
+        "research/eko-deerflow-agent/wave2/02-AGENT-REPOS.md + 02-REPOS.json",
+        "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md §11",
+        "donor LICENSE, package manifest and commit page",
+        "research/eko-deerflow-agent/REPORT.md bibliography"
+      ],
+      "dependencies": {
+        "required": [
+          "research-corpus-navigator"
+        ],
+        "optional": [
+          "source-verification",
+          "hallucination-redteam",
+          "capability-auditor"
+        ]
+      },
+      "acceptanceTests": [
+        "Port-OpenHands-loop request produces extraction + licence + original plan + parity tests",
+        "Clone-and-use request checks licence, pin, install scripts and runtime cost first",
+        "Best-donor-loop question cites 05/02 with labels and does not rank on stars alone"
+      ]
+    },
+    {
+      "name": "agent-learning-loop",
+      "version": "0.1.0-draft",
+      "status": "not-installed",
+      "description": "Operate memory, retrieval, evaluation and skill promotion honestly: record episodes, retrieve bounded cases, run goldens and A/B, promote evidence-backed skills, detect reward hacking, never claim weight learning.",
+      "whenToUse": [
+        "Designing or operating the four memory stores",
+        "Adding retrieval and measuring lift",
+        "Building goldens, A/B arms and regression gates",
+        "Promotion/rollback decisions and reward-hacking audits"
+      ],
+      "whenNotToUse": [
+        "Fine-tuning or RLHF/PPO weight training (out of scope, not planned)",
+        "Claiming learning from a single run",
+        "Evaluating without fixtures"
+      ],
+      "sections": [
+        "Stores and ownership",
+        "Episode recording",
+        "Retrieval and receipts",
+        "Skills and pins",
+        "Golden set and metrics",
+        "A/B and statistics",
+        "Promotion and rollback",
+        "Anti-reward-hacking and honest claims"
+      ],
+      "references": [
+        "research/eko-deerflow-agent/wave2/06-LEARNING-LOOPS.md + 06-LEARNING.json",
+        "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md §8–9",
+        "research/eko-deerflow-agent/wave2/07-EXAMPLES.md Examples 3, 5, 6 + 07-EXAMPLES.json",
+        "research/eko-deerflow-agent/wave2/01-STACK-VPS.md §11",
+        "~/.dsh/skills/craft-agent-operator/references/memory-ledger.md",
+        "~/.dsh/skills/craft-agent-operator/references/evaluation.md"
+      ],
+      "dependencies": {
+        "required": [
+          "research-corpus-navigator",
+          "agent-harness-architect"
+        ],
+        "optional": [
+          "craft-agent-operator",
+          "auditor",
+          "capability-auditor"
+        ]
+      },
+      "acceptanceTests": [
+        "Retrieval-improvement question demands arms/runs/CI and accepts a null result",
+        "Promotion request checks evidence, goldens, sign-off and pin or refuses",
+        "Learning-claim question distinguishes ledger recording from learning and cites 04 §8.6"
+      ]
+    },
+    {
+      "name": "visual-computer-use-verifier",
+      "version": "0.1.0-draft",
+      "status": "not-installed",
+      "description": "Verify visual artifacts, screenshots, print masters and GUI-only surfaces with rendered evidence, system-of-record read-back and a blind crop-cited critic; never treat exit codes or screenshots as proof.",
+      "whenToUse": [
+        "Verifying a visual artifact before acceptance or publish",
+        "Print/DPI/transparency/safe-zone checks",
+        "GUI-only surfaces with mandatory read-back",
+        "Blind critic reviews with rubric evidence"
+      ],
+      "whenNotToUse": [
+        "Primary action path when a typed CLI/MCP command exists",
+        "Art authoring/editing",
+        "Pixel-only automation of command-capable apps"
+      ],
+      "sections": [
+        "Evidence ladder",
+        "Artifact read-back",
+        "Render ladder",
+        "Blind critic",
+        "GUI fallback",
+        "Refusal codes",
+        "Precision and honest reporting",
+        "Human rubric"
+      ],
+      "references": [
+        "research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md §7",
+        "research/eko-deerflow-agent/wave2/03-CRAFT-SURFACE.md + 03-SURFACE.json",
+        "research/eko-deerflow-agent/wave2/07-EXAMPLES.md Example 4 + 07-EXAMPLES.json",
+        "research/eko-deerflow-agent/wave2/01-STACK-VPS.md §10",
+        "~/.dsh/skills/craft-mcp-drive/SKILL.md",
+        "~/.dsh/skills/artcraft-command-atlas/SKILL.md",
+        "~/.dsh/skills/visuals-gui/SKILL.md",
+        "~/.dsh/skills/forgewright-evidence-check/SKILL.md"
+      ],
+      "dependencies": {
+        "required": [
+          "research-corpus-navigator",
+          "craft-mcp-drive"
+        ],
+        "optional": [
+          "artcraft-command-atlas",
+          "visuals-gui",
+          "forgewright-evidence-check",
+          "apparel-print-master"
+        ]
+      },
+      "acceptanceTests": [
+        "Print-ready question requires dimensions/DPI/alpha/gates and marks unverified when missing",
+        "GUI-saved question refuses the toast and requires read-back",
+        "Critic review checks blindness, crop evidence, unseen and low-confidence rules"
+      ]
+    }
+  ],
+  "integration": [
+    {
+      "from": "ex1",
+      "to": "ex2",
+      "via": "command_batch handoff → gateway call"
+    },
+    {
+      "from": "ex2",
+      "to": "ex3",
+      "via": "tool_call + artifact records → ledger"
+    },
+    {
+      "from": "ex3",
+      "to": "ex1",
+      "via": "episode events and retrieval cases"
+    },
+    {
+      "from": "ex1",
+      "to": "ex4",
+      "via": "renders handed to the blind critic"
+    },
+    {
+      "from": "ex4",
+      "to": "ex1",
+      "via": "CritiqueReport in arbitration"
+    },
+    {
+      "from": "ex6",
+      "to": "ex5",
+      "via": "promotion gate consumes eval evidence"
+    },
+    {
+      "from": "ex5",
+      "to": "ex1",
+      "via": "skill_pin on the next episode"
+    },
+    {
+      "from": "ex3",
+      "to": "ex6",
+      "via": "case summaries/outcomes as run context"
+    }
+  ],
+  "productionGates": [
+    "Migrations and integration tests against PostgreSQL 16 (chain, queue, unique indexes, rollback)",
+    "Versioned JSON Schema for every contract with compatibility tests",
+    "Real CLI probes (20 commands per installed app) and replacement of 127 shims",
+    "Failure injection: timeout, signal, partial write, disk full, DB restart, concurrent promotion, corrupted chain",
+    "Role tokens and approval tokens bound to artifact hashes; no secrets in logs/argv",
+    "Observability: episode/handoff/tool_call correlation, refusal metrics, budget burn, critic flip rate",
+    "Human rubric and inter-rater study before any taste claim",
+    "Load/resource test on the 2-vCPU host before raising concurrency",
+    "Backup/restore and deliberate rollback drill",
+    "Honest baseline run of the 50 goldens before any learning claim"
+  ],
+  "unverified": [
+    "Real Craft CLI JSON envelope field names and MCP parity",
+    "PostgreSQL SQL execution, locks and chain hashing across jsonb normalisation",
+    "Vision quality/false-pass rate and semantic grounding of crop citations",
+    "Retrieval/skill lift and promotion of real skills (no goldens/evidence yet)",
+    "Lease/deadline/budget constants and host load behaviour",
+    "All five skills: not installed, trigger routing untested, token budgets estimated",
+    "Wave 2 files 02–08 and their JSON companions were still being written during this task; re-check before install",
+    "Whether to update, merge or keep separate the installed v1.0.0 counterparts of these five skills",
+    "Any claim of measured learning or production readiness"
+  ]
+}

@@ -1,0 +1,2347 @@
+{
+  "cases": 19,
+  "defects": 15,
+  "controls": 4,
+  "rules": [
+    {
+      "rule": "R1_global_ssim_lt_0.99",
+      "defectsDetected": 7,
+      "defectsTotal": 15,
+      "controlsFlagged": 1,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "ghost_text/strong",
+        "speck/mild",
+        "speck/strong",
+        "lost_stroke/full",
+        "lost_stroke/partial",
+        "wrong_colour/mild_triangle",
+        "wrong_colour/strong_triangle"
+      ],
+      "falsePositive": [
+        "clean/recompressed_jpeg75"
+      ]
+    },
+    {
+      "rule": "R2_global_rmse_gt_0.01",
+      "defectsDetected": 12,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R3_tile_min_ssim_lt_0.95",
+      "defectsDetected": 13,
+      "defectsTotal": 15,
+      "controlsFlagged": 3,
+      "controlsTotal": 4,
+      "missed": [
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": [
+        "clean/recompressed_jpeg92",
+        "clean/recompressed_jpeg75",
+        "clean/recompressed_webp80"
+      ]
+    },
+    {
+      "rule": "R4_diff8_area_gt_0.001",
+      "defectsDetected": 11,
+      "defectsTotal": 15,
+      "controlsFlagged": 3,
+      "controlsTotal": 4,
+      "missed": [
+        "speck/mild",
+        "speck/strong",
+        "lost_stroke/full",
+        "lost_stroke/partial"
+      ],
+      "falsePositive": [
+        "clean/recompressed_jpeg92",
+        "clean/recompressed_jpeg75",
+        "clean/recompressed_webp80"
+      ]
+    },
+    {
+      "rule": "R5_edge_specks_gt_0",
+      "defectsDetected": 2,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "white_fringe/mild",
+        "white_fringe/strong",
+        "halo/mild",
+        "halo/strong",
+        "ghost_text/mild",
+        "ghost_text/strong",
+        "lost_stroke/full",
+        "lost_stroke/partial",
+        "wrong_colour/mild_triangle",
+        "wrong_colour/strong_triangle",
+        "wrong_colour/flat_inner_disc",
+        "margin/shift_40px",
+        "margin/overflow_8pct"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R6_white_residual_gt_0.002",
+      "defectsDetected": 1,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "white_fringe/mild",
+        "halo/mild",
+        "halo/strong",
+        "ghost_text/mild",
+        "ghost_text/strong",
+        "speck/mild",
+        "speck/strong",
+        "lost_stroke/full",
+        "lost_stroke/partial",
+        "wrong_colour/mild_triangle",
+        "wrong_colour/strong_triangle",
+        "wrong_colour/flat_inner_disc",
+        "margin/shift_40px",
+        "margin/overflow_8pct"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R7_composite_black_rmse_gt_0.01",
+      "defectsDetected": 11,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "halo/mild",
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R8_region_ratio_gt_4",
+      "defectsDetected": 12,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    },
+    {
+      "rule": "R9_region_ratio_gt_4_and_region_rmse_gt_0.01",
+      "defectsDetected": 12,
+      "defectsTotal": 15,
+      "controlsFlagged": 0,
+      "controlsTotal": 4,
+      "missed": [
+        "ghost_text/mild",
+        "speck/mild",
+        "speck/strong"
+      ],
+      "falsePositive": []
+    }
+  ],
+  "records": [
+    {
+      "id": "01",
+      "case": "white_fringe/mild",
+      "class": "white_fringe",
+      "severity": "mild",
+      "file": "01_white_fringe_mild.png",
+      "gt_bbox": [
+        239,
+        359,
+        962,
+        1082
+      ],
+      "region": {
+        "box": [
+          227,
+          347,
+          974,
+          1094
+        ],
+        "region_rmse": 0.063583,
+        "region_mae": 0.004338,
+        "region_ssim_rgb": 0.959378,
+        "colour": {
+          "mean_abs_rgb_delta": 0.0,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          227,
+          347,
+          974,
+          1094
+        ],
+        "region_rmse": 0.009402,
+        "region_mae": 0.002334,
+        "region_ssim_rgb": 0.980747,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 6.763,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.987496,
+        "global_rmse": 0.035402,
+        "global_mae": 0.001345,
+        "composite_rmse_black": 0.013065,
+        "composite_rmse_white": 0.0
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.752772,
+        "ssim_p05": 0.862681,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 35,
+        "tiles_below_0_99": 41,
+        "rmse_max": 0.172584,
+        "rmse_p95": 0.129858
+      },
+      "diff8": {
+        "area_frac": 0.00160444,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.00160444,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 1.0,
+        "iou_delta32": 1.0,
+        "iou_largest_component": 1.0
+      }
+    },
+    {
+      "id": "02",
+      "case": "white_fringe/strong",
+      "class": "white_fringe",
+      "severity": "strong",
+      "file": "02_white_fringe_strong.png",
+      "gt_bbox": [
+        238,
+        358,
+        963,
+        1083
+      ],
+      "region": {
+        "box": [
+          226,
+          346,
+          975,
+          1095
+        ],
+        "region_rmse": 0.099608,
+        "region_mae": 0.010108,
+        "region_ssim_rgb": 0.953647,
+        "colour": {
+          "mean_abs_rgb_delta": 0.013973,
+          "ref_mean_rgb": [
+            66.8,
+            75.3,
+            88.5
+          ],
+          "var_mean_rgb": [
+            70.4,
+            78.8,
+            92.1
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          226,
+          346,
+          975,
+          1095
+        ],
+        "region_rmse": 0.009377,
+        "region_mae": 0.002322,
+        "region_ssim_rgb": 0.980848,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 10.623,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        238,
+        358,
+        963,
+        1083
+      ],
+      "bbox_shift_px": [
+        -2,
+        -2,
+        2,
+        2
+      ],
+      "global": {
+        "global_ssim_rgb": 0.985655,
+        "global_rmse": 0.055608,
+        "global_mae": 0.00315,
+        "composite_rmse_black": 0.04828,
+        "composite_rmse_white": 0.0
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.721967,
+        "ssim_p05": 0.8457,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 38,
+        "tiles_below_0_99": 42,
+        "rmse_max": 0.242565,
+        "rmse_p95": 0.185388
+      },
+      "diff8": {
+        "area_frac": 0.00321333,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.00321333,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.013973,
+        "edge_specks": 0,
+        "coverage": 0.229965,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 1.0,
+        "iou_delta32": 1.0,
+        "iou_largest_component": 1.0
+      }
+    },
+    {
+      "id": "03",
+      "case": "halo/mild",
+      "class": "halo",
+      "severity": "mild",
+      "file": "03_halo_mild.png",
+      "gt_bbox": [
+        232,
+        352,
+        969,
+        1089
+      ],
+      "region": {
+        "box": [
+          220,
+          340,
+          981,
+          1101
+        ],
+        "region_rmse": 0.196463,
+        "region_mae": 0.044174,
+        "region_ssim_rgb": 0.897451,
+        "colour": {
+          "mean_abs_rgb_delta": 0.0,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          220,
+          340,
+          981,
+          1101
+        ],
+        "region_rmse": 0.009229,
+        "region_mae": 0.002249,
+        "region_ssim_rgb": 0.981446,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 21.288,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.966937,
+        "global_rmse": 0.111437,
+        "global_mae": 0.014212,
+        "composite_rmse_black": 0.006415,
+        "composite_rmse_white": 0.001013
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.456289,
+        "ssim_p05": 0.681483,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 47,
+        "tiles_below_0_99": 52,
+        "rmse_max": 0.50765,
+        "rmse_p95": 0.417294
+      },
+      "diff8": {
+        "area_frac": 0.02110222,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.02110222,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.958,
+        "iou_delta32": 0.958,
+        "iou_largest_component": 0.958
+      }
+    },
+    {
+      "id": "04",
+      "case": "halo/strong",
+      "class": "halo",
+      "severity": "strong",
+      "file": "04_halo_strong.png",
+      "gt_bbox": [
+        224,
+        344,
+        977,
+        1097
+      ],
+      "region": {
+        "box": [
+          212,
+          332,
+          989,
+          1109
+        ],
+        "region_rmse": 0.290848,
+        "region_mae": 0.098045,
+        "region_ssim_rgb": 0.827161,
+        "colour": {
+          "mean_abs_rgb_delta": 0.0,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          212,
+          332,
+          989,
+          1109
+        ],
+        "region_rmse": 0.009039,
+        "region_mae": 0.002158,
+        "region_ssim_rgb": 0.982209,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 32.177,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.93704,
+        "global_rmse": 0.172694,
+        "global_mae": 0.034525,
+        "composite_rmse_black": 0.021306,
+        "composite_rmse_white": 0.003363
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.15945,
+        "ssim_p05": 0.376205,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 59,
+        "tiles_below_0_99": 63,
+        "rmse_max": 0.726534,
+        "rmse_p95": 0.646482
+      },
+      "diff8": {
+        "area_frac": 0.05044778,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.05044778,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.8949,
+        "iou_delta32": 0.8949,
+        "iou_largest_component": 0.8949
+      }
+    },
+    {
+      "id": "05",
+      "case": "ghost_text/mild",
+      "class": "ghost_text",
+      "severity": "mild",
+      "file": "05_ghost_text_mild.png",
+      "gt_bbox": [
+        442,
+        636,
+        758,
+        724
+      ],
+      "region": {
+        "box": [
+          430,
+          624,
+          770,
+          736
+        ],
+        "region_rmse": 0.044839,
+        "region_mae": 0.016163,
+        "region_ssim_rgb": 0.893382,
+        "colour": {
+          "mean_abs_rgb_delta": 0.021551,
+          "ref_mean_rgb": [
+            87.3,
+            95.5,
+            105.4
+          ],
+          "var_mean_rgb": [
+            93.7,
+            101.2,
+            109.7
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          430,
+          624,
+          770,
+          736
+        ],
+        "region_rmse": 0.011845,
+        "region_mae": 0.004901,
+        "region_ssim_rgb": 0.967282,
+        "colour": {
+          "mean_abs_rgb_delta": 0.006535,
+          "ref_mean_rgb": [
+            87.3,
+            95.5,
+            105.4
+          ],
+          "var_mean_rgb": [
+            87.2,
+            95.4,
+            105.4
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 3.785,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.997884,
+        "global_rmse": 0.006522,
+        "global_mae": 0.000342,
+        "composite_rmse_black": 0.007531,
+        "composite_rmse_white": 0.007531
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.850784,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 9,
+        "tiles_below_0_99": 10,
+        "rmse_max": 0.063108,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.00378722,
+        "components": 13
+      },
+      "diff32": {
+        "area_frac": 0.00352722,
+        "components": 13
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.6718,
+        "iou_delta32": 0.6597,
+        "iou_largest_component": 0.112
+      }
+    },
+    {
+      "id": "06",
+      "case": "ghost_text/strong",
+      "class": "ghost_text",
+      "severity": "strong",
+      "file": "06_ghost_text_strong.png",
+      "gt_bbox": [
+        434,
+        628,
+        766,
+        732
+      ],
+      "region": {
+        "box": [
+          422,
+          616,
+          778,
+          744
+        ],
+        "region_rmse": 0.114913,
+        "region_mae": 0.04305,
+        "region_ssim_rgb": 0.819102,
+        "colour": {
+          "mean_abs_rgb_delta": 0.057399,
+          "ref_mean_rgb": [
+            77.4,
+            86.7,
+            98.7
+          ],
+          "var_mean_rgb": [
+            94.5,
+            101.9,
+            110.2
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          422,
+          616,
+          778,
+          744
+        ],
+        "region_rmse": 0.010828,
+        "region_mae": 0.004096,
+        "region_ssim_rgb": 0.972872,
+        "colour": {
+          "mean_abs_rgb_delta": 0.005461,
+          "ref_mean_rgb": [
+            77.4,
+            86.7,
+            98.7
+          ],
+          "var_mean_rgb": [
+            77.3,
+            86.6,
+            98.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 10.613,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.99567,
+        "global_rmse": 0.018284,
+        "global_mae": 0.00109,
+        "composite_rmse_black": 0.021112,
+        "composite_rmse_white": 0.021112
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.721671,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 10,
+        "tiles_below_0_99": 10,
+        "rmse_max": 0.165209,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.00494833,
+        "components": 12
+      },
+      "diff32": {
+        "area_frac": 0.00481111,
+        "components": 12
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.5463,
+        "iou_delta32": 0.5445,
+        "iou_largest_component": 0.107
+      }
+    },
+    {
+      "id": "07",
+      "case": "speck/mild",
+      "class": "speck",
+      "severity": "mild",
+      "file": "07_speck_mild.png",
+      "gt_bbox": [
+        220,
+        377,
+        922,
+        1113
+      ],
+      "region": {
+        "box": [
+          208,
+          365,
+          934,
+          1125
+        ],
+        "region_rmse": 0.006036,
+        "region_mae": 3.8e-05,
+        "region_ssim_rgb": 0.999353,
+        "colour": {
+          "mean_abs_rgb_delta": 5.6e-05,
+          "ref_mean_rgb": [
+            68.3,
+            76.8,
+            90.1
+          ],
+          "var_mean_rgb": [
+            68.3,
+            76.8,
+            90.1
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          208,
+          365,
+          934,
+          1125
+        ],
+        "region_rmse": 0.009388,
+        "region_mae": 0.002305,
+        "region_ssim_rgb": 0.981377,
+        "colour": {
+          "mean_abs_rgb_delta": 0.003996,
+          "ref_mean_rgb": [
+            68.3,
+            76.8,
+            90.1
+          ],
+          "var_mean_rgb": [
+            68.2,
+            76.7,
+            90.0
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 0.643,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        220,
+        360,
+        961,
+        1113
+      ],
+      "bbox_shift_px": [
+        -20,
+        0,
+        0,
+        32
+      ],
+      "global": {
+        "global_ssim_rgb": 0.999803,
+        "global_rmse": 0.003342,
+        "global_mae": 1.2e-05,
+        "composite_rmse_black": 0.003261,
+        "composite_rmse_white": 0.001744
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.980995,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 0,
+        "tiles_below_0_99": 5,
+        "rmse_max": 0.03125,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 1.333e-05,
+        "components": 6
+      },
+      "diff32": {
+        "area_frac": 1.333e-05,
+        "components": 6
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 5.9e-05,
+        "edge_specks": 4,
+        "coverage": 0.226761,
+        "alpha_components": 5
+      },
+      "localization": {
+        "iou_delta8": 1.0,
+        "iou_delta32": 1.0,
+        "iou_largest_component": 0.0
+      }
+    },
+    {
+      "id": "08",
+      "case": "speck/strong",
+      "class": "speck",
+      "severity": "strong",
+      "file": "08_speck_strong.png",
+      "gt_bbox": [
+        220,
+        340,
+        1031,
+        1114
+      ],
+      "region": {
+        "box": [
+          208,
+          328,
+          1043,
+          1126
+        ],
+        "region_rmse": 0.015086,
+        "region_mae": 0.000247,
+        "region_ssim_rgb": 0.997215,
+        "colour": {
+          "mean_abs_rgb_delta": 0.000465,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.9,
+            76.4,
+            89.9
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          208,
+          328,
+          1043,
+          1126
+        ],
+        "region_rmse": 0.008604,
+        "region_mae": 0.001955,
+        "region_ssim_rgb": 0.983892,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 1.753,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        220,
+        340,
+        1031,
+        1114
+      ],
+      "bbox_shift_px": [
+        -20,
+        -20,
+        70,
+        33
+      ],
+      "global": {
+        "global_ssim_rgb": 0.998975,
+        "global_rmse": 0.009179,
+        "global_mae": 9.2e-05,
+        "composite_rmse_black": 0.0094,
+        "composite_rmse_white": 0.006757
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.963179,
+        "ssim_p05": 0.992136,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 0,
+        "tiles_below_0_99": 20,
+        "rmse_max": 0.05483,
+        "rmse_p95": 0.038771
+      },
+      "diff8": {
+        "area_frac": 0.00012,
+        "components": 24
+      },
+      "diff32": {
+        "area_frac": 0.00012,
+        "components": 24
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.000529,
+        "edge_specks": 10,
+        "coverage": 0.226802,
+        "alpha_components": 11
+      },
+      "localization": {
+        "iou_delta8": 1.0,
+        "iou_delta32": 1.0,
+        "iou_largest_component": 0.0
+      }
+    },
+    {
+      "id": "09",
+      "case": "lost_stroke/full",
+      "class": "lost_stroke",
+      "severity": "full",
+      "file": "09_lost_stroke_full.png",
+      "gt_bbox": [
+        450,
+        840,
+        750,
+        842
+      ],
+      "region": {
+        "box": [
+          438,
+          828,
+          762,
+          854
+        ],
+        "region_rmse": 0.299666,
+        "region_mae": 0.097841,
+        "region_ssim_rgb": 0.448097,
+        "colour": {
+          "mean_abs_rgb_delta": 0.094723,
+          "ref_mean_rgb": [
+            49.7,
+            62.2,
+            80.2
+          ],
+          "var_mean_rgb": [
+            24.1,
+            37.5,
+            58.0
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          438,
+          828,
+          762,
+          854
+        ],
+        "region_rmse": 0.014517,
+        "region_mae": 0.005097,
+        "region_ssim_rgb": 0.975358,
+        "colour": {
+          "mean_abs_rgb_delta": 0.006795,
+          "ref_mean_rgb": [
+            49.7,
+            62.2,
+            80.2
+          ],
+          "var_mean_rgb": [
+            49.7,
+            62.0,
+            80.2
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 20.642,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.998032,
+        "global_rmse": 0.0205,
+        "global_mae": 0.000458,
+        "composite_rmse_black": 0.018131,
+        "composite_rmse_white": 0.002862
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.803206,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 5,
+        "tiles_below_0_99": 5,
+        "rmse_max": 0.19166,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.00050167,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.00050167,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.22625,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.6645,
+        "iou_delta32": 0.6645,
+        "iou_largest_component": 0.6645
+      }
+    },
+    {
+      "id": "10",
+      "case": "lost_stroke/partial",
+      "class": "lost_stroke",
+      "severity": "partial",
+      "file": "10_lost_stroke_partial.png",
+      "gt_bbox": [
+        450,
+        840,
+        570,
+        842
+      ],
+      "region": {
+        "box": [
+          438,
+          828,
+          582,
+          854
+        ],
+        "region_rmse": 0.284996,
+        "region_mae": 0.088495,
+        "region_ssim_rgb": 0.486143,
+        "colour": {
+          "mean_abs_rgb_delta": 0.085675,
+          "ref_mean_rgb": [
+            49.4,
+            61.9,
+            80.0
+          ],
+          "var_mean_rgb": [
+            26.3,
+            39.6,
+            59.9
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          438,
+          828,
+          582,
+          854
+        ],
+        "region_rmse": 0.014526,
+        "region_mae": 0.005104,
+        "region_ssim_rgb": 0.974846,
+        "colour": {
+          "mean_abs_rgb_delta": 0.006805,
+          "ref_mean_rgb": [
+            49.4,
+            61.9,
+            80.0
+          ],
+          "var_mean_rgb": [
+            49.5,
+            61.7,
+            80.0
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 19.62,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.999205,
+        "global_rmse": 0.012998,
+        "global_mae": 0.000184,
+        "composite_rmse_black": 0.011495,
+        "composite_rmse_white": 0.001815
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.803206,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 2,
+        "tiles_below_0_99": 2,
+        "rmse_max": 0.188641,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.00020167,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.00020167,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.22655,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.6612,
+        "iou_delta32": 0.6612,
+        "iou_largest_component": 0.6612
+      }
+    },
+    {
+      "id": "11",
+      "case": "wrong_colour/mild_triangle",
+      "class": "wrong_colour",
+      "severity": "mild_triangle",
+      "file": "11_wrong_colour_mild_triangle.png",
+      "gt_bbox": [
+        540,
+        920,
+        660,
+        1000
+      ],
+      "region": {
+        "box": [
+          528,
+          908,
+          672,
+          1012
+        ],
+        "region_rmse": 0.233393,
+        "region_mae": 0.097289,
+        "region_ssim_rgb": 0.8116,
+        "colour": {
+          "mean_abs_rgb_delta": 0.129719,
+          "ref_mean_rgb": [
+            93.0,
+            56.8,
+            58.8
+          ],
+          "var_mean_rgb": [
+            96.0,
+            102.5,
+            109.4
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          528,
+          908,
+          672,
+          1012
+        ],
+        "region_rmse": 0.021628,
+        "region_mae": 0.006176,
+        "region_ssim_rgb": 0.896427,
+        "colour": {
+          "mean_abs_rgb_delta": 0.008235,
+          "ref_mean_rgb": [
+            93.0,
+            56.8,
+            58.8
+          ],
+          "var_mean_rgb": [
+            93.1,
+            56.4,
+            58.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 10.791,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.998572,
+        "global_rmse": 0.021289,
+        "global_mae": 0.000809,
+        "composite_rmse_black": 0.024582,
+        "composite_rmse_white": 0.024582
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.758467,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 4,
+        "tiles_below_0_99": 4,
+        "rmse_max": 0.367959,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.00273389,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.00273389,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.9795,
+        "iou_delta32": 0.9795,
+        "iou_largest_component": 0.9795
+      }
+    },
+    {
+      "id": "12",
+      "case": "wrong_colour/strong_triangle",
+      "class": "wrong_colour",
+      "severity": "strong_triangle",
+      "file": "12_wrong_colour_strong_triangle.png",
+      "gt_bbox": [
+        540,
+        920,
+        660,
+        1000
+      ],
+      "region": {
+        "box": [
+          528,
+          908,
+          672,
+          1012
+        ],
+        "region_rmse": 0.256255,
+        "region_mae": 0.104054,
+        "region_ssim_rgb": 0.695286,
+        "colour": {
+          "mean_abs_rgb_delta": 0.138739,
+          "ref_mean_rgb": [
+            93.0,
+            56.8,
+            58.8
+          ],
+          "var_mean_rgb": [
+            101.9,
+            28.2,
+            127.4
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          528,
+          908,
+          672,
+          1012
+        ],
+        "region_rmse": 0.021628,
+        "region_mae": 0.006176,
+        "region_ssim_rgb": 0.896427,
+        "colour": {
+          "mean_abs_rgb_delta": 0.008235,
+          "ref_mean_rgb": [
+            93.0,
+            56.8,
+            58.8
+          ],
+          "var_mean_rgb": [
+            93.1,
+            56.4,
+            58.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 11.848,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.99769,
+        "global_rmse": 0.023374,
+        "global_mae": 0.000866,
+        "composite_rmse_black": 0.02699,
+        "composite_rmse_white": 0.02699
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.582886,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 4,
+        "tiles_below_0_99": 4,
+        "rmse_max": 0.404002,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.00273389,
+        "components": 1
+      },
+      "diff32": {
+        "area_frac": 0.00273389,
+        "components": 1
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.9795,
+        "iou_delta32": 0.9795,
+        "iou_largest_component": 0.9795
+      }
+    },
+    {
+      "id": "13",
+      "case": "wrong_colour/flat_inner_disc",
+      "class": "wrong_colour",
+      "severity": "flat_inner_disc",
+      "file": "13_wrong_colour_flat_inner_disc.png",
+      "gt_bbox": [
+        300,
+        420,
+        900,
+        1020
+      ],
+      "region": {
+        "box": [
+          288,
+          408,
+          912,
+          1032
+        ],
+        "region_rmse": 0.095534,
+        "region_mae": 0.067562,
+        "region_ssim_rgb": 0.841644,
+        "colour": {
+          "mean_abs_rgb_delta": 0.097212,
+          "ref_mean_rgb": [
+            66.7,
+            75.2,
+            88.8
+          ],
+          "var_mean_rgb": [
+            102.3,
+            57.8,
+            110.1
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          288,
+          408,
+          912,
+          1032
+        ],
+        "region_rmse": 0.010468,
+        "region_mae": 0.002703,
+        "region_ssim_rgb": 0.979104,
+        "colour": {
+          "mean_abs_rgb_delta": 0.003783,
+          "ref_mean_rgb": [
+            66.7,
+            75.2,
+            88.8
+          ],
+          "var_mean_rgb": [
+            66.7,
+            75.1,
+            88.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 9.126,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.966095,
+        "global_rmse": 0.044433,
+        "global_mae": 0.014615,
+        "composite_rmse_black": 0.051307,
+        "composite_rmse_white": 0.051307
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.7925,
+        "ssim_p05": 0.7925,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 88,
+        "tiles_below_0_99": 99,
+        "rmse_max": 0.128836,
+        "rmse_p95": 0.128836
+      },
+      "diff8": {
+        "area_frac": 0.15858944,
+        "components": 9
+      },
+      "diff32": {
+        "area_frac": 0.15858944,
+        "components": 9
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 1.0,
+        "iou_delta32": 1.0,
+        "iou_largest_component": 1.0
+      }
+    },
+    {
+      "id": "14",
+      "case": "margin/shift_40px",
+      "class": "margin",
+      "severity": "shift_40px",
+      "file": "14_margin_shift_40px.png",
+      "gt_bbox": [
+        240,
+        360,
+        1001,
+        1081
+      ],
+      "region": {
+        "box": [
+          228,
+          348,
+          1013,
+          1093
+        ],
+        "region_rmse": 0.314343,
+        "region_mae": 0.13428,
+        "region_ssim_rgb": 0.684486,
+        "colour": {
+          "mean_abs_rgb_delta": 0.195622,
+          "ref_mean_rgb": [
+            63.3,
+            71.3,
+            83.9
+          ],
+          "var_mean_rgb": [
+            63.3,
+            71.3,
+            83.9
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          228,
+          348,
+          1013,
+          1093
+        ],
+        "region_rmse": 0.009184,
+        "region_mae": 0.002227,
+        "region_ssim_rgb": 0.981632,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 34.227,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        280,
+        360,
+        1001,
+        1081
+      ],
+      "bbox_shift_px": [
+        40,
+        0,
+        40,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.898177,
+        "global_rmse": 0.179176,
+        "global_mae": 0.043628,
+        "composite_rmse_black": 0.176271,
+        "composite_rmse_white": 0.218542
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.104188,
+        "ssim_p05": 0.269776,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 94,
+        "tiles_below_0_99": 104,
+        "rmse_max": 0.676709,
+        "rmse_p95": 0.52232
+      },
+      "diff8": {
+        "area_frac": 0.090365,
+        "components": 13
+      },
+      "diff32": {
+        "area_frac": 0.09006389,
+        "components": 17
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 1.0,
+        "iou_delta32": 1.0,
+        "iou_largest_component": 0.498
+      }
+    },
+    {
+      "id": "15",
+      "case": "margin/overflow_8pct",
+      "class": "margin",
+      "severity": "overflow_8pct",
+      "file": "15_margin_overflow_8pct.png",
+      "gt_bbox": [
+        211,
+        331,
+        989,
+        1109
+      ],
+      "region": {
+        "box": [
+          199,
+          319,
+          1001,
+          1121
+        ],
+        "region_rmse": 0.316159,
+        "region_mae": 0.14021,
+        "region_ssim_rgb": 0.657585,
+        "colour": {
+          "mean_abs_rgb_delta": 0.203537,
+          "ref_mean_rgb": [
+            58.0,
+            65.4,
+            76.9
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          199,
+          319,
+          1001,
+          1121
+        ],
+        "region_rmse": 0.008757,
+        "region_mae": 0.002025,
+        "region_ssim_rgb": 0.983309,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 36.104,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        211,
+        331,
+        990,
+        1110
+      ],
+      "bbox_shift_px": [
+        -29,
+        -29,
+        29,
+        29
+      ],
+      "global": {
+        "global_ssim_rgb": 0.878375,
+        "global_rmse": 0.188992,
+        "global_mae": 0.050102,
+        "composite_rmse_black": 0.184961,
+        "composite_rmse_white": 0.243797
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.130813,
+        "ssim_p05": 0.214386,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 102,
+        "tiles_below_0_99": 114,
+        "rmse_max": 0.639346,
+        "rmse_p95": 0.555524
+      },
+      "diff8": {
+        "area_frac": 0.11335667,
+        "components": 38
+      },
+      "diff32": {
+        "area_frac": 0.10913222,
+        "components": 51
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.264738,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": 0.9974,
+        "iou_delta32": 0.9974,
+        "iou_largest_component": 0.9974
+      }
+    },
+    {
+      "id": "16",
+      "case": "clean/identical",
+      "class": "clean",
+      "severity": "identical",
+      "file": "16_clean_identical.png",
+      "gt_bbox": null,
+      "region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.0,
+        "region_mae": 0.0,
+        "region_ssim_rgb": 1.0,
+        "colour": {
+          "mean_abs_rgb_delta": 0.0,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.009427,
+        "region_mae": 0.002347,
+        "region_ssim_rgb": 0.980647,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 0.0,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 1.0,
+        "global_rmse": 0.0,
+        "global_mae": 0.0,
+        "composite_rmse_black": 0.0,
+        "composite_rmse_white": 0.0
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 1.0,
+        "ssim_p05": 1.0,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 0,
+        "tiles_below_0_99": 0,
+        "rmse_max": 0.0,
+        "rmse_p95": 0.0
+      },
+      "diff8": {
+        "area_frac": 0.0,
+        "components": 0
+      },
+      "diff32": {
+        "area_frac": 0.0,
+        "components": 0
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": null,
+        "iou_delta32": null,
+        "iou_largest_component": null
+      }
+    },
+    {
+      "id": "17",
+      "case": "clean/recompressed_jpeg92",
+      "class": "clean",
+      "severity": "recompressed_jpeg92",
+      "file": "17_clean_recompressed_jpeg92.png",
+      "gt_bbox": null,
+      "region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.009427,
+        "region_mae": 0.002347,
+        "region_ssim_rgb": 0.980647,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.009427,
+        "region_mae": 0.002347,
+        "region_ssim_rgb": 0.980647,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 1.0,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.994071,
+        "global_rmse": 0.005235,
+        "global_mae": 0.000724,
+        "composite_rmse_black": 0.005918,
+        "composite_rmse_white": 0.005918
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.865476,
+        "ssim_p05": 0.961763,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 6,
+        "tiles_below_0_99": 73,
+        "rmse_max": 0.029539,
+        "rmse_p95": 0.014225
+      },
+      "diff8": {
+        "area_frac": 0.01355667,
+        "components": 836
+      },
+      "diff32": {
+        "area_frac": 0.00058778,
+        "components": 122
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.0,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": null,
+        "iou_delta32": null,
+        "iou_largest_component": null
+      }
+    },
+    {
+      "id": "18",
+      "case": "clean/recompressed_jpeg75",
+      "class": "clean",
+      "severity": "recompressed_jpeg75",
+      "file": "18_clean_recompressed_jpeg75.png",
+      "gt_bbox": null,
+      "region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.014099,
+        "region_mae": 0.003813,
+        "region_ssim_rgb": 0.958571,
+        "colour": {
+          "mean_abs_rgb_delta": 0.006538,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.2,
+            89.7
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.009427,
+        "region_mae": 0.002347,
+        "region_ssim_rgb": 0.980647,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 1.496,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.9873,
+        "global_rmse": 0.007829,
+        "global_mae": 0.001176,
+        "composite_rmse_black": 0.008854,
+        "composite_rmse_white": 0.008854
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.803343,
+        "ssim_p05": 0.911407,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 52,
+        "tiles_below_0_99": 86,
+        "rmse_max": 0.03857,
+        "rmse_p95": 0.024521
+      },
+      "diff8": {
+        "area_frac": 0.02624222,
+        "components": 661
+      },
+      "diff32": {
+        "area_frac": 0.00177556,
+        "components": 960
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 0.000377,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": null,
+        "iou_delta32": null,
+        "iou_largest_component": null
+      }
+    },
+    {
+      "id": "19",
+      "case": "clean/recompressed_webp80",
+      "class": "clean",
+      "severity": "recompressed_webp80",
+      "file": "19_clean_recompressed_webp80.png",
+      "gt_bbox": null,
+      "region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.009928,
+        "region_mae": 0.003228,
+        "region_ssim_rgb": 0.984833,
+        "colour": {
+          "mean_abs_rgb_delta": 0.005616,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            75.9,
+            88.8
+          ]
+        }
+      },
+      "control_region": {
+        "box": [
+          228,
+          348,
+          973,
+          1093
+        ],
+        "region_rmse": 0.009427,
+        "region_mae": 0.002347,
+        "region_ssim_rgb": 0.980647,
+        "colour": {
+          "mean_abs_rgb_delta": 0.004004,
+          "ref_mean_rgb": [
+            67.7,
+            76.3,
+            89.8
+          ],
+          "var_mean_rgb": [
+            67.7,
+            76.3,
+            89.7
+          ]
+        }
+      },
+      "region_rmse_ratio_vs_benign": 1.053,
+      "content_bbox_ref": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "content_bbox_var": [
+        240,
+        360,
+        961,
+        1081
+      ],
+      "bbox_shift_px": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "global": {
+        "global_ssim_rgb": 0.995355,
+        "global_rmse": 0.005513,
+        "global_mae": 0.000995,
+        "composite_rmse_black": 0.006243,
+        "composite_rmse_white": 0.006243
+      },
+      "tile": {
+        "tiles": 414,
+        "ssim_min": 0.893809,
+        "ssim_p05": 0.970525,
+        "ssim_p50": 1.0,
+        "tiles_below_0_95": 3,
+        "tiles_below_0_99": 71,
+        "rmse_max": 0.030052,
+        "rmse_p95": 0.015122
+      },
+      "diff8": {
+        "area_frac": 0.01400222,
+        "components": 457
+      },
+      "diff32": {
+        "area_frac": 0.00070389,
+        "components": 302
+      },
+      "gate_equiv": {
+        "white_residual_ratio": 2e-06,
+        "edge_specks": 0,
+        "coverage": 0.226752,
+        "alpha_components": 1
+      },
+      "localization": {
+        "iou_delta8": null,
+        "iou_delta32": null,
+        "iou_largest_component": null
+      }
+    }
+  ]
+}

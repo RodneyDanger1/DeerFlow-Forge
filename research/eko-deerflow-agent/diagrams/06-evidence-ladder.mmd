@@ -1,0 +1,17 @@
+flowchart TD
+  E1["1 Process<br/>exit + JSON result"] --> E2["2 Artifact<br/>exists · hash · dimensions/DPI"]
+  E2 --> E3["3 Domain gates<br/>craft_trace / prep_print_art"]
+  E3 --> E4["4 Independent render<br/>engine vs rsvg/PDF"]
+  E4 --> E5["5 Tile / crop metrics<br/>SSIM + diff bbox"]
+  E5 --> E6["6 Blind critic<br/>crop-cited per dimension"]
+  E6 --> E7["7 Human rubric<br/>taste · print safety"]
+
+  E1 -.->|"exit 0 is not proof"| X1["Unverified"]
+  E2 -.->|"failed run can leave PNG"| X1
+  E3 -.->|"prep ok hard-coded true"| X1
+  E4 -.->|"renderer drift"| X1
+  E5 -.->|"global SSIM misses 4% defect"| X1
+  E6 -.->|"false pass / no crop"| X1
+  E7 -.->|"disagreement"| X2["NeedsHuman"]
+
+  E7 --> V["Accepted only when<br/>all applicable rungs agree"]

@@ -1,0 +1,643 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "06-LEARNING",
+  "taskId": "task-6",
+  "producer": "learning-loop-researcher",
+  "generatedAtUtc": "2026-11-05T16:45:00Z",
+  "method": {
+    "readOnly": true,
+    "externalSources": "web_fetch only: arXiv abstract pages, GitHub raw READMEs and docs, GitHub contents API, one OpenHands blog post",
+    "fullTextsRead": false,
+    "pdfsRead": false,
+    "reposCloned": false,
+    "codeExecuted": false,
+    "modelsCalled": false,
+    "experimentsRun": false,
+    "writesPerformedInRepo": [
+      "research/eko-deerflow-agent/wave2/06-LEARNING-LOOPS.md",
+      "research/eko-deerflow-agent/wave2/06-LEARNING.json"
+    ],
+    "productionFilesTouched": false
+  },
+  "evidenceLabels": {
+    "FETCHED": "retrieved this session by web_fetch from a cited URL",
+    "READ": "read from a file in this repo at a cited path",
+    "VERIFIED": "cross-checked against a fetched or read source in this session; not independently reproduced",
+    "INFERRED": "logical consequence of fetched or read facts",
+    "UNVERIFIED": "no fetched or read source establishes it",
+    "NOT_DOCUMENTED": "reviewed sources are silent"
+  },
+  "headlineFindings": [
+    "Five distinct things are called agent learning: in-context reflection, retrieval memory, procedural skill libraries, supervised weight updates, reinforcement learning. They have different requirements and different truth conditions.",
+    "Reflexion reinforces 'not by updating weights, but instead through linguistic feedback' and stores reflective text in an episodic memory buffer (abstract).",
+    "Voyager uses an ever-growing skill library of executable code and blackbox GPT-4 queries that bypass parameter fine-tuning (abstract).",
+    "ExpeL extracts natural-language insights from past tasks and recalls them at inference without parametric updates (abstract).",
+    "Agent Workflow Memory induces reusable workflows and reports +24.6% / +51.1% relative success on Mind2Web / WebArena (paper claims).",
+    "DeerFlow's skill-evolution host supplies evidence, staging, checking, publication and recovery, but explicitly not the learning strategy, candidate generation or quality evaluation.",
+    "Real agent-RL stacks exist and are active (verl, SkyRL/SkyRL-Agent, rLLM, AgentGym/AgentGym-RL, SWE-RL, SWE-Gym, OpenHands x Snowflake), but all need open weights, GPUs and a verifiable reward.",
+    "The commonly cited AgentGym arXiv id 2501.08913 is wrong; it is a machine-generated-text detection challenge. Real ids: 2406.04151 (AgentGym) and 2509.08755 (AgentGym-RL).",
+    "Reward signals are gameable: random rewards improved MATH-500 by 21.4 points on Qwen2.5-Math-7B via GRPO clipping bias, and specification gaming can generalise to reward tampering.",
+    "Prompted self-correction without external feedback is not reliably supported; reliable external feedback is the condition that works (TACL 2024 critical survey).",
+    "The Forge repo already specifies a learning loop (craft-agent-operator + memory-ledger + evaluation) but its own status lines say the tables and policy are proposed, not deployed.",
+    "The deployed stack is L0: no episode/skill/eval tables, no token ledger, no craft MCP registered, 2 vCPU / 7.9 GB / no GPU, API-only model.",
+    "The only truthful buildable learning for Forge today is L1+L2 with supervised promotion: autonomous proposal, human-approved activation, regression-tested."
+  ],
+  "memoryTaxonomy": [
+    {
+      "layer": "working_context",
+      "holds": "current prompt, tool outputs, scratchpad",
+      "persistence": "one turn or one run",
+      "update": "context assembly",
+      "canImprove": "within-run only",
+      "evidence": "INFERRED"
+    },
+    {
+      "layer": "episodic",
+      "holds": "concrete past runs: brief, actions, artifacts, gates, failure code",
+      "persistence": "cross-run, keyed by episode id",
+      "update": "append-only",
+      "canImprove": "retrieval of similar cases; no generalisation alone",
+      "evidence": "READ memory-ledger.md:14-39; FETCHED Reflexion"
+    },
+    {
+      "layer": "semantic",
+      "holds": "distilled facts and preferences with confidence",
+      "persistence": "cross-run",
+      "update": "extraction, consolidation, confidence ranking",
+      "canImprove": "conditions policy text; must be scored and expirable",
+      "evidence": "FETCHED DeerFlow MEMORY_IMPROVEMENTS.md; Mem0; Zep"
+    },
+    {
+      "layer": "procedural",
+      "holds": "lessons and skills: ordered command ids, params, preconditions, gates",
+      "persistence": "cross-run, versioned",
+      "update": "promotion from repeated verified episodes",
+      "canImprove": "reuse of known-good routines; main reliability lever",
+      "evidence": "FETCHED Voyager, ExpeL, AWM; READ memory-ledger.md:63-93"
+    },
+    {
+      "layer": "parametric",
+      "holds": "model weights",
+      "persistence": "model artifact",
+      "update": "SFT, preference optimisation, RL",
+      "canImprove": "genuine policy change; needs data, GPUs, eval",
+      "evidence": "FETCHED verl, SkyRL, SWE-RL, rLLM; NOT_DOCUMENTED for this stack"
+    }
+  ],
+  "learningLevels": [
+    {
+      "level": "L0",
+      "name": "Frozen",
+      "whatChanges": "nothing",
+      "requires": "prompt and tools",
+      "truthfulClaim": "does the task the same way every time",
+      "existsInStack": true,
+      "evidence": "READ 01-STACK-VPS.md sections 4 and 15 (GAP-LEARN)"
+    },
+    {
+      "level": "L1",
+      "name": "In-context / episodic",
+      "whatChanges": "prompt contents: retrieved cases and reflective text",
+      "requires": "episode log, retrieval, prompt assembly, context budget",
+      "truthfulClaim": "conditions on past runs; measurable only A/B",
+      "existsInStack": "partial (DeerFlow memory/task notes/history search upstream; no Forge episode store)"
+    },
+    {
+      "level": "L2",
+      "name": "Retrieval plus skill library",
+      "whatChanges": "text artifacts: lessons, skills, workflows, facts",
+      "requires": "L1 plus candidate generation, evidence binding, N-success promotion, regression, rollback",
+      "truthfulClaim": "reuses verified routines and improves on held-out tasks",
+      "existsInStack": false,
+      "evidence": "READ memory-ledger.md:3-4 says proposed"
+    },
+    {
+      "level": "L3",
+      "name": "SFT or preference optimisation",
+      "whatChanges": "model weights",
+      "requires": "open weights, GPU, curated trajectories or preference pairs, held-out eval, forgetting controls",
+      "truthfulClaim": "a fine-tuned checkpoint scores X on benchmark Y",
+      "existsInStack": false,
+      "evidence": "READ 01-STACK-VPS.md: API-only model, no GPU"
+    },
+    {
+      "level": "L4",
+      "name": "RL on environment reward",
+      "whatChanges": "model weights",
+      "requires": "L3 plus many rollouts, sandboxed environment, deterministic verifier, reward-hacking defences, eval suite",
+      "truthfulClaim": "RL under reward R raised pass@1 from A to B on held-out tasks",
+      "existsInStack": false,
+      "evidence": "READ no GPU, no verifier, no environment"
+    }
+  ],
+  "claimRules": {
+    "L1": "A/B against no-retrieval arm, same model and app version, at least 3 repeats, reported interval",
+    "L2": "L1 plus transfer to unseen briefs and no golden regression",
+    "L3": "named checkpoint, training set, held-out set, before/after numbers",
+    "L4": "reward audited for hacking and result replicated across at least two model families",
+    "forbiddenPhrasesUntilEvidence": ["self-improving", "RL-trained", "learns on its own", "gets better every run"]
+  },
+  "primarySourceReview": [
+    {
+      "name": "Reflexion",
+      "id": "arXiv:2303.11366",
+      "url": "https://arxiv.org/abs/2303.11366",
+      "claim": "reinforces not by updating weights but through linguistic feedback; reflective text kept in an episodic memory buffer; 91% pass@1 HumanEval vs GPT-4 80%",
+      "requires": "retries, a feedback signal, an evaluator",
+      "doesNotShow": "weight learning; reflection without external feedback",
+      "forgeConsequence": "reflection is only worth adding where the deterministic gate report is the feedback"
+    },
+    {
+      "name": "ExpeL",
+      "id": "arXiv:2308.10144",
+      "url": "https://arxiv.org/abs/2308.10144",
+      "claim": "gathers experiences across training tasks, extracts natural-language knowledge, recalls insights and past experiences at inference",
+      "requires": "task pool, outcome signal, insight extraction, retrieval index",
+      "doesNotShow": "per-task-family transfer guarantees; it is in-context",
+      "forgeConsequence": "closest published template for the Forge loop; agent_lesson is an ExpeL insight store with evidence ids"
+    },
+    {
+      "name": "Voyager",
+      "id": "arXiv:2305.16291",
+      "url": "https://arxiv.org/abs/2305.16291",
+      "claim": "automatic curriculum, ever-growing skill library of executable code, iterative prompting with environment feedback, execution errors and self-verification; blackbox GPT-4 queries bypass fine-tuning",
+      "requires": "reset-able cheap observable environment, executable skills, automatic verification, curriculum generator",
+      "doesNotShow": "that the same works in a destructive production editor",
+      "forgeConsequence": "reuse the versioned skill-library pattern; do not transfer free exploration to production"
+    },
+    {
+      "name": "Agent Workflow Memory",
+      "id": "arXiv:2409.07429",
+      "url": "https://arxiv.org/abs/2409.07429",
+      "claim": "induces reusable workflows and selectively provides them; offline and online; +24.6% Mind2Web and +51.1% WebArena relative success; fewer steps",
+      "requires": "step-level trajectory capture, workflow induction, retrieval and selection",
+      "doesNotShow": "Craft or design domains",
+      "forgeConsequence": "a Forge skill should be a workflow record, not prose advice"
+    },
+    {
+      "name": "DeerFlow memory and skill-evolution host",
+      "urls": [
+        "https://github.com/bytedance/deer-flow",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/backend/docs/MEMORY_IMPROVEMENTS.md",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/backend/docs/MEMORY_COGNITIVE_STYLE.md",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/docs/task-continuity.md",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/docs/OPENVIKING.md",
+        "https://raw.githubusercontent.com/bytedance/deer-flow/main/docs/skill-evolution-host.md"
+      ],
+      "claim": "DeerMem is the default memory backend; OpenViking optional; facts are confidence-ranked and injected under a token budget; cognitiveStyle added; task_continuity adds task_note/history_search/history_read; skill-evolution host offers stage/check/commit/revert with fail-closed scans and PREPARED/APPLIED/NEEDS_REPAIR lifecycle",
+      "requires": "durable DB, one POSIX host, shared local skill storage, security-scan model for auto-publication",
+      "doesNotShow": "any learning strategy, candidate generation, quality evaluation or reward model",
+      "forgeConsequence": "DeerFlow is a substrate; Forge must supply the learner and the evaluator"
+    },
+    {
+      "name": "Mem0",
+      "id": "arXiv:2504.19413",
+      "urls": ["https://arxiv.org/abs/2504.19413", "https://github.com/mem0ai/mem0"],
+      "claim": "extracts, consolidates and retrieves salient memory; graph variant; LOCOMO gains; current README says single-pass ADD-only extraction and multi-signal retrieval, with benchmark scores reflecting the managed platform",
+      "requires": "LLM for extraction, embedding model, vector store",
+      "doesNotShow": "procedural skill memory or design quality",
+      "forgeConsequence": "user/session memory layer only; ADD-only change supports append-only ledger design"
+    },
+    {
+      "name": "Letta / MemGPT",
+      "id": "arXiv:2310.08560",
+      "urls": ["https://arxiv.org/abs/2310.08560", "https://github.com/letta-ai/letta"],
+      "claim": "virtual context management across memory tiers with interrupts; document analysis and multi-session chat; Letta is f.k.a. MemGPT and active source moved to letta-ai/letta-code",
+      "requires": "memory hierarchy, paging tool calls, persistence, reliable tool calling",
+      "doesNotShow": "procedural skill learning",
+      "forgeConsequence": "use as the context-budget mental model; implement bounded typed retrieval rather than an agent paging loop for L1/L2"
+    },
+    {
+      "name": "Graphiti / Zep",
+      "id": "arXiv:2501.13956",
+      "urls": ["https://arxiv.org/abs/2501.13956", "https://github.com/getzep/graphiti"],
+      "claim": "temporally-aware knowledge graph; facts have validity windows and are invalidated not deleted; episodes are provenance; hybrid semantic + BM25 + graph retrieval; DMR 94.8 vs MemGPT 93.4",
+      "requires": "Neo4j 5.26 or FalkorDB or Neptune, LLM and embedder",
+      "doesNotShow": "procedural skills; the reference servers have no auth or prompt-injection protection",
+      "forgeConsequence": "adopt bi-temporal lessons with episode provenance; do not expose reference servers"
+    },
+    {
+      "name": "Self-correction limits",
+      "id": "arXiv:2406.01297",
+      "url": "https://arxiv.org/abs/2406.01297",
+      "claim": "no prior work demonstrates successful self-correction with feedback from prompted LLMs except on exceptionally suited tasks; reliable external feedback works; large-scale fine-tuning enables self-correction",
+      "forgeConsequence": "reflection without a deterministic verifier is not a learning signal"
+    },
+    {
+      "name": "Reward hacking literature",
+      "ids": ["arXiv:2506.10947", "arXiv:2210.10760", "arXiv:2406.10162"],
+      "claim": "random rewards can improve MATH-500 by 21.4 points via GRPO clipping bias on Qwen2.5-Math-7B; reward-model overoptimisation degrades gold performance; specification gaming generalises toward reward tampering",
+      "forgeConsequence": "verifier outside the agent write scope; validate reward across model families; human held-out labels"
+    }
+  ],
+  "memorySystems": [
+    {
+      "system": "DeerMem",
+      "type": "facts plus user/history summaries plus cognitive style",
+      "update": "LLM extraction after turns, debounced, confidence-ranked",
+      "retrieval": "confidence order now, similarity planned",
+      "provenance": "fact ids; PII middleware upstream",
+      "fit": "user and brand preferences, collaboration style",
+      "ops": "already deployed; may need schema extension"
+    },
+    {
+      "system": "OpenViking",
+      "type": "optional remote memory backend, session per thread",
+      "update": "existing middleware capture with commit retries",
+      "retrieval": "fixed query via adapter, configurable top_k and threshold",
+      "provenance": "session and cursor; fail-open read, log-and-drop write",
+      "fit": "separate memory server",
+      "ops": "extra service and key"
+    },
+    {
+      "system": "Mem0",
+      "type": "extracted memories, optional graph",
+      "update": "LLM extraction plus ADD-only accumulation",
+      "retrieval": "semantic plus BM25 plus entity fusion",
+      "provenance": "memory ids",
+      "fit": "conversational memory, not skills",
+      "ops": "LLM plus embedder plus vector store"
+    },
+    {
+      "system": "Letta/MemGPT",
+      "type": "tiered virtual context with agent paging",
+      "update": "agent tool calls",
+      "retrieval": "agent-driven paging",
+      "provenance": "message history",
+      "fit": "long-running interactive agents",
+      "ops": "latency; tool-calling reliability"
+    },
+    {
+      "system": "Graphiti/Zep",
+      "type": "temporal knowledge graph with validity windows",
+      "update": "incremental ingestion, invalidate not delete",
+      "retrieval": "hybrid semantic plus BM25 plus graph",
+      "provenance": "episode to entity/edge lineage",
+      "fit": "lessons and facts that change over time",
+      "ops": "graph DB plus LLM plus embedder"
+    },
+    {
+      "system": "AWM / Voyager pattern",
+      "type": "workflow and skill library",
+      "update": "induced from verified trajectories",
+      "retrieval": "similarity over task or workflow",
+      "provenance": "source trajectories",
+      "fit": "procedural skills for Craft",
+      "ops": "must be built"
+    },
+    {
+      "system": "Forge episode ledger",
+      "type": "episodic plus actions plus artifacts plus evals plus lessons plus skills",
+      "update": "append-only",
+      "retrieval": "metadata and lexical first, embeddings later",
+      "provenance": "episode ids on every lesson",
+      "fit": "the core Forge store",
+      "ops": "Postgres already on VPS"
+    }
+  ],
+  "nameVerification": [
+    {
+      "citedName": "AgentGym arXiv 2501.08913",
+      "verdict": "WRONG",
+      "reality": "2501.08913 is GenAI Content Detection Task 3 (cross-domain machine-generated text detection)",
+      "correctIds": ["2406.04151 AgentGym", "2509.08755 AgentGym-RL"]
+    },
+    {
+      "citedName": "verl",
+      "verdict": "REAL",
+      "reality": "Volcano Engine RL library, open-source HybridFlow (2409.19256); PPO, GRPO, GSPO, ReMax, REINFORCE++, RLOO, PRIME, DAPO, DrGRPO, SPPO, SFT; multi-turn tool calling; FSDP2/Megatron; vLLM/SGLang"
+    },
+    {
+      "citedName": "SkyRL",
+      "verdict": "REAL",
+      "reality": "NovaSky/Berkeley Sky modular RL library; skyrl, skyrl-train, skyrl-tx, skyrl-agent, skyrl-gym; SkyRL-Agent paper 2511.16108"
+    },
+    {
+      "citedName": "rLLM",
+      "verdict": "REAL",
+      "reality": "agentic RL on any harness; backends verl/tinker/fireworks; GRPO, REINFORCE, RLOO, SFT, on-policy distillation; token ids and logprobs captured by a model gateway"
+    },
+    {
+      "citedName": "SWE-RL",
+      "verdict": "REAL",
+      "reality": "2502.18449; rule-based similarity reward on software evolution; Llama3-SWE-RL-70B 41.0% SWE-bench Verified"
+    },
+    {
+      "citedName": "SWE-Gym",
+      "verdict": "REAL",
+      "reality": "2412.21139; 2438 Python task instances with executable runtime, unit tests and NL task"
+    },
+    {
+      "citedName": "OpenHands RL",
+      "verdict": "PARTIALLY_VERIFIED",
+      "reality": "OpenHands platform (2407.16741) plus a fetched blog describes post-training via Snowflake Cortex Training and Harbor task dirs with tests/test.sh as reward; a standalone OpenHands-RL repo was not verified"
+    },
+    {
+      "citedName": "Agent Lightning",
+      "verdict": "UNVERIFIED",
+      "reality": "only seen listed in verl README as a built-with project; not independently fetched"
+    }
+  ],
+  "trainingHarnesses": {
+    "categories": [
+      {
+        "category": "in-context",
+        "mechanism": "put text in the prompt",
+        "data": "episodes and reflections",
+        "compute": "none beyond inference",
+        "eval": "A/B with repeats",
+        "existsInStack": "L1 possible, needs episode store"
+      },
+      {
+        "category": "retrieval",
+        "mechanism": "index, query, rank",
+        "data": "episodic and semantic records",
+        "compute": "optional vector store",
+        "eval": "retrieval quality plus downstream A/B",
+        "existsInStack": "possible, needs build"
+      },
+      {
+        "category": "skill_library",
+        "mechanism": "versioned procedural artifacts plus selection",
+        "data": "verified episodes",
+        "compute": "none beyond inference",
+        "eval": "regression plus transfer",
+        "existsInStack": "possible, needs build"
+      },
+      {
+        "category": "sft",
+        "mechanism": "next-token loss on demonstrations",
+        "data": "curated trajectories",
+        "compute": "GPUs and open weights",
+        "eval": "held-out benchmarks",
+        "existsInStack": false
+      },
+      {
+        "category": "preference_optimisation",
+        "mechanism": "learn from chosen and rejected pairs",
+        "data": "preference pairs",
+        "compute": "GPUs and open weights",
+        "eval": "win rate plus eval suite",
+        "existsInStack": false
+      },
+      {
+        "category": "rl",
+        "mechanism": "policy gradient on environment reward",
+        "data": "many rollouts",
+        "compute": "GPU cluster plus sandbox fleet",
+        "eval": "verifiable reward plus held-out suite",
+        "existsInStack": false
+      }
+    ],
+    "hardRequirementsProvedBySources": [
+      "verl needs distributed GPU training and HF-format weighted models",
+      "SkyRL-Agent trains a 32B model purely with RL on a GPU-scale job",
+      "rLLM needs a training backend and a gateway that can score token ids and logprobs",
+      "SWE-Gym reward comes from unit tests in an executable runtime",
+      "OpenHands x Snowflake needs Harbor tests/test.sh, a Snowflake account and ~4 H200 GPUs default",
+      "AgentGym-RL needs diverse interactive environments and stable multi-turn RL"
+    ]
+  },
+  "currentStack": {
+    "overallLevel": "L0",
+    "facts": [
+      {"capability": "episode/action/artifact/eval/lesson/skill tables", "status": "absent", "evidence": "READ memory-ledger.md:3-4; READ 01-STACK-VPS.md GAP-LEARN"},
+      {"capability": "token or cost ledger", "status": "absent", "evidence": "READ 01-STACK-VPS.md section 4 and GAP-COST"},
+      {"capability": "retrieval over past Craft runs", "status": "absent", "evidence": "READ 01-STACK-VPS.md GAP-LEARN"},
+      {"capability": "DeerFlow memory (facts, task notes, history search)", "status": "upstream exists; deployed 2.2.0 has FTS5 memory index on disk", "evidence": "READ audit section 11; FETCHED DeerFlow docs"},
+      {"capability": "skill-evolution host API", "status": "upstream exists; plugin not installed", "evidence": "FETCHED skill-evolution-host.md; READ audit section 5"},
+      {"capability": "craft catalogue hash available", "status": "yes", "evidence": "READ audit section 10 (918 VectorCraft ids, 965-line PhotoCraft registry)"},
+      {"capability": "deterministic verifier for design quality", "status": "no (technical gates exist, taste does not)", "evidence": "READ evaluation.md:3-4"},
+      {"capability": "GPU for training", "status": "no", "evidence": "READ audit section 8"},
+      {"capability": "open weights", "status": "no, API model only", "evidence": "READ audit section 4"},
+      {"capability": "human approval workflow", "status": "documented as required, not implemented", "evidence": "READ SKILL.md:29-38; audit GAP-PUBLISH"}
+    ]
+  },
+  "forgeConductorLoop": {
+    "stages": [
+      {"n": 1, "stage": "preflight", "input": "brief, rights, app/version, output contract", "output": "episode header status planned", "invariant": "missing field refuses with named field; never invent"},
+      {"n": 2, "stage": "retrieve", "input": "episode header", "output": "bounded retrieval result (max 8 episodes, 3 skills, ids and summaries)", "invariant": "only verified/failed episodes; only skills matching app version and catalogue hash; empty result forces baseline arm"},
+      {"n": 3, "stage": "plan", "input": "retrieved evidence plus catalogue", "output": "plan with command ids, params, per-step gate, stop condition", "invariant": "every command id exists in the pinned catalogue hash"},
+      {"n": 4, "stage": "execute", "input": "plan", "output": "actions, artifacts, logs", "invariant": "copies only, new output path, budget enforced, no autonomous publish, retry only proven-transient"},
+      {"n": 5, "stage": "verify", "input": "artifacts", "output": "technical eval, human eval, verdict", "invariant": "exit 0 is not proof; all required gates recorded; hash mismatch means UNVERIFIED; never edit a report to pass"},
+      {"n": 6, "stage": "record", "input": "whole episode", "output": "immutable episode row plus artifact hashes", "invariant": "append-only, idempotent by episode_id and seq, model/app/catalogue pins stored"},
+      {"n": 7, "stage": "reflect", "input": "verified episode only", "output": "reflection with cause, evidence ids, candidate text, scope", "invariant": "no reflection on unverified episodes; no lesson from one lucky run"},
+      {"n": 8, "stage": "candidate", "input": "reflection", "output": "skill candidate status draft", "invariant": "scope, preconditions, steps, gates, app pin, catalogue hash, content hash required"},
+      {"n": 9, "stage": "promote", "input": "candidate plus N episodes plus regression plus approval", "output": "active version", "invariant": "N at least 3 independent inputs; no golden regression; human approval; new version, never rewrite in place"},
+      {"n": 10, "stage": "regress", "input": "active skill change", "output": "regression report", "invariant": "any previously-passing golden failing blocks; baseline invalidated by model/app/catalogue change"},
+      {"n": 11, "stage": "rollback", "input": "operation id or version", "output": "new forward version or revert", "invariant": "conflicts reported not force-overwritten; evidence kept for audit"}
+    ],
+    "stateMachines": {
+      "episode": "planned -> executing -> verified | failed | refused | unverified",
+      "skill": "draft -> candidate -> active -> superseded; active -> rolled_back",
+      "lesson": "draft -> candidate -> active -> superseded | rejected",
+      "operation": "PREPARED -> APPLIED | ABORTED | NEEDS_REPAIR"
+    },
+    "loopString": "brief -> retrieve -> plan -> execute -> verify -> record -> reflect -> propose -> promote -> regress -> rollback"
+  },
+  "dataContracts": {
+    "records": ["episode", "action", "artifact", "evaluation", "reflection", "skill", "promotion"],
+    "invariants": [
+      "episode and action are append-only",
+      "every active skill has a promotion row whose regression_run_id is a completed run with zero regressions",
+      "every skill pins app_version_pin and catalogue_sha256; mismatch makes it non-retrievable",
+      "artifact sha256 is computed after fsync; the ledger stores the hash not the bytes",
+      "cost is computed from provider usage, never self-reported by the model",
+      "a lesson with empty evidence cannot leave draft",
+      "promotion and rollback are idempotent by key"
+    ],
+    "retrievalContract": {
+      "request": "task_family, app, version, catalogue_sha256, optional brand and failure_code, k_episodes max 8, k_skills max 3",
+      "phase1Ranking": "weighted sum of same app version, task family, brand, failure code, recency, gate pass rate; weights recorded in ledger",
+      "phase2": "embeddings only after a measured baseline",
+      "payload": "bounded summaries plus ids, never whole traces",
+      "emptyResult": "first-class answer that forces the baseline arm"
+    }
+  },
+  "rewardAndAcceptance": {
+    "acceptanceFunction": "accept = all required gates present and passing AND artifact hash exists AND format/dimensions/dpi/colourspace match contract AND rights recorded AND (human score >= 3 if taste claim)",
+    "scalarReward": {
+      "form": "R = 1.0*gates_all_pass + 0.0*efficiency + 0.0*human_norm - 1.0*regression_break - 1.0*rights_violation - 1.0*source_overwrite - 1.0*unsafe_publish_attempt",
+      "note": "efficiency and human terms are logged but not rewarded until reliability is at ceiling; caps prevent rewarding less work or busywork"
+    },
+    "promotionRule": "k >= 3 independent successes AND k/n >= 0.75 AND WilsonLB(k,n,1.96) > p0 + 0.10 AND no golden regression AND human approval (taste) AND version and catalogue pinned AND content hash differs from active skills",
+    "wilsonLowerBound": "LB = (p + z^2/(2n) - z*sqrt(p(1-p)/n + z^2/(4n^2))) / (1 + z^2/n)",
+    "smallSampleWarning": "3/3 gives WilsonLB95 about 0.44, below 0.5; the statistical guard forces larger samples or an explicit p0",
+    "demotionRule": [
+      "2 failures in the last 20 uses of that skill version",
+      "any regression on a golden the promotion run passed",
+      "a newer verified episode contradicts it (contradiction record, not averaging)",
+      "app version or catalogue hash changed (expire, do not carry over)",
+      "CUSUM on rolling failure rate: S_t = max(0, S_t-1 + f_t - k), trigger S_t > h"
+    ],
+    "autoDemotionAllowed": true,
+    "autoPromotionAllowed": false
+  },
+  "antiRewardHacking": {
+    "threats": [
+      {"threat": "gate exploitation", "control": "gate config hash, required gate set per task family, human sample review; gate pass with visibly bad artifact is a failure"},
+      {"threat": "brief narrowing", "control": "brief immutable; output contract checked independently; refusal code on mismatch"},
+      {"threat": "lesson that changes rules", "control": "scan lesson content for gate or threshold mutation; reject"},
+      {"threat": "duplicate evidence", "control": "input sha256 and run_id uniqueness"},
+      {"threat": "retrieval echo chamber", "control": "exploration budget with retrieval disabled on a fraction of runs; held-out golden set never retrievable"},
+      {"threat": "self-reported success", "control": "all reward fields computed by harness or verifier"},
+      {"threat": "reward tampering at L4", "control": "verifier in separate process or container, read-only reward code, config hash, no write scope to eval dir, config diff monitoring"},
+      {"threat": "proxy over-optimisation at L4", "control": "periodic gold human labels; stop when gold-human agreement drops"},
+      {"threat": "spurious RLVR gains", "control": "validate reward across at least two model families and against a random-reward control"},
+      {"threat": "memory poisoning", "control": "memory is data not instructions; scan before injection; tool gateway re-authorises every action"},
+      {"threat": "silent drift", "control": "version pin plus expiry plus periodic golden replay"}
+    ],
+    "literature": [
+      "Spurious Rewards 2506.10947: random rewards gave +21.4 on MATH-500 for Qwen2.5-Math-7B via GRPO clipping bias; effect is model-family dependent",
+      "Sycophancy to Subterfuge 2406.10162: specification gaming generalises; a small fraction rewrote their own reward function; retraining and harmlessness training mitigate but do not eliminate",
+      "Scaling Laws for Reward Model Overoptimization 2210.10760: optimising a proxy too hard degrades gold performance",
+      "No fetched source studies reward hacking in a design-production agent; threats are transferred by analogy and must be tested locally"
+    ]
+  },
+  "coldStart": [
+    {"step": 0, "action": "freeze model id, app versions, catalogue hash and record in every episode"},
+    {"step": 1, "action": "build golden set of 12 to 20 rights-cleared tasks across task families"},
+    {"step": 2, "action": "run baseline arm with retrieval and lessons disabled; record pass/fail, attempts, gate values, cost"},
+    {"step": 3, "action": "seed deterministic knowledge only: catalogue, brand kit, printer rules, not lessons"},
+    {"step": 4, "action": "at most a few human-authored seed skills labelled created_by=human, still versioned and rollback-able"},
+    {"step": 5, "action": "retrieval phase 1 metadata/lexical; embeddings only after a measured baseline"},
+    {"step": 6, "action": "exploration/rehearsal episodes tagged origin=simulation and not promotable"},
+    {"step": 7, "action": "measure time-to-first-verified and attempts per episode; do not say learning before the A/B"}
+  ],
+  "catastrophicForgetting": [
+    {"level": "L1", "risk": "reflective text lost with context turnover; irrelevant memory injected", "control": "bounded injection budget (DeerFlow fact default 2000 tokens; OpenViking example 12000 chars, top_k 8, threshold 0.25), confidence ranking, dedupe, expiry"},
+    {"level": "L2", "risk": "skill wrong after app or catalogue change; contradictory lessons", "control": "version pin plus expiry, contradiction records, periodic golden replay, keep superseded rows, no hard delete"},
+    {"level": "L3", "risk": "SFT overfits and degrades out of domain", "control": "per-task-family LoRA plus replay mix plus held-out OOD eval; SWE-RL abstract notes an SFT baseline degraded on average while RL generalised (paper claim)"},
+    {"level": "L4", "risk": "policy collapse, entropy collapse, over-optimisation, loss of prior skills", "control": "KL penalty, reward caps, curriculum (AgentGym-RL ScalingInter-RL), checkpoint eval gates, last-known-good weights"}
+  ],
+  "autonomy": {
+    "definitions": {
+      "autonomous": "agent chooses goals, curriculum and success criteria",
+      "supervised": "human supplies or approves brief and acceptance criteria; agent chooses how",
+      "selfDirected": "agent improves its own policy from its own experience without an external verifier"
+    },
+    "evidence": {
+      "freePlayInSimulator": "Voyager (Minecraft automatic curriculum); AgentGym/AgentGym-RL, SWE-Gym designed environments; safe only in a sandbox",
+      "selfDirectedInRealTool": "no fetched source demonstrates it without an external verifier; prompted self-correction unreliable (2406.01297); not safe",
+      "supervisedExecution": "Reflexion, ExpeL, AWM update memory not weights and rely on task outcomes; this is the Forge design",
+      "weightTraining": "real but requires GPU, open weights, verifiable reward; not in stack"
+    },
+    "safeAutonomous": [
+      "episode logging",
+      "retrieval",
+      "reflection drafting",
+      "candidate generation",
+      "regression runs",
+      "cost accounting",
+      "automatic demotion on objective trigger",
+      "memory expiry"
+    ],
+    "safeAutonomousWithinBrief": [
+      "planning",
+      "choosing command ids",
+      "executing on copies",
+      "retrying transient failures",
+      "visual self-check"
+    ],
+    "neverAutonomous": [
+      "publish or print",
+      "rights acceptance",
+      "gate or threshold changes",
+      "reward definition",
+      "skill activation",
+      "tool-scope expansion",
+      "filesystem root changes"
+    ],
+    "answer": "Free play is evidence-backed only where the world is cheap, reset-able and verifiable. A Craft production job is destructive, expensive, has rights and brand consequences and no automatic quality oracle. Forge should be autonomous in how it works and supervised in what becomes true: it proposes, the owner promotes."
+  },
+  "claimLadder": [
+    {"phrase": "follows the craft-agent protocol", "allowedToday": true, "minimumEvidence": "skill exists"},
+    {"phrase": "records episodes and retrieves past runs", "allowedToday": false, "minimumEvidence": "episode table plus a retrieval fetch test"},
+    {"phrase": "learns from experience", "allowedToday": false, "minimumEvidence": "L2 promotion plus A/B on held-out goldens with CI"},
+    {"phrase": "improves over time", "allowedToday": false, "minimumEvidence": "sustained gain across new briefs, not fixtures"},
+    {"phrase": "is trained or fine-tuned", "allowedToday": false, "minimumEvidence": "named checkpoint plus before/after eval"},
+    {"phrase": "RL makes it better", "allowedToday": false, "minimumEvidence": "L4 run plus held-out benchmark plus reward audit"},
+    {"phrase": "is self-improving", "allowedToday": false, "minimumEvidence": "a demonstrated bounded self-modification loop with independent verification; closest literature result is in a game"}
+  ],
+  "candidateQuestions": [
+    "Which two arXiv ids are the real AgentGym papers, and what is 2501.08913 actually about?",
+    "What does Reflexion change: weights or an episodic memory buffer?",
+    "Which three components make up Voyager, and which one bypasses fine-tuning?",
+    "What does ExpeL extract from experience, and where does it use it?",
+    "What does Agent Workflow Memory induce, and what are its two application modes?",
+    "Which memory backend is DeerFlow's default, and which is the optional remote one?",
+    "What does DeerFlow's skill-evolution host explicitly not include?",
+    "What are the four states of DeerFlow's skill-mutation operation lifecycle?",
+    "What does Mem0's current README say its new extraction algorithm does, and what caveat does it attach to its benchmarks?",
+    "What makes Graphiti's facts different from flat RAG chunks?",
+    "Which learning levels require GPUs and open weights?",
+    "Which verifiable environment was released specifically to train real-world SWE agents, and what does each task contain?",
+    "What reward does OpenHands x Snowflake use for post-training, and what file defines it?",
+    "Why is a 3/3 success count insufficient to promote a skill?",
+    "What did the Spurious Rewards paper show that undermines naive claims that RL worked?"
+  ],
+  "notDocumentedUnverified": [
+    {"item": "full-text details of the six papers (exact k, prompts, ablations)", "status": "NOT_DOCUMENTED", "why": "only abstract pages and READMEs fetched"},
+    {"item": "whether deepseek-flash supports fine-tuning or weight export", "status": "NOT_DOCUMENTED", "why": "no fetched source states it; do not assume"},
+    {"item": "whether deployed DeerFlow 2.2.0 matches upstream main memory docs", "status": "UNVERIFIED", "why": "upstream docs fetched; deployed memory code not read"},
+    {"item": "whether DeerMem has a published paper", "status": "NOT_DOCUMENTED", "why": "no such source fetched"},
+    {"item": "whether Forge agent_* tables are deployed", "status": "NO", "why": "memory-ledger.md:3-4 says proposed; audit found no such tables"},
+    {"item": "whether a Forge learning loop has ever run", "status": "NO_EVIDENCE", "why": "no episode store exists"},
+    {"item": "whether any L1/L2 loop improves Craft output", "status": "UNVERIFIED", "why": "requires the A/B in evaluation.md, not built"},
+    {"item": "whether lessons transfer across briefs or brands", "status": "UNVERIFIED", "why": "no experiment"},
+    {"item": "whether embeddings beat metadata retrieval here", "status": "UNVERIFIED", "why": "local rule says measure before adding"},
+    {"item": "OpenHands-RL as a standalone repo", "status": "UNVERIFIED", "why": "verified artifact is a blog on Snowflake Cortex post-training"},
+    {"item": "Agent Lightning details", "status": "UNVERIFIED", "why": "only seen listed in verl README"},
+    {"item": "Llama3-SWE-RL-70B and SA-SWE-32B numbers", "status": "PAPER_CLAIMS", "why": "read from abstracts, not reproduced"},
+    {"item": "Mem0 and Zep benchmark numbers", "status": "VENDOR_OR_PAPER_CLAIMS", "why": "Mem0 explicitly caveats OSS versus managed"},
+    {"item": "whether the VPS can host any training", "status": "NO_CAPACITY", "why": "2 vCPU, 7.9 GB RAM, no GPU, swap in use"},
+    {"item": "whether an autonomous no-direction mode is safe for Craft", "status": "NO_UNSUPPORTED", "why": "no verifier, destructive operations, rights exposure"},
+    {"item": "prompt-injection resistance of any memory backend", "status": "UNVERIFIED", "why": "Graphiti reference servers have none; DeerFlow scans candidates but is not an untrusted-code sandbox"}
+  ],
+  "bibliography": [
+    {"kind": "paper", "id": "2303.11366", "url": "https://arxiv.org/abs/2303.11366", "title": "Reflexion: Language Agents with Verbal Reinforcement Learning"},
+    {"kind": "paper", "id": "2308.10144", "url": "https://arxiv.org/abs/2308.10144", "title": "ExpeL: LLM Agents Are Experiential Learners"},
+    {"kind": "paper", "id": "2305.16291", "url": "https://arxiv.org/abs/2305.16291", "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models"},
+    {"kind": "paper", "id": "2409.07429", "url": "https://arxiv.org/abs/2409.07429", "title": "Agent Workflow Memory"},
+    {"kind": "paper", "id": "2310.08560", "url": "https://arxiv.org/abs/2310.08560", "title": "MemGPT: Towards LLMs as Operating Systems"},
+    {"kind": "paper", "id": "2504.19413", "url": "https://arxiv.org/abs/2504.19413", "title": "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory"},
+    {"kind": "paper", "id": "2501.13956", "url": "https://arxiv.org/abs/2501.13956", "title": "Zep: A Temporal Knowledge Graph Architecture for Agent Memory"},
+    {"kind": "paper", "id": "2406.04151", "url": "https://arxiv.org/abs/2406.04151", "title": "AgentGym: Evolving Large Language Model-based Agents across Diverse Environments"},
+    {"kind": "paper", "id": "2509.08755", "url": "https://arxiv.org/abs/2509.08755", "title": "AgentGym-RL: Training LLM Agents for Long-Horizon Decision Making through Multi-Turn Reinforcement Learning"},
+    {"kind": "paper", "id": "2409.19256", "url": "https://arxiv.org/abs/2409.19256", "title": "HybridFlow: A Flexible and Efficient RLHF Framework"},
+    {"kind": "paper", "id": "2511.16108", "url": "https://arxiv.org/abs/2511.16108", "title": "SkyRL-Agent: Efficient RL Training for Multi-turn LLM Agent"},
+    {"kind": "paper", "id": "2502.18449", "url": "https://arxiv.org/abs/2502.18449", "title": "SWE-RL: Advancing LLM Reasoning via Reinforcement Learning on Open Software Evolution"},
+    {"kind": "paper", "id": "2412.21139", "url": "https://arxiv.org/abs/2412.21139", "title": "Training Software Engineering Agents and Verifiers with SWE-Gym"},
+    {"kind": "paper", "id": "2407.16741", "url": "https://arxiv.org/abs/2407.16741", "title": "OpenHands: An Open Platform for AI Software Developers as Generalist Agents"},
+    {"kind": "paper", "id": "2402.03300", "url": "https://arxiv.org/abs/2402.03300", "title": "DeepSeekMath (GRPO)"},
+    {"kind": "paper", "id": "2501.12948", "url": "https://arxiv.org/abs/2501.12948", "title": "DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning"},
+    {"kind": "paper", "id": "2406.01297", "url": "https://arxiv.org/abs/2406.01297", "title": "When Can LLMs Actually Correct Their Own Mistakes? A Critical Survey of Self-Correction of LLMs"},
+    {"kind": "paper", "id": "2506.10947", "url": "https://arxiv.org/abs/2506.10947", "title": "Spurious Rewards: Rethinking Training Signals in RLVR"},
+    {"kind": "paper", "id": "2210.10760", "url": "https://arxiv.org/abs/2210.10760", "title": "Scaling Laws for Reward Model Overoptimization"},
+    {"kind": "paper", "id": "2406.10162", "url": "https://arxiv.org/abs/2406.10162", "title": "Sycophancy to Subterfuge: Investigating Reward-Tampering in Large Language Models"},
+    {"kind": "repo", "url": "https://github.com/volcengine/verl", "title": "verl README"},
+    {"kind": "repo", "url": "https://github.com/NovaSky-AI/SkyRL", "title": "SkyRL README"},
+    {"kind": "repo", "url": "https://github.com/rllm-org/rllm", "title": "rLLM README"},
+    {"kind": "repo", "url": "https://github.com/getzep/graphiti", "title": "Graphiti README"},
+    {"kind": "repo", "url": "https://github.com/mem0ai/mem0", "title": "Mem0 README"},
+    {"kind": "repo", "url": "https://github.com/letta-ai/letta", "title": "Letta README"},
+    {"kind": "docs", "url": "https://raw.githubusercontent.com/bytedance/deer-flow/main/backend/docs/MEMORY_IMPROVEMENTS.md", "title": "DeerFlow memory improvements"},
+    {"kind": "docs", "url": "https://raw.githubusercontent.com/bytedance/deer-flow/main/backend/docs/MEMORY_COGNITIVE_STYLE.md", "title": "DeerFlow memory cognitive style"},
+    {"kind": "docs", "url": "https://raw.githubusercontent.com/bytedance/deer-flow/main/docs/task-continuity.md", "title": "DeerFlow task continuity"},
+    {"kind": "docs", "url": "https://raw.githubusercontent.com/bytedance/deer-flow/main/docs/OPENVIKING.md", "title": "DeerFlow OpenViking memory backend"},
+    {"kind": "docs", "url": "https://raw.githubusercontent.com/bytedance/deer-flow/main/docs/skill-evolution-host.md", "title": "DeerFlow skill evolution host API"},
+    {"kind": "blog", "url": "https://www.openhands.dev/blog/post-train-ai-models-openhands-snowflake", "title": "Post-Train a Model for Your Own Agent Harness with OpenHands and Snowflake"},
+    {"kind": "local", "path": "research/eko-deerflow-agent/wave2/01-STACK-VPS.md", "title": "Wave 2 stack and VPS audit"},
+    {"kind": "local", "path": "blueprint/files/skills/craft-agent-operator/SKILL.md", "title": "Craft agent operator protocol"},
+    {"kind": "local", "path": "blueprint/files/skills/craft-agent-operator/references/memory-ledger.md", "title": "Experience ledger and promotion rules (proposed)"},
+    {"kind": "local", "path": "blueprint/files/skills/craft-agent-operator/references/evaluation.md", "title": "Evaluation protocol (proposed)"}
+  ],
+  "limits": {
+    "notDone": ["read PDFs", "clone repositories", "execute code", "call a model", "probe the VPS", "run any experiment", "touch production files"],
+    "deliberateRefusals": [
+      "assert that any learning loop improves Craft output",
+      "assert that training is available in this stack",
+      "describe an autonomous self-improvement mode as safe"
+    ]
+  }
+}

@@ -1,0 +1,552 @@
+{
+  "meta": {
+    "task_id": "task-12",
+    "subject": "Security, dependency and key hardening plan",
+    "owner": "agent-repos-scout",
+    "date_local": "2026-11-05",
+    "timezone": "America/Chicago",
+    "mutation_policy": "read-only; no production change made; no VPS SSH in this task; no DeepSeek chat completion",
+    "new_work": [
+      "DeepSeek zero-spend validation procedure verified against official API docs",
+      "Donor and runtime licence/NOTICE inventory assembled",
+      "Off-host TCP reachability probe run from this workstation (8765, 8091, 22)"
+    ],
+    "inputs": [
+      "research/eko-deerflow-agent/wave2/01-STACK-VPS.md",
+      "research/eko-deerflow-agent/wave2/02-AGENT-REPOS.md",
+      "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md",
+      "research/eko-deerflow-agent/execution-wave/00-WAVE-2-PLAN.md",
+      "local repo files (blueprint/files/**, package.json, .gitignore)",
+      "official DeepSeek API docs (fetched 2026-11-05)"
+    ],
+    "evidence_labels": {
+      "[V]": "verified in this task (own command output, fetched doc, or file read)",
+      "[R]": "read from existing artifact (VPS audit, repo verification, donor survey, repo file)",
+      "[I]": "inferred from verified observations",
+      "[U]": "unverified residual gap"
+    },
+    "outputs": [
+      "research/eko-deerflow-agent/execution-wave/05-SECURITY.md",
+      "research/eko-deerflow-agent/execution-wave/05-SECURITY.json"
+    ],
+    "differential_questions_answered": {
+      "Q8": "Exact DeepSeek key validation that does not spend quota — see deepseek_key.validation",
+      "Q9": "Licence/NOTICE delta for each borrowed mechanism — see license_inventory"
+    }
+  },
+
+  "headline_decisions": [
+    {
+      "n": 1,
+      "decision": "Rebind pod MCP from 0.0.0.0 to 172.17.0.1 (option A) then add a bearer token (option B); the code default is already 127.0.0.1 and the HTTP server has no auth.",
+      "evidence": ["[R] 01-STACK-VPS.md §9, §13", "[V] blueprint/files/pod_pipeline/config.py:60,115", "[V] blueprint/files/pod_pipeline/mcp_server.py:301-415"],
+      "priority": "critical"
+    },
+    {
+      "n": 2,
+      "decision": "From this workstation, 8765 and 8091 are NOT reachable off-host (TCP timeout); 22 is open. Internet exposure is currently closed from this vantage, but internal and docker-network reachability is unchanged.",
+      "evidence": ["[V] TCP probe 2026-11-05 to 179.197.88.181"],
+      "priority": "info"
+    },
+    {
+      "n": 3,
+      "decision": "Remove SupplementaryGroups=docker from pod-mcp (POD_USE_DOCKER=0) and add systemd confinement; docker-group membership is host-root-equivalent.",
+      "evidence": ["[V] blueprint/files/deploy/systemd/pod-mcp.service", "[R] 01-STACK-VPS.md §9, §13, R2"],
+      "priority": "critical"
+    },
+    {
+      "n": 4,
+      "decision": "Validate the DeepSeek key only with GET /user/balance and GET /models (200 valid, 401 invalid, 402 no balance); never with a chat completion.",
+      "evidence": ["[V] api-docs.deepseek.com (first call, list-models, balance, error codes)"],
+      "priority": "high"
+    },
+    {
+      "n": 5,
+      "decision": "Rotate with an 8-step spend-free runbook: create B, root-only store, restart gateway only, validate B, revoke A, confirm A=401, record fingerprint, re-run preflight.",
+      "evidence": ["[V] DeepSeek docs", "[R] 01-STACK-VPS.md §13"],
+      "priority": "high"
+    },
+    {
+      "n": 6,
+      "decision": "Pin DeerFlow by tuple: commit SHA 58fc5bd + image digests + uv.lock + compose/config/extensions hashes; reject main (2.3.0-dev) and floating tags.",
+      "evidence": ["[R] 01-STACK-VPS.md §12", "[R] 02-AGENT-REPOS.md §2.2", "[V] local compose"],
+      "priority": "high"
+    },
+    {
+      "n": 7,
+      "decision": "All adopted donor mechanisms are MIT/Apache-2.0; the AGPL, CC BY-NC-SA, proprietary and unlicensed candidates stay excluded.",
+      "evidence": ["[R] 02-AGENT-REPOS.md §5.3", "[R] 05-HARNESS-CODE.md §1.1"],
+      "priority": "high"
+    },
+    {
+      "n": 8,
+      "decision": "The repo has no LICENSE/NOTICE and the vendor Craft binaries have no checksums; ship NOTICE + SBOM and record vendor version/hash/EULA.",
+      "evidence": ["[V] repo root listing, .gitignore, git ls-files", "[R] 01-STACK-VPS.md §10, R11"],
+      "priority": "high"
+    },
+    {
+      "n": 9,
+      "decision": "Resolve redis:7-alpine resolved version/licence at pin time (>=7.4 RSALv2/SSPL reported) and postgres:16 (PostgreSQL Licence); prefer digest pin or Valkey if policy forbids.",
+      "evidence": ["[R] 01-STACK-VPS.md §9", "[I] Redis licence change (verify against image)"],
+      "priority": "high"
+    },
+    {
+      "n": 10,
+      "decision": "No per-key DeepSeek spend limit is documented; enforce budgets client-side (episode token/wall/cost caps, user_id attribution, balance monitor, fail-closed on 402).",
+      "evidence": ["[V] DeepSeek rate-limit/error docs", "[R] 01-STACK-VPS.md §13, Q12"],
+      "priority": "high"
+    }
+  ],
+
+  "threat_model": {
+    "assets": [
+      "vendor Craft binaries and /opt/craft toolchain",
+      "pod Postgres DB and DeerFlow state DB",
+      "provider credentials in container env (DEEPSEEK_API_KEY + Tavily/Exa/Serper/Jina/InfoQuest/Provisional/Sofya/Unbrowse/Serply) and Fourthwall credentials",
+      "publish path (Fourthwall products)",
+      "owner model spend on the DeepSeek account"
+    ],
+    "adversaries": [
+      "network peer reaching an exposed MCP port and triggering host processes",
+      "compromised or substituted vendor binary (no checksums today)",
+      "compromised dependency via floating image tag or unpinned environment",
+      "model-induced damaging action (delete/overwrite/publish)",
+      "operator accident (key in argv/log/commit; wrong service restart)"
+    ],
+    "blast_radius": {
+      "statement": "pod is in the docker group => code execution as pod is host-root-equivalent (host FS mount, read every container env incl. DEEPSEEK_API_KEY). MCP is unauthenticated; only boundary is ufw source ranges.",
+      "evidence": ["[R] 01-STACK-VPS.md R2, §9", "[V] unit file"]
+    },
+    "principle": "Fail closed, least privilege, verify without spend; every control has an independent observable (TCP result, HTTP status, hash, id, licence scan, balance check)."
+  },
+
+  "findings": [
+    {
+      "id": "F1",
+      "title": "pod MCP listens on 0.0.0.0:8765 with no authentication",
+      "severity": "critical",
+      "current_state": "[R] 01 §9/§13: POD_MCP_HOST=0.0.0.0, three tools incl. trigger_pipeline_job; [V] mcp_server.py:301-415 has no Authorization/token check; config.py:60,115 default is 127.0.0.1.",
+      "change": "Option A: set POD_MCP_HOST=172.17.0.1 in pipeline.env (gateway already uses http://172.17.0.1:8765 per 01 §9), restart pod-mcp. Option B: add POD_MCP_TOKEN bearer check in mcp_server.py (_client/serve_http) with hmac.compare_digest, 401 on failure, access log without argument values; configure static header in /opt/deer-flow/extensions_config.json (verify header support in backend/docs/MCP_SERVER.md first [U]).",
+      "change_site": [
+        "/opt/pod-pipeline/config/pipeline.env",
+        "blueprint/files/pod_pipeline/mcp_server.py",
+        "blueprint/files/pod_pipeline/config.py (no change needed; default already loopback)",
+        "/opt/deer-flow/extensions_config.json (only if headers supported)"
+      ],
+      "rollback": "Revert POD_MCP_HOST value and restart; token path can be made optional when POD_MCP_TOKEN is unset, or revert file and restart.",
+      "test": "ss -lntp shows 172.17.0.1:8765 only; off-host TCP 8765 closed; gateway health 200; unauthenticated POST 401; authenticated tools/list returns 3 tools.",
+      "owner": "stack-vps-auditor (task-8) executes; lead approves"
+    },
+    {
+      "id": "F2",
+      "title": "pod-mcp runs with SupplementaryGroups=docker (host-root-equivalent) while POD_USE_DOCKER=0",
+      "severity": "critical",
+      "current_state": "[V] blueprint/files/deploy/systemd/pod-mcp.service: User=pod, Group=pod, SupplementaryGroups=docker, NoNewPrivileges=true; [R] 01 §13 POD_USE_DOCKER=0.",
+      "change": "Remove SupplementaryGroups=docker; add ProtectSystem=strict, ProtectHome=true, PrivateTmp=true, ReadWritePaths for data/build/logs/sandbox, RestrictAddressFamilies, MemoryMax=1500M, TasksMax=512; keep NoNewPrivileges=true.",
+      "change_site": [
+        "blueprint/files/deploy/systemd/pod-mcp.service",
+        "/etc/systemd/system/pod-mcp.service"
+      ],
+      "rollback": "Restore unit copy, daemon-reload; re-add group only if a verified Docker path appears.",
+      "test": "systemctl show pod-mcp -p SupplementaryGroups empty; docker ps as pod fails; one MCP-triggered craft run completes.",
+      "owner": "stack-vps-auditor; lead approves"
+    },
+    {
+      "id": "F3",
+      "title": "Internet reachability of 8765/8091 currently closed from one off-host vantage",
+      "severity": "info",
+      "current_state": "[V] TCP probe 2026-11-05 from workstation: 8765 timeout, 8091 timeout, 22 open. [R] ufw allows 8765 only from 172.16.0.0/12 and 192.168.200.0/24.",
+      "change": "No change required for this vantage; keep P1 probe in preflight/CI; do not weaken ufw.",
+      "change_site": [],
+      "rollback": "n/a",
+      "test": "Repeat off-host probe periodically and after any firewall change.",
+      "owner": "lead"
+    },
+    {
+      "id": "F4",
+      "title": "Secrets readable at group level and inside container env; no vault, no rotation evidence",
+      "severity": "high",
+      "current_state": "[R] 01 §13: pipeline.env 0640 pod:pod with POD_DB_PASS, POD_CREDENTIAL_KEY, FW_API_USER, FW_API_SECRET, DATABASE_URL; gateway container env holds DEEPSEEK_API_KEY + 10 provider keys + internal auth token + credentials key; no vault; [V] .gitignore excludes .env*, no secret-like tracked file.",
+      "change": "Secret register (names/location/owner/rotation/fingerprint only); chmod 600 root-owned for gateway env file, 640 minimal for pipeline.env; remove pod from docker group; scope/remove unused provider keys; add log leak scan.",
+      "change_site": [
+        "/opt/pod-pipeline/config/pipeline.env (modes)",
+        "/etc/deerflow/deepseek.env (new, 0600 root)",
+        "docker compose env_file reference",
+        "provider env list in compose"
+      ],
+      "rollback": "Restore modes/previous env file; container restart.",
+      "test": "stat -c '%a %U:%G' = 600 root:root; services start; preflight P7 passes; leak scan count 0.",
+      "owner": "lead + stack-vps-auditor"
+    },
+    {
+      "id": "F5",
+      "title": "DeepSeek key validity never verified; no rotation procedure",
+      "severity": "high",
+      "current_state": "[R] 01 §17: key validity UNVERIFIED, no live call made; key only in container env; model deepseek-flash (1,048,576 context, 8,192 max_tokens, 600s, max_retries 2) in /opt/deer-flow/config.yaml:18-37.",
+      "change": "Adopt zero-spend validation (see deepseek_key.validation) and the 8-step rotation runbook (deepseek_key.rotation).",
+      "change_site": ["operational runbook", "secret register"],
+      "rollback": "Key B revocable; container can restart onto previous env file.",
+      "test": "Metadata endpoints 200; old key 401 after revocation; fingerprint recorded; preflight P5/P6/P9 pass.",
+      "owner": "lead (owner of the account)"
+    },
+    {
+      "id": "F6",
+      "title": "No documented per-key spend limit; budgets must be client-side",
+      "severity": "high",
+      "current_state": "[V] DeepSeek docs document account concurrency (2500 flash / 500 pro), 402 insufficient balance and user_id isolation; no per-key budget is documented [U]. [R] DeerFlow config has token_budget/token_usage keys but persistence unverified; no usage table in deerflow.db.",
+      "change": "Episode budgets (max_tokens/wall/attempts/cost) with fail-closed refusal; user_id per episode; scheduled zero-spend balance monitor; cost ledger reconciled with balance delta; handle 402 as terminal stop.",
+      "change_site": ["Forge Conductor budget service (task-9)", "DeerFlow config.yaml budget keys", "monitoring schedule"],
+      "rollback": "Disable monitor/budget enforcement; keep 402 handling.",
+      "test": "Ledger row per call; simulated 402 stops cleanly; balance available check alerts.",
+      "owner": "harness-architect (design) + lead (implementation)"
+    },
+    {
+      "id": "F7",
+      "title": "DeerFlow deployment unpinned; main is 2.3.0-dev and floating image tags are in use",
+      "severity": "high",
+      "current_state": "[R] 01 §12: /opt/deer-flow HEAD 58fc5bd, pyproject 2.2.0, compose project deer-flow-dev from docker-compose-dev.yaml, two untracked files; images nginx:1.31.2-alpine, redis:7-alpine, postgres:16; [R] 02 §2.2 release v2.2.0 2026-11-04, main 2.3.0-dev.",
+      "change": "Record pin tuple in deploy/pins.lock (commit SHA, image digests, uv.lock hash, compose/config/extensions hashes); deploy by digest; no auto-pull; upgrade via staging clone + changelog review + golden-set eval + rollback test; resolve untracked backup file.",
+      "change_site": ["deploy/pins.lock (new)", "docker-compose override with digests", "/opt/deer-flow"],
+      "rollback": "Restore previous compose/override; images remain by digest.",
+      "test": "Manifest compare passes; docker inspect RepoDigests matches; no floating tag in compose config.",
+      "owner": "stack-vps-auditor"
+    },
+    {
+      "id": "F8",
+      "title": "Vendor Craft binaries have no checksum/signature manifest and unknown EULA",
+      "severity": "high",
+      "current_state": "[R] 01 §10: vectorcraft 0.21.1, photocraft 0.20.2; uid 1001 UNKNOWN, world-executable; /opt/craft/pkg tarballs 258MB; no .sha256/.sig; docs tree /opt/craft/artcraft-docs.",
+      "change": "Record SHA256 of binaries and tarballs in deploy/vendor-craft.lock; request vendor checksums/signature/EULA; run under a dedicated service account; keep tarballs; do not redistribute in packaged corpus.",
+      "change_site": ["deploy/vendor-craft.lock (new)", "/opt/craft (read-only hash)"],
+      "rollback": "n/a (record only).",
+      "test": "sha256sum matches recorded manifest; provenance/EULA status recorded.",
+      "owner": "lead (vendor contact) + craft-surface-auditor"
+    },
+    {
+      "id": "F9",
+      "title": "Repo has no LICENSE/NOTICE/SBOM; donor attributions not shipped",
+      "severity": "high",
+      "current_state": "[V] repo root: no LICENSE/NOTICE/THIRD-PARTY files; .gitignore excludes .env*; no SBOM directory.",
+      "change": "Add LICENSE (owner decision), NOTICE, THIRD-PARTY-NOTICES.md, deploy/sbom/*.cdx.json, licenses/policy.json deny-list, CI licence gate; verify per-donor NOTICE files.",
+      "change_site": ["LICENSE", "NOTICE", "THIRD-PARTY-NOTICES.md", "deploy/sbom/", "licenses/policy.json", "CI"],
+      "rollback": "Revert added files; CI gate can be disabled.",
+      "test": "CI licence gate passes; NOTICE lists donors and runtime components; SBOM parses.",
+      "owner": "lead"
+    },
+    {
+      "id": "F10",
+      "title": "redis:7-alpine resolved version/licence unknown (floating tag)",
+      "severity": "high",
+      "current_state": "[R] 01 §9: redis:7-alpine container running; [I] Redis >=7.4 changed licence to RSALv2/SSPLv1 — resolved version not inspected in this task.",
+      "change": "Pin redis by digest; read image version + licence; if >=7.4 and policy forbids, pin 7.2 digest or migrate to Valkey (BSD).",
+      "change_site": ["docker compose image reference"],
+      "rollback": "Restore previous image digest.",
+      "test": "redis-server --version recorded; image licence recorded; preflight P11 passes.",
+      "owner": "stack-vps-auditor"
+    },
+    {
+      "id": "F11",
+      "title": "SSH posture unverified",
+      "severity": "medium",
+      "current_state": "[V] port 22 open off-host; [U] sshd config not read.",
+      "change": "Preflight sshd -T; require key-only auth and no root password login; consider fail2ban.",
+      "change_site": ["/etc/ssh/sshd_config.d/*"],
+      "rollback": "Restore sshd config backup; keep an active session open while testing.",
+      "test": "sshd -T shows permitrootlogin no/prohibit-password and passwordauthentication no; new key-based login works.",
+      "owner": "lead"
+    },
+    {
+      "id": "F12",
+      "title": "Console has no auth but is loopback-only",
+      "severity": "medium",
+      "current_state": "[R] 01 §7: VITE_AUTH_ENABLED=false, bound 127.0.0.1:8091 via SSH tunnel; [V] externally closed.",
+      "change": "Leave loopback; add auth before any exposure; do not set BIND_HOST for the console.",
+      "change_site": ["deploy/vps/deerflow-forge-console.service"],
+      "rollback": "n/a",
+      "test": "ss -lntp shows 127.0.0.1:8091 only; off-host probe closed.",
+      "owner": "lead"
+    },
+    {
+      "id": "F13",
+      "title": "Unknown host agent monarx-agent listening on loopback",
+      "severity": "low",
+      "current_state": "[R] 01 §9: 127.0.0.1:65529 and UDP :1721 monarx-agent.",
+      "change": "Verify provenance (systemctl cat, dpkg -S, package signature); remove if not required.",
+      "change_site": ["host packages"],
+      "rollback": "Reinstall package if removal was wrong.",
+      "test": "Provenance recorded; no unexplained listener.",
+      "owner": "lead"
+    },
+    {
+      "id": "F14",
+      "title": "Disk pressure and OOM risk",
+      "severity": "medium",
+      "current_state": "[R] 01 §8/R3/R4: 63% disk, 32.26GB images (76% reclaimable), 15.38GB build cache, 2.5GB swap used, ~4.8GB available.",
+      "change": "Reclaim images/build cache with a pull plan; cap agent MemoryMax; monitor before change window.",
+      "change_site": ["docker system prune (planned)", "systemd MemoryMax"],
+      "rollback": "Images re-pullable by digest from the pin manifest.",
+      "test": "Disk >10GB free; swap not growing; agent run stable.",
+      "owner": "lead"
+    },
+    {
+      "id": "F15",
+      "title": "MCP has no access log; log redaction unverified",
+      "severity": "medium",
+      "current_state": "[V] mcp_server.py has no access logging; [U] key leak scan not run.",
+      "change": "Log remote_addr/tool/allow-deny/latency without argument values; add key-shaped string scan to preflight.",
+      "change_site": ["blueprint/files/pod_pipeline/mcp_server.py"],
+      "rollback": "Remove logging change.",
+      "test": "Logs contain tool + status, no secrets; leak scan count 0.",
+      "owner": "stack-vps-auditor"
+    },
+    {
+      "id": "F16",
+      "title": "systemd confinement gaps on pod-mcp",
+      "severity": "medium",
+      "current_state": "[V] unit has NoNewPrivileges=true only; no ProtectSystem/PrivateTmp/ReadWritePaths/MemoryMax.",
+      "change": "Add confinement directives (see F2).",
+      "change_site": ["blueprint/files/deploy/systemd/pod-mcp.service"],
+      "rollback": "Restore unit.",
+      "test": "systemd-analyze security score improves; service functional.",
+      "owner": "stack-vps-auditor"
+    }
+  ],
+
+  "deepseek_key": {
+    "validation": {
+      "verdict": "Validate with metadata endpoints only; never with a chat completion.",
+      "endpoints": [
+        {"method": "GET", "url": "https://api.deepseek.com/user/balance", "returns": "is_available + balance_infos", "source": "api-docs.deepseek.com/api/get-user-balance"},
+        {"method": "GET", "url": "https://api.deepseek.com/models", "returns": "model list + metadata", "source": "api-docs.deepseek.com/api/list-models"}
+      ],
+      "auth": "Authorization: Bearer $DEEPSEEK_API_KEY",
+      "base_url": "https://api.deepseek.com (OpenAI-compatible); https://api.deepseek.com/anthropic (Anthropic-compatible)",
+      "model_note": "deepseek-flash is served by DeepSeek-V4.1-Flash-1017; legacy deepseek-v4-flash names retired",
+      "procedure": [
+        "Presence only: docker exec deer-flow-gateway sh -lc 'test -n \"$DEEPSEEK_API_KEY\" && echo present || echo MISSING'",
+        "Balance: printf 'header = \"Authorization: Bearer %s\"\\n' \"$DEEPSEEK_API_KEY\" | curl -K - -sS -o /dev/null -w 'balance_http=%{http_code}\\n' https://api.deepseek.com/user/balance (inside the container)",
+        "Models: same curl -K - pattern against https://api.deepseek.com/models"
+      ],
+      "why_curl_K": "Keeps the secret out of ps/argv; the header is written to curl's config on stdin (printf is a shell builtin).",
+      "result_matrix": {
+        "200/200": "key valid, egress works, balance readable -> proceed",
+        "401": "invalid/revoked/wrong environment -> rotate; never retry with a value found on disk",
+        "402": "auth succeeded but balance insufficient -> top up or reduce budget; key valid",
+        "429": "rate/concurrency -> back off; not a validity signal",
+        "5xx/timeout/DNS": "provider or network, not the key -> retest later; check egress"
+      },
+      "forbidden": "POST /chat/completions as a key test (spends quota, creates a billable event, proves nothing extra).",
+      "billing_caveat": "[I] Metadata endpoints generate no tokens and docs price chat tokens; treating them as zero-spend is an inference from endpoint semantics, not an explicit billing statement."
+    },
+    "rotation": {
+      "steps": [
+        {"n": 0, "action": "Record current key fingerprint without printing value", "verify": "12-hex sha256 prefix stored"},
+        {"n": 1, "action": "Create key B in platform.deepseek.com/api_keys (linked by official error-codes page)", "verify": "key exists"},
+        {"n": 2, "action": "Store B root-only (install -m 600 -o root -g root)", "verify": "stat 600 root:root"},
+        {"n": 3, "action": "Point gateway at B (env_file/drop-in); restart only gateway container", "verify": "container healthy"},
+        {"n": 4, "action": "Validate B via metadata endpoints", "verify": "both 200"},
+        {"n": 5, "action": "Revoke key A in platform", "verify": "revoked in UI"},
+        {"n": 6, "action": "Confirm A returns 401 (if value retained securely)", "verify": "401"},
+        {"n": 7, "action": "Update secret register fingerprint/date/operator", "verify": "register updated"},
+        {"n": 8, "action": "Re-run preflight P5/P6/P9", "verify": "all pass"},
+        {"n": 9, "action": "Schedule next rotation (90 days or on incident)", "verify": "calendar entry"}
+      ],
+      "rollback": "Revoke B and re-enable A in the platform; restart container onto previous env file; never leave two active keys indefinitely."
+    },
+    "spend_controls": [
+      "Episode budgets: max_tokens, max_wall_s, max_attempts, per-episode cost cap; fail-closed refusal when absent/exceeded",
+      "user_id parameter per episode for attribution/isolation (documented)",
+      "Concurrency cap 1-2 on the 2 vCPU host regardless of the 2500 account allowance",
+      "Scheduled zero-spend GET /user/balance; alert on is_available=false; 402 terminates the run",
+      "Cost ledger reconciled with balance delta; missing usage -> UNVERIFIED, never estimated silently",
+      "No autonomous top-up/account/model changes without an approval token"
+    ],
+    "documented_limits": {
+      "concurrency_account_level": {"deepseek-flash": 2500, "deepseek-v4-pro": 500},
+      "error_codes": {"401": "Authentication Fails", "402": "Insufficient Balance", "429": "Rate Limit Reached", "500": "Server Error", "503": "Server Overloaded"},
+      "per_key_budget": "not documented [U]"
+    }
+  },
+
+  "pin_manifest": {
+    "current_state": {
+      "deerflow_git_head": "58fc5bd",
+      "deerflow_backend_version": "2.2.0",
+      "deerflow_release": "v2.2.0 (2026-11-04)",
+      "main_branch_version": "2.3.0-dev (moves daily)",
+      "compose_project": "deer-flow-dev",
+      "compose_file": "docker/docker-compose-dev.yaml",
+      "untracked_files": ["_audit_prompt.txt", "extensions_config.json.bak-before-forge-mcp"],
+      "images_floating": ["nginx:1.31.2-alpine", "redis:7-alpine", "postgres:16"],
+      "evidence": ["[R] 01-STACK-VPS.md §12", "[V] local compose"]
+    },
+    "tuple": [
+      "git rev-parse HEAD",
+      "git describe --tags --always",
+      "docker inspect RepoDigests for every container",
+      "sha256 of docker-compose-dev.yaml, config.yaml, extensions_config.json, backend/uv.lock",
+      "vendor binary SHA256 + tarball SHA256 (deploy/vendor-craft.lock)"
+    ],
+    "rules": [
+      "Deploy by digest; no production pull of floating tags",
+      "uv sync --locked with UV_INDEX_URL kept at pypi.org/simple (mirror would invalidate the lock)",
+      "No upgrade to 2.3.0-dev until changelog review + staging clone + golden-set eval + tested rollback",
+      "Resolve untracked config-drift file during the change window",
+      "Record the pin tuple in deploy/pins.lock and diff it in preflight"
+    ]
+  },
+
+  "license_inventory": {
+    "repo_gap": {
+      "license": "[V] absent",
+      "notice": "[V] absent",
+      "third_party_notices": "[V] absent",
+      "sbom": "[V] absent",
+      "gitignore_secrets": "[V] .env/.env.* excluded; no secret-like tracked file"
+    },
+    "donor_mechanisms": [
+      {"mechanism": "M1 ordered re-entrant operation pipeline", "donor": "block/goose", "license": "Apache-2.0", "obligation": "retain licence + NOTICE, state changes"},
+      {"mechanism": "M2 single-step contract + append-only trajectory", "donor": "SWE-agent/SWE-agent", "license": "MIT", "obligation": "retain copyright + permission notice"},
+      {"mechanism": "M3 repair-on-format vs abort-on-environment", "donor": "SWE-agent + Aider-AI/aider", "license": "MIT + Apache-2.0", "obligation": "both notices"},
+      {"mechanism": "M4 tools as declarative records", "donor": "SWE-agent + continuedev/continue", "license": "MIT + Apache-2.0", "obligation": "both notices"},
+      {"mechanism": "M5 one tool namespace across transports", "donor": "continuedev/continue + All-Hands-AI/OpenHands", "license": "Apache-2.0 + MIT", "obligation": "both notices"},
+      {"mechanism": "M6 capability-gated tool exposure", "donor": "microsoft/playwright-mcp", "license": "Apache-2.0", "obligation": "retain licence + NOTICE"},
+      {"mechanism": "M7 composable condenser pipeline", "donor": "All-Hands-AI/OpenHands (0.60)", "license": "MIT", "obligation": "retain notice"},
+      {"mechanism": "M8 continuation-note compaction", "donor": "cline/cline", "license": "Apache-2.0", "obligation": "retain licence + NOTICE"},
+      {"mechanism": "M9 token-budget compaction", "donor": "block/goose + cline/cline", "license": "Apache-2.0", "obligation": "retain licences"},
+      {"mechanism": "M10 assertions as first-class tools", "donor": "microsoft/playwright-mcp", "license": "Apache-2.0", "obligation": "retain licence"},
+      {"mechanism": "M11 decidable acceptance + explicit UNVERIFIED", "donor": "bytedance/deer-flow", "license": "MIT", "obligation": "retain notice"},
+      {"mechanism": "M12 fail-closed checkpoints + state-only rollback", "donor": "OpenHands/DeerFlow", "license": "MIT", "obligation": "retain notice"}
+    ],
+    "excluded_by_license": [
+      {"candidate": "hyperbrowserai/HyperAgent", "license": "AGPL-3.0", "reason": "network copyleft"},
+      {"candidate": "facebookresearch/HyperAgents", "license": "CC BY-NC-SA 4.0", "reason": "non-commercial + share-alike"},
+      {"candidate": "hyperagent.com", "license": "proprietary", "reason": "closed hosted product"},
+      {"candidate": "alex-hyperagent/hyperagent-public-skills", "license": "NONE", "reason": "no licence"},
+      {"candidate": "stanford-iris-lab/meta-harness-tbench2-artifact", "license": "NONE", "reason": "no licence"}
+    ],
+    "runtime_components": [
+      {"layer": "pipeline Python", "items": "asyncpg, httpx, Pillow", "expected": "Apache-2.0 / BSD-3 / MIT-CMU-family", "gate": "confirm with SBOM"},
+      {"layer": "DeerFlow Python", "items": "backend/pyproject.toml + uv.lock (FastAPI, LangGraph/LangChain, pydantic, ...)", "expected": "MIT/BSD/Apache", "gate": "confirm with SBOM"},
+      {"layer": "console Node", "items": "React, Radix, TanStack, Tailwind, better-auth, kysely, pg, Playwright", "expected": "MIT (Playwright Apache-2.0)", "gate": "confirm with SBOM"},
+      {"layer": "images", "items": "postgres:16 (PostgreSQL Licence), nginx:1.31.2-alpine (BSD-2), redis:7-alpine (version-dependent)", "expected": "mixed", "gate": "pin digest + read image licence"},
+      {"layer": "vendor", "items": "vectorcraft 0.21.1, photocraft 0.20.2, artcraft-docs", "expected": "proprietary EULA unknown", "gate": "obtain EULA + checksums"}
+    ],
+    "deliverables": [
+      "LICENSE (project licence decision)",
+      "NOTICE + THIRD-PARTY-NOTICES.md (generated runtime sections + donor attributions)",
+      "deploy/sbom/*.cdx.json (CycloneDX per deployment)",
+      "licenses/policy.json (allow MIT/BSD/Apache-2.0/ISC/PSF/PostgreSQL/MIT-CMU; review MPL-2.0; deny AGPL/SSPL/RSALv2/CC-BY-NC*/unlicensed)",
+      "CI licence gate failing on denied licence or missing donor notice"
+    ],
+    "open_checks": [
+      "Per-donor NOTICE files must be fetched and carried (Apache-2.0 §4(d)) [U]",
+      "Redis resolved version/licence [U]",
+      "Vendor EULA [U]",
+      "SBOM tool availability (syft/trivy/pip-licenses/license-checker) not assumed [U]"
+    ]
+  },
+
+  "preflight": [
+    {"id": "P0", "check": "host capacity", "command": "free -m; df -h /; uptime", "pass": ">=2GB available RAM, >=10GB free disk", "severity": "medium", "gate": false},
+    {"id": "P1", "check": "MCP not internet-reachable (off-host)", "command": "Test-NetConnection 179.197.88.181 -Port 8765 / nc -vz", "pass": "TcpTestSucceeded False", "severity": "critical", "gate": true},
+    {"id": "P2", "check": "MCP bind address", "command": "ss -lntp | grep 8765", "pass": "expected bind only (fails until F1 option A)", "severity": "critical", "gate": true},
+    {"id": "P3", "check": "docker group membership", "command": "systemctl show pod-mcp -p SupplementaryGroups; getent group docker; id pod", "pass": "pod not in docker", "severity": "critical", "gate": true},
+    {"id": "P4", "check": "docker socket perms", "command": "stat -c '%a %U:%G' /var/run/docker.sock", "pass": "660 root:docker, group minimal", "severity": "high", "gate": false},
+    {"id": "P5", "check": "key presence (names only)", "command": "docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' deer-flow-gateway | grep -c '^DEEPSEEK_API_KEY='", "pass": "1", "severity": "high", "gate": true},
+    {"id": "P6", "check": "key validity zero-spend", "command": "metadata endpoints per deepseek_key.validation", "pass": "both 200 and is_available true", "severity": "high", "gate": true},
+    {"id": "P7", "check": "secret file modes", "command": "stat -c '%a %U:%G' /opt/pod-pipeline/config/pipeline.env", "pass": "640 or 600, root-owned preferred", "severity": "medium", "gate": false},
+    {"id": "P8", "check": "DeerFlow pin manifest", "command": "git rev-parse/describe/status; docker inspect RepoDigests; sha256sum lockfiles", "pass": "matches deploy/pins.lock", "severity": "high", "gate": true},
+    {"id": "P9", "check": "key leak scan", "command": "journalctl -u pod-mcp -u deer-flow-gateway --since -7d | grep -c 'sk-'; docker logs ... | grep -c 'Bearer '", "pass": "0", "severity": "high", "gate": true},
+    {"id": "P10", "check": "licence files / SBOM", "command": "ls LICENSE NOTICE THIRD-PARTY-NOTICES.md deploy/sbom", "pass": "present after F9", "severity": "medium", "gate": false},
+    {"id": "P11", "check": "image versions/digests", "command": "docker images --digests; docker exec deer-flow-redis redis-server --version", "pass": "digests recorded; Redis licence resolved", "severity": "high", "gate": true},
+    {"id": "P12", "check": "SSH posture", "command": "sshd -T | grep -E 'permitrootlogin|passwordauthentication'", "pass": "no root password login; passwordauth off", "severity": "medium", "gate": false},
+    {"id": "P13", "check": "console exposure", "command": "off-host 8091 + ss -lntp | grep 8091", "pass": "closed externally, loopback bind", "severity": "medium", "gate": false},
+    {"id": "P14", "check": "vendor binary hashes", "command": "sha256sum /opt/craft/*/*/bin/*-cli", "pass": "recorded in deploy/vendor-craft.lock", "severity": "high", "gate": false},
+    {"id": "P15", "check": "unknown host agent", "command": "systemctl cat monarx-agent; dpkg -S $(command -v monarx-agent)", "pass": "provenance known or removed", "severity": "low", "gate": false}
+  ],
+  "preflight_gate_rule": "P1-P3, P5-P6, P8 must pass before any Craft-driving agent is enabled; P10/P11 may pass with a dated waiver.",
+
+  "change_window": [
+    {"order": 1, "change": "snapshot configs + hashes", "site": "install -m600 copies; sha256sum", "rollback": "restore copies", "verify": "hashes match"},
+    {"order": 2, "change": "rebind MCP to 172.17.0.1", "site": "pipeline.env; systemctl restart pod-mcp", "rollback": "revert value + restart", "verify": "P1/P2; gateway health 200"},
+    {"order": 3, "change": "drop SupplementaryGroups=docker + confinement", "site": "pod-mcp.service; daemon-reload; restart", "rollback": "restore unit", "verify": "P3/P4; docker ps as pod fails; craft run OK"},
+    {"order": 4, "change": "tighten secret file modes", "site": "chmod/chown", "rollback": "restore modes", "verify": "P7; service up"},
+    {"order": 5, "change": "rotate DeepSeek key", "site": "platform + env file + gateway restart", "rollback": "re-enable A, revoke B", "verify": "P5/P6/P9; old key 401"},
+    {"order": 6, "change": "pin manifest + digest deploy", "site": "deploy/pins.lock; compose override", "rollback": "restore compose", "verify": "P8/P11"},
+    {"order": 7, "change": "vendor hash manifest + EULA request", "site": "deploy/vendor-craft.lock", "rollback": "n/a record only", "verify": "P14"},
+    {"order": 8, "change": "NOTICE/SBOM policy", "site": "new repo files + CI gate", "rollback": "revert CI gate", "verify": "P10"},
+    {"order": 9, "change": "MCP bearer token", "site": "mcp_server.py + extensions_config.json", "rollback": "unset token / revert", "verify": "401 unauth; 200 auth; 3 tools"},
+    {"order": 10, "change": "spend ledger + balance monitor", "site": "Forge Conductor (task-9)", "rollback": "disable monitor", "verify": "ledger row per call; 402 stops"}
+  ],
+  "change_window_estimate": "45-90 minutes for steps 1-6; steps 7-10 are follow-ups; schedule when no Craft run is in flight (steps 2-6 restart services).",
+
+  "verification_matrix": [
+    {"control": "MCP not public", "test": "off-host TCP 8765", "expected": "timeout/refused"},
+    {"control": "MCP auth", "test": "unauthenticated POST", "expected": "401 JSON-RPC error"},
+    {"control": "MCP reachable by consumer", "test": "gateway health + tools/list", "expected": "200 + 3 tools"},
+    {"control": "least privilege", "test": "id pod; docker ps as pod", "expected": "no docker group; permission denied"},
+    {"control": "key valid", "test": "/user/balance, /models", "expected": "200 + is_available"},
+    {"control": "key not leaked", "test": "log scan count", "expected": "0"},
+    {"control": "old key dead", "test": "old key metadata call", "expected": "401"},
+    {"control": "pinned build", "test": "manifest compare", "expected": "hashes/digests match"},
+    {"control": "licence policy", "test": "CI licence gate", "expected": "no denied licences; NOTICE present"},
+    {"control": "spend stop", "test": "simulated 402", "expected": "fail-closed refusal, no retry storm"}
+  ],
+
+  "probes_run": [
+    {"target": "179.197.88.181:8765", "method": "TCP connect from workstation", "result": "timeout/closed", "date": "2026-11-05"},
+    {"target": "179.197.88.181:8091", "method": "TCP connect from workstation", "result": "timeout/closed", "date": "2026-11-05"},
+    {"target": "179.197.88.181:22", "method": "TCP connect from workstation", "result": "open", "date": "2026-11-05"}
+  ],
+  "deepseek_spend": "none — no chat completion, no Authorization header sent; only official docs were fetched",
+
+  "unverified": [
+    {"id": "U1", "item": "external reachability of 8765 from all networks", "evidence": "one off-host vantage closed [V]", "resolution": "keep P1 in preflight/CI"},
+    {"id": "U2", "item": "redis resolved version/licence", "evidence": "floating tag", "resolution": "P11 at pin time"},
+    {"id": "U3", "item": "DeerFlow MCP client static header support", "evidence": "backend/docs/MCP_SERVER.md not fetched", "resolution": "fetch before F1 option B; else use option A/bridge"},
+    {"id": "U4", "item": "systemd EnvironmentFile readable at 0600 root", "evidence": "not tested", "resolution": "test in change window; fallback 0640"},
+    {"id": "U5", "item": "metadata endpoints are free", "evidence": "inference from API semantics [I]", "resolution": "acceptable; bounded"},
+    {"id": "U6", "item": "docker socket perms, docker members, sshd config, monarx provenance", "evidence": "not re-probed", "resolution": "P4/P12/P15"},
+    {"id": "U7", "item": "per-key spend limit", "evidence": "not documented", "resolution": "client-side budgets"},
+    {"id": "U8", "item": "vendor EULA/checksums", "evidence": "none on host", "resolution": "vendor request + hash manifest"},
+    {"id": "U9", "item": "pg_dump availability", "evidence": "no psql client on host", "resolution": "verify in change window"},
+    {"id": "U10", "item": "VPS drift since audit", "evidence": "no SSH in this task", "resolution": "run preflight; if contradicting 01, stop"}
+  ],
+
+  "bibliography": {
+    "access_date": "2026-11-05",
+    "official_docs_fetched": [
+      "https://api-docs.deepseek.com/",
+      "https://api-docs.deepseek.com/api/list-models",
+      "https://api-docs.deepseek.com/api/get-user-balance",
+      "https://api-docs.deepseek.com/quick_start/error_codes",
+      "https://api-docs.deepseek.com/quick_start/rate_limit"
+    ],
+    "repo_files_read": [
+      "DeerFlow Forge/blueprint/files/deploy/systemd/pod-mcp.service",
+      "DeerFlow Forge/blueprint/files/deploy/compose.yml",
+      "DeerFlow Forge/blueprint/files/pod_pipeline/mcp_server.py",
+      "DeerFlow Forge/blueprint/files/pod_pipeline/config.py",
+      "DeerFlow Forge/blueprint/files/requirements.txt",
+      "DeerFlow Forge/blueprint/files/requirements-test.txt",
+      "DeerFlow Forge/package.json",
+      "DeerFlow Forge/.gitignore"
+    ],
+    "sibling_artifacts_cited": [
+      "research/eko-deerflow-agent/wave2/01-STACK-VPS.md",
+      "research/eko-deerflow-agent/wave2/02-AGENT-REPOS.md",
+      "research/eko-deerflow-agent/wave2/05-HARNESS-CODE.md",
+      "research/eko-deerflow-agent/execution-wave/00-WAVE-2-PLAN.md"
+    ],
+    "not_fetched": [
+      "backend/docs/MCP_SERVER.md",
+      "vendor EULA/checksums",
+      "container image licence texts",
+      "VPS shell (no SSH in this task)"
+    ]
+  },
+
+  "secrets_hygiene_statement": "No secret value appears in this file or in 05-SECURITY.md. Only variable names, locations, modes, and presence checks are recorded. Key fingerprints are hashes, never values.",
+  "report_lines_target": "under 25 lines to the Lead"
+}
