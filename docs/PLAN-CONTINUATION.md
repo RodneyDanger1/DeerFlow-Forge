@@ -16,8 +16,13 @@
 | Independent W1-C/console review | **PASS** (`13-INDEPENDENT-REVIEW`) |
 | Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
 | G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
-| W2 Forge service/DDL/queue | **not started — G0 execution provenance is still U** |
+| W2 Forge service/DDL/queue | **recon complete, not started — G0 provenance U** |
 | W3–W6 | not started |
+
+## W2 recon
+
+See `docs/W2-RECON.md`. It names the DDL/gateway/queue contract, existing DB/worker call sites, the
+missing scratch-Postgres step, and the files that would be touched. No W2 source exists or was added.
 
 ## Decision
 
