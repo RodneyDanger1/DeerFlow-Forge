@@ -157,6 +157,26 @@ export default defineConfig(({ command, isPreview }) => ({
     strictPort: true,
   },
   resolve: { tsconfigPaths: true },
+  build: {
+    // CSS gets a deterministic, hash-free filename.
+    //
+    // Vite runs a client build and an SSR build in one command. The two passes
+    // minify CSS slightly differently, so a content-hashed stylesheet name is
+    // not identical between them: the SSR chunk baked /assets/styles-<SSR>.css
+    // into the HTML while the client emitted /assets/styles-<client>.css, and
+    // the deployed page requested a stylesheet that was never written
+    // (verified: HTTP 404 on the node-server preset). JS hashes stayed
+    // consistent because both passes share the same chunk graph. A stable CSS
+    // name removes the disagreement; JS keeps its content hash.
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          const name = assetInfo.names?.[0] ?? assetInfo.name ?? "";
+          return name.endsWith(".css") ? "assets/[name].css" : "assets/[name]-[hash][extname]";
+        },
+      },
+    },
+  },
   plugins: [
     pgliteBootstrapPlugin(),
     // Before tanstackStart so /auth/popup never falls through to the SPA.

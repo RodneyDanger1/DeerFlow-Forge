@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import asyncio
 import dataclasses
 import json
 import os
 import re
 import stat
-import subprocess
 import sys
 from pathlib import Path
 from typing import Any, Callable
@@ -24,21 +24,44 @@ ROOT = Path(__file__).resolve().parent.parent
 TEST_DB_URL = os.environ.get("TEST_DATABASE_URL", "postgresql://pod_app:devpass@127.0.0.1:5432/pod_test")
 CRED_KEY = "test-credential-key-0123456789abcdef"
 CRAFT_TOOLS = ("photocraft-cli", "vectorcraft-cli", "designcraft-cli", "effectcraft-cli", "filmcraft-cli")
+DB_RE = re.compile(r"^postgresql://([^:]+):([^@]+)@([^:/]+):(\d+)/(\w+)$")
 
 
-def _admin(sql: str) -> None:
-    subprocess.run(["su", "postgres", "-c", f'psql -v ON_ERROR_STOP=1 -q -c "{sql}"'], check=True, capture_output=True)
+def _dsn(user: str, pw: str, host: str, port: str, name: str) -> str:
+    return f"postgresql://{user}:{pw}@{host}:{port}/{name}"
 
 
-@pytest.fixture(scope="session", autouse=True)
+async def _create_schema() -> None:
+    """Create a throwaway database and apply sql/schema.sql through asyncpg.
+
+    Earlier this shelled out to `su postgres` + `psql`, which only works on a
+    host-installed PostgreSQL — the deployment runs Postgres in Docker, where no
+    `postgres` OS user exists. The configured user owns the test database and is
+    a superuser inside that container, so an asyncpg admin connection is enough.
+    """
+    match = DB_RE.match(TEST_DB_URL)
+    if not match:
+        raise pytest.UsageError(f"TEST_DATABASE_URL is not a plain postgresql:// URL: {TEST_DB_URL!r}")
+    user, pw, host, port, name = match.groups()
+    admin = await asyncpg.connect(_dsn(user, pw, host, port, "postgres"))
+    try:
+        await admin.execute(f'DROP DATABASE IF EXISTS "{name}" WITH (FORCE)')
+        await admin.execute(f'CREATE DATABASE "{name}" OWNER "{user}"')
+    finally:
+        await admin.close()
+    conn = await asyncpg.connect(TEST_DB_URL)
+    try:
+        await conn.execute((ROOT / "sql" / "schema.sql").read_text(encoding="utf-8"))
+    finally:
+        await conn.close()
+
+
+@pytest.fixture(scope="session")
 def _database() -> None:
-    m = re.match(r"postgresql://([^:]+):([^@]+)@([^:/]+):(\d+)/(\w+)", TEST_DB_URL)
-    user, _pw, _h, _p, name = m.groups()           # type: ignore[union-attr]
-    _admin(f"DROP DATABASE IF EXISTS {name}")
-    _admin(f"CREATE DATABASE {name} OWNER {user}")
-    env = {**os.environ, "PGPASSWORD": _pw}
-    subprocess.run(["psql", TEST_DB_URL, "-v", "ON_ERROR_STOP=1", "-q", "-1", "-f", str(ROOT / "sql" / "schema.sql")],
-                   check=True, capture_output=True, env=env)
+    try:
+        asyncio.run(_create_schema())
+    except (OSError, asyncpg.PostgresError) as exc:
+        pytest.skip(f"test database unavailable at {TEST_DB_URL}: {exc}")
 
 
 @pytest.fixture
@@ -68,7 +91,7 @@ def settings(stubs_env: Path) -> Settings:
 
 
 @pytest_asyncio.fixture
-async def pool(settings: Settings):
+async def pool(_database, settings: Settings):
     p = await asyncpg.create_pool(TEST_DB_URL, min_size=1, max_size=6)
     await p.execute("TRUNCATE users_saas_accounts, ingested_assets, processing_jobs, fourthwall_products, "
                     "agent_sync_logs RESTART IDENTITY CASCADE")

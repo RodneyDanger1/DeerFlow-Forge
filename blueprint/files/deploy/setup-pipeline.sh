@@ -23,15 +23,19 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update
 apt-get install -y --no-install-recommends \
   ca-certificates curl \
-  python3 python3-venv python3-pip \
-  imagemagick potrace ghostscript ffmpeg \
-  docker.io docker-compose-v2
+  python3 python3-venv \
+  imagemagick potrace ghostscript ffmpeg
 
+# Docker is required, but never installed over an existing engine: the distro
+# docker.io package can replace the running Docker a live site depends on.
+if ! command -v docker >/dev/null 2>&1; then
+  apt-get install -y --no-install-recommends docker.io docker-compose-v2
+fi
 if command -v systemctl >/dev/null 2>&1 && [[ -d /run/systemd/system ]]; then
-  systemctl enable --now docker
+  systemctl enable --now docker 2>/dev/null || true
 fi
 if ! docker info >/dev/null 2>&1; then
-  echo "the docker daemon is not running" >&2
+  echo "the docker daemon is not reachable; start it (this script will not restart a running engine)" >&2
   exit 1
 fi
 if ! docker compose version >/dev/null 2>&1; then
@@ -57,9 +61,18 @@ install -d -o "$APP_USER" -g "$APP_GROUP" -m 0750 \
   "$ROOT/deploy"
 
 if [[ ! -x "$ROOT/.venv/bin/python" ]]; then
-  python3 -m venv "$ROOT/.venv"
+  if command -v uv >/dev/null 2>&1; then
+    # Ubuntu 26.04 ships Python 3.14; asyncpg/Pillow wheels lag it. uv pins 3.12.
+    uv venv --python 3.12 "$ROOT/.venv"
+  else
+    python3 -m venv "$ROOT/.venv"
+  fi
 fi
-"$ROOT/.venv/bin/pip" install --disable-pip-version-check -r "$ROOT/requirements.txt"
+if command -v uv >/dev/null 2>&1; then
+  uv pip install --python "$ROOT/.venv/bin/python" --disable-pip-version-check -r "$ROOT/requirements-test.txt"
+else
+  "$ROOT/.venv/bin/pip" install --disable-pip-version-check -r "$ROOT/requirements-test.txt"
+fi
 
 for tool in vectorcraft-cli photocraft-cli designcraft-cli effectcraft-cli filmcraft-cli; do
   if [[ ! -e "$ROOT/bin/$tool" ]]; then
@@ -96,7 +109,11 @@ if python3 -c 'import socket,sys;s=socket.socket();s.settimeout(0.3);r=s.connect
   exit 1
 fi
 
-docker build -t "${POD_DOCKER_IMAGE:-pod-craft-runner:latest}" -f "$ROOT/deploy/Dockerfile" "$ROOT"
+if [[ "${POD_USE_DOCKER:-0}" == "1" ]]; then
+  docker build -t "${POD_DOCKER_IMAGE:-pod-craft-runner:latest}" -f "$ROOT/deploy/Dockerfile" "$ROOT"
+else
+  echo "POD_USE_DOCKER is not 1: skipping the craft-runner image (native mode uses \$ROOT/bin)"
+fi
 docker compose --env-file "$ROOT/config/pipeline.env" -f "$ROOT/deploy/compose.yml" up -d
 
 ready=0

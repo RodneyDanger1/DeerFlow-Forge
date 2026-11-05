@@ -1,0 +1,22 @@
+[Unit]
+Description=DeerFlow Forge console (Nitro node server)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=forge
+Group=forge
+WorkingDirectory=/opt/deerflow-forge
+Environment=NODE_ENV=production
+Environment=PORT=8091
+Environment=HOST=127.0.0.1
+ExecStart=/opt/node22/bin/node /opt/deerflow-forge/.output/server/index.mjs
+Restart=on-failure
+RestartSec=2
+NoNewPrivileges=true
+ProtectSystem=full
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

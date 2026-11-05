@@ -49,10 +49,13 @@ class ToolError(Exception):
 TOOLS: list[dict[str, Any]] = [
     {
         "name": "list_pending_assets",
-        "description": "Assets sitting in the inbox or stuck in queued/processing past POD stuck_after_s.",
+        "description": "Assets sitting in the inbox or stuck in queued/processing past POD stuck_after_s. Reports returned/truncated so a full page is never mistaken for the whole queue.",
         "inputSchema": {
             "type": "object",
-            "properties": {"account_id": {"type": "integer"}},
+            "properties": {
+                "account_id": {"type": "integer"},
+                "limit": {"type": "integer", "minimum": 1, "maximum": 200, "default": 200},
+            },
             "additionalProperties": False,
         },
     },
@@ -120,11 +123,18 @@ def _need_int(args: dict[str, Any], name: str, *, required: bool) -> int | None:
 
 
 async def list_pending_assets(arguments: dict[str, Any]) -> dict[str, Any]:
+    # Boundary validation first: an out-of-range page size must refuse without
+    # touching configuration or the database.
+    account_id = _need_int(arguments, "account_id", required=False)
+    raw_limit = _need_int(arguments, "limit", required=False)
+    limit = 200 if raw_limit is None else raw_limit
+    if limit < 1 or limit > 200:
+        raise ToolError("limit must be between 1 and 200")
     settings = _settings()
     pool = await _pool()
-    account_id = _need_int(arguments, "account_id", required=False)
-    rows = await db.pending_assets(pool, stuck_after_s=settings.stuck_after_s, account_id=account_id)
-    return {"assets": [_jsonable(r) for r in rows]}
+    rows, truncated = await db.pending_assets(
+        pool, stuck_after_s=settings.stuck_after_s, account_id=account_id, limit=limit)
+    return {"assets": [_jsonable(r) for r in rows], "returned": len(rows), "truncated": truncated, "limit": limit}
 
 
 async def _spawn_worker(settings: Settings, run_id: uuid.UUID) -> int:
@@ -161,8 +171,14 @@ async def trigger_pipeline_job(arguments: dict[str, Any]) -> dict[str, Any]:
         asset = await db.get_asset(pool, asset_id)
         if asset is None:
             raise ToolError(f"asset {asset_id} does not exist")
-        run_id, created = await db.enqueue_run(
-            pool, account_id=asset["account_id"], asset_id=asset_id, product_type=product_type)
+        try:
+            run_id, created = await db.enqueue_run(
+                pool, account_id=asset["account_id"], asset_id=asset_id, product_type=product_type)
+        except RuntimeError as exc:
+            # The live run for this (asset, product_type) finished between the
+            # conflict and the lookup: the caller gets a named, retryable refusal
+            # instead of a fabricated run id.
+            raise ToolError(str(exc)) from exc
         await db.log_sync(
             pool, account_id=asset["account_id"], direction="inbound", channel="mcp",
             event_type="job.triggered", run_id=run_id,

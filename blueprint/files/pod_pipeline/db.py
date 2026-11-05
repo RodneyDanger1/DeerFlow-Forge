@@ -35,24 +35,39 @@ SELECT j.id AS job_id, j.run_id, j.account_id, j.asset_id, j.product_type, j.sta
 
 async def enqueue_run(pool: Pool, *, account_id: int, asset_id: int, product_type: str) -> tuple[uuid.UUID, bool]:
     """Insert the run row. Returns (run_id, created). If a live run exists for the same
-    (asset, product_type) the partial unique index rejects the insert and the existing run_id is returned."""
+    (asset, product_type) the partial unique index rejects the insert and the existing run_id is returned.
+
+    The conflict lookup can legitimately find nothing: the live run may finish between the
+    rejected INSERT and the SELECT. Returning that as (None, False) made callers report
+    run_id "None", so retry the insert once and otherwise refuse by name.
+    """
     run_id = uuid.uuid4()
-    async with pool.acquire() as con:
+    for _attempt in range(2):
         try:
-            async with con.transaction():
-                await con.execute(
-                    """INSERT INTO processing_jobs (run_id, account_id, asset_id, product_type, module, step_name, step_index, status)
-                       VALUES ($1,$2,$3,$4,'orchestrator','pipeline_run',0,'queued')""",
-                    run_id, account_id, asset_id, product_type)
-                await con.execute(
-                    "UPDATE ingested_assets SET status='queued' WHERE id=$1 AND status IN ('pending','failed','processed')",
-                    asset_id)
-            return run_id, True
+            async with pool.acquire() as con:
+                async with con.transaction():
+                    await con.execute(
+                        """INSERT INTO processing_jobs (run_id, account_id, asset_id, product_type, module, step_name, step_index, status)
+                           VALUES ($1,$2,$3,$4,'orchestrator','pipeline_run',0,'queued')""",
+                        run_id, account_id, asset_id, product_type)
+                    await con.execute(
+                        "UPDATE ingested_assets SET status='queued' WHERE id=$1 AND status IN ('pending','failed','processed')",
+                        asset_id)
+                return run_id, True
         except asyncpg.UniqueViolationError:
-            existing = await con.fetchval(
-                """SELECT run_id FROM processing_jobs WHERE asset_id=$1 AND product_type=$2
-                      AND module='orchestrator' AND status IN ('queued','running') LIMIT 1""", asset_id, product_type)
-            return existing, False
+            async with pool.acquire() as con:
+                existing = await con.fetchval(
+                    """SELECT run_id FROM processing_jobs WHERE asset_id=$1 AND product_type=$2
+                          AND module='orchestrator' AND status IN ('queued','running') LIMIT 1""", asset_id, product_type)
+            if existing is not None:
+                return existing, False
+            # The conflicting run became terminal between the INSERT and the SELECT.
+            # Re-attempt once against the now-free slot; a second conflict means a
+            # different live run won the race again.
+            run_id = uuid.uuid4()
+            continue
+    raise RuntimeError(
+        f"asset {asset_id}/{product_type}: a run is finishing concurrently; retry the request once it settles")
 
 
 async def claim_run(pool: Pool, run_id: uuid.UUID | None, pid: int) -> dict[str, Any] | None:
@@ -150,7 +165,13 @@ async def register_asset(pool: Pool, *, account_id: int, source_path: str, filen
             account_id, source_path, filename, sha256, byte_size, mime, width, height, dpi, color_space, has_alpha)
 
 
-async def pending_assets(pool: Pool, *, stuck_after_s: int, account_id: int | None = None, limit: int = 200) -> list[dict[str, Any]]:
+async def pending_assets(pool: Pool, *, stuck_after_s: int, account_id: int | None = None,
+                         limit: int = 200) -> tuple[list[dict[str, Any]], bool]:
+    """Pending/stuck assets plus an honest truncation flag.
+
+    Fetches limit+1 rows so a full page can say "there are more" instead of an
+    agent silently believing a 200-row cap is the whole queue.
+    """
     async with pool.acquire() as con:
         rows = await con.fetch(
             """SELECT id, account_id, original_filename, source_path, byte_size, mime_type, width_px, height_px,
@@ -160,8 +181,9 @@ async def pending_assets(pool: Pool, *, stuck_after_s: int, account_id: int | No
                 WHERE ($2::bigint IS NULL OR account_id=$2)
                   AND (status IN ('pending','failed')
                        OR (status IN ('queued','processing') AND updated_at < now() - make_interval(secs => $1)))
-                ORDER BY created_at LIMIT $3""", float(stuck_after_s), account_id, limit)
-        return [dict(r) for r in rows]
+                ORDER BY created_at LIMIT $3""", float(stuck_after_s), account_id, limit + 1)
+        truncated = len(rows) > limit
+        return [dict(r) for r in rows[:limit]], truncated
 
 
 async def get_asset(pool: Pool, asset_id: int) -> dict[str, Any] | None:

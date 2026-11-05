@@ -92,12 +92,89 @@ Run the pipeline MCP server on the VPS, then register it in DeerFlow's
 `extensions_config.json` as an MCP server (`type: "http"`, url
 `http://host.docker.internal:8765/`) or use the stdio bridge inside the container.
 
+## Verification
+
+```bash
+# Console (Node 22+)
+npm run typecheck && npm run lint && npm test && npm run build
+
+# Pipeline (pure tests: no database needed)
+cd blueprint/files
+uv run --python 3.12 --with pytest --with pytest-asyncio --with asyncpg \
+  --with httpx --with pillow -- python -m pytest tests/ -q \
+  -k "not integration"
+
+# Pipeline (integration: real PostgreSQL + Craft CLI stubs)
+TEST_DATABASE_URL=postgresql://pod_app:<pass>@127.0.0.1:5432/pod_test \
+  .venv/bin/python -m pytest tests/ -q
+
+# Visual/forensic smoke: real Chrome, both viewports, screenshots in screenshots/
+npm run build:vps
+PORT=8090 node .output/server/index.mjs &
+node scripts/visual-console-smoke.mjs http://127.0.0.1:8090
+```
+
+`npm run build:vps` clears preset-sensitive build caches before building with
+the `node-server` Nitro preset. Skipping that is a real defect: `node_modules/.nitro`
+keeps the previous client manifest, so the SSR HTML can reference a CSS file the
+build never wrote (observed as a 404 on `/assets/styles-*.css` and an unstyled
+page). CSS now uses a deterministic `assets/styles.css` name because Vite's
+client and SSR passes minify it differently and would otherwise hash it
+inconsistently.
+
+## Deployment (VPS)
+
+Both halves run on one host and never touch each other's services.
+
+```bash
+# Console: loopback on 127.0.0.1:8091, systemd unit, private Node 22 install
+sudo git clone https://github.com/RodneyDanger1/DeerFlow-Forge /opt/deerflow-forge
+sudo bash /opt/deerflow-forge/deploy/vps/install-console.sh
+
+# Pipeline: /opt/pod-pipeline + Postgres container + MCP + worker timer
+sudo cp -a /opt/deerflow-forge/blueprint/files/. /opt/pod-pipeline/
+sudo bash /opt/pod-pipeline/deploy/setup-pipeline.sh
+```
+
+`setup-pipeline.sh` refuses to install `docker.io` over a running engine, skips
+the craft-runner image unless `POD_USE_DOCKER=1`, and pins Python 3.12 through
+`uv` when available (Ubuntu 26.04's 3.14 has no asyncpg/Pillow wheels yet).
+
+Reach the console through an SSH tunnel:
+
+```bash
+ssh -N -L 8091:127.0.0.1:8091 root@<vps>
+# then open http://localhost:8091
+```
+
+To let DeerFlow drive the pipeline, register the MCP server in DeerFlow's
+`extensions_config.json` (bind `POD_MCP_HOST` to an address the gateway
+container can reach, e.g. the docker bridge, and keep it firewalled):
+
+```json
+{"mcpServers": {"forge": {"enabled": true, "type": "http",
+  "url": "http://host.docker.internal:8765/",
+  "description": "DeerFlow Forge pod pipeline"}}}
+```
+
+The pipeline exposes `list_pending_assets`, `trigger_pipeline_job`, and
+`get_fourthwall_status`; `deploy/mcp-stdio.mjs` is a stdio bridge that mirrors
+the client's framing (newline-delimited or Content-Length).
+
 ## Status
 
-Verified on Windows 11 / Node 26.7.0: typecheck, lint, 197 unit tests, and the
-production build all pass. Windows-specific fixes in this tree: the Vite
-env-wrapper resolves npm `.cmd` shims, the test script globs correctly under
-`cmd`, and symlink-dependent tests skip when Developer Mode is unavailable.
+Verified on Windows 11 / Node 26.7.0: typecheck, lint, 204 JS tests (202 pass,
+2 skipped), the Vercel build, the `node-server` build, a Chrome visual pass over
+all five sections at desktop and phone widths, and 24 pure Python tests.
+Integration tests (PostgreSQL + stubs + mocked Fourthwall) run where a test
+database is reachable.
 
-Known gaps before real pipeline traffic: vendor craft binaries, Fourthwall
-credentials, and a Postgres instance. See `blueprint/files/config/pipeline.env.example`.
+Windows-specific fixes in this tree: the Vite env-wrapper resolves npm `.cmd`
+shims, the build script re-invokes npm through `npm_execpath`, the test script
+globs correctly under `cmd`, and symlink-dependent tests skip when Developer
+Mode is unavailable.
+
+Known gaps before real pipeline traffic: vendor craft binaries (the shipped
+`craft-bin/*-cli` files exit 127 by design), Fourthwall credentials, and the
+`fourthwall_template_id` values in `config/products.json`.
+

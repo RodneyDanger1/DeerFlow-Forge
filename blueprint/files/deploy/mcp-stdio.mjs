@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-// stdio MCP bridge. DeerFlow speaks Content-Length frames (or one JSON object
-// per line) on stdin. Each message is POSTed to the Python server and the
-// response is written back as a Content-Length frame.
+// stdio MCP bridge. The client (DeerFlow) may speak either Content-Length
+// frames or one JSON object per line; the Python server mirrors the framing it
+// receives. This bridge must mirror too: replying to a newline-delimited client
+// with a Content-Length frame is unparseable on the client side.
 //
 // Tools live in pod_pipeline/mcp_server.py:
 //   list_pending_assets, trigger_pipeline_job, get_fourthwall_status
@@ -57,13 +58,14 @@ function createReader(stream) {
   return {
     async readMessage() {
       if (!(await fill(1))) return null;
-      if (buf[0] === 0x7b) {
+      const framed = buf[0] !== 0x7b;
+      if (!framed) {
         while (buf.indexOf(0x0a) < 0) {
           if (!(await fill(buf.length + 1))) return null;
         }
         const line = take(buf.indexOf(0x0a));
         take(1);
-        return JSON.parse(line.toString("utf8"));
+        return { msg: JSON.parse(line.toString("utf8")), framed };
       }
       while (buf.indexOf("\r\n\r\n") < 0 && buf.indexOf("\n\n") < 0) {
         if (!(await fill(buf.length + 1))) return null;
@@ -79,13 +81,22 @@ function createReader(stream) {
       if (!match) throw new Error("missing Content-Length");
       const n = Number(match[1]);
       if (!(await fill(n))) return null;
-      return JSON.parse(take(n).toString("utf8"));
+      return { msg: JSON.parse(take(n).toString("utf8")), framed };
     },
   };
 }
 
-function writeFrame(obj) {
+/**
+ * Reply in the framing the client used: a newline-delimited client gets one
+ * JSON line, a Content-Length client gets a Content-Length frame.
+ */
+function writeReply(obj, framed) {
   const body = Buffer.from(JSON.stringify(obj));
+  if (!framed) {
+    process.stdout.write(body);
+    process.stdout.write("\n");
+    return;
+  }
   process.stdout.write(`Content-Length: ${body.length}\r\n\r\n`);
   process.stdout.write(body);
 }
@@ -93,8 +104,9 @@ function writeFrame(obj) {
 async function main() {
   const reader = createReader(process.stdin);
   for (;;) {
-    const msg = await reader.readMessage();
-    if (msg == null) return;
+    const read = await reader.readMessage();
+    if (read == null) return;
+    const { msg, framed } = read;
     /** @type {unknown} */
     let out;
     try {
@@ -113,7 +125,7 @@ async function main() {
       };
     }
     if (msg.id === undefined) continue;
-    writeFrame(out);
+    writeReply(out, framed);
   }
 }
 
