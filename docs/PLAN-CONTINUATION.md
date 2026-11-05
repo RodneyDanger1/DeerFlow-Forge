@@ -17,31 +17,24 @@
 | Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
 | G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
 | G0 provenance | **CLOSED independently** (`16-G0-PROVENANCE.md`): fresh staging-only run reproduced artifacts byte-identically |
-| W2 Forge service/DDL/queue | **W2 local gate PASS**: 97 pass/9 skip; 18/18 SQL; 9 ms SKIP LOCKED; real HTTP→repo→worker→reaper e2e. No production deploy |
-| UI/agent bug audit | **DONE for tested surfaces**: copy fallback, health 503, verifier malformed check, reaper abandoned; UI 15/15 checks, 112 pass/4 skip |
-| W3-A verifier | **DONE**: 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed checks refuse; staging 112 pass/4 skip |
+| W2 Forge service/DDL/queue | **W2 local gate PASS** (at close: 97 pass/9 skip); current full suite **126 pass/4 skip**; 18/18 SQL; 9 ms SKIP LOCKED; real HTTP→repo→worker→reaper e2e. No production deploy |
+| UI/agent bug audit | **DONE for tested surfaces**: copy fallback, health 503, verifier malformed check, reaper abandoned; UI 15/15 checks, 126 pass/4 skip |
+| W3-A verifier | **DONE**: 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed checks refuse; staging 126 pass/4 skip |
 | W3-B critic | **DONE (contract)**: 14/14 blind-critic tests; gate authoritative; disagreement → needs_human; no model claim |
 | W4 learning/eval | not started |
 
 ## Decision
 
-G0 is closed: artifact consistency PASS, independent provenance PASS. W2 may begin as **local source**
-(new `forge` gateway/schema/tests), but no production `forge` DB, service, or cutover until W2 gate G1.
-The `--print-width-in 5.0` recipe is now recorded; the old 8.0 default produces a different PNG by design.
+G0 is closed: artifact consistency PASS and independent provenance PASS. W2 is closed **locally**
+(gateway, DDL, repository, worker, loopback service; no production DB or deploy). W3-A verifier and
+W3-B critic contract are local and tested. Production cutover, a supervised service, DeerFlow MCP
+registration and any learning claim remain blocked/unverified.
 
-## Decision
+Historical note: earlier text in this file instructed “do not start W2” until provenance was
+independently closed. That condition was satisfied by `16-G0-PROVENANCE.md`; the instruction is
+superseded and retained only in history.
 
-Do **not** start W2 yet. The independent reviewer confirmed the artifacts are internally consistent but
-cannot confirm they came from the VPS. Starting a durable ledger on that basis would violate the
-plan's gate. The honest next action is either:
-
-1. owner grants the verifier read-only VPS access so it can rerun G0, or
-2. owner explicitly accepts a **conditional G0** based on Lead-run artifacts + independent artifact
-   consistency, with W2 still local-only until production is separately approved.
-
-No production cutover is proposed either way.
-
-## W1-C scope and non-goals
+## Historical W1-C scope (completed; kept for audit)
 
 **Goal:** patch only skills whose guidance still contradicts Phase 0 or omits a safety boundary.
 

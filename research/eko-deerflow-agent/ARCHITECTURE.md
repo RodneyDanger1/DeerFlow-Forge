@@ -1,6 +1,8 @@
 # Architecture
 
-**Status:** target architecture + as-is architecture. Design, not deployed. Date: 2026-11-05.
+**Status:** target architecture + as-is architecture. The Forge gateway/DDL/repository/worker/service
+and verifier/critic contracts exist locally and are tested on scratch PostgreSQL; **no production
+Forge service, DB, or deploy exists**. Date: 2026-11-05.
 
 This document answers: where the agent lives, what it calls, what it owns, what it must never
 own, how evidence flows, and how a run is recovered. For the short version see [`README.md`](README.md).

@@ -1,8 +1,10 @@
 # Ridgeboundia / DeerFlow Forge Agent Program
 
-**Status:** research + execution evidence + implementation plan. **No production repair has been
-applied.** Phase 0 **staging gate passed** for one real VectorCraft trace and one real PhotoCraft
-retouch; DeerFlow MCP registration remains partial. Date: 2026-11-05. Owner: Riley.
+**Status:** research + execution evidence + implementation plan. **No production repair or deploy has
+been applied.** Phase 0 staging gate passed for one real VectorCraft trace and one real PhotoCraft
+retouch; a **local** Forge core (gateway/DDL/repo/worker/service/verifier/critic) is implemented and
+tested on scratch infrastructure; DeerFlow MCP registration remains unapplied. Date: 2026-11-05.
+Owner: Riley.
 
 This is the master entry point for the agent-harness work. It explains what exists, what is broken,
 what we are building, the six integrations, eight Python changes, eight agent/tool/skill changes, the
@@ -37,13 +39,14 @@ not a new generic superagent, and not a claim of “better than human.”
 | VPS | 2 vCPU / 7.9 GB / 36 GB free, no GPU/display; DeerFlow 2.2 already running |
 | Model | `deepseek-flash` (“DeepSeek V4.1 Flash”), 1,048,576 ctx, 8,192 output; key validity unverified |
 | Craft apps | VectorCraft 0.21.1 + PhotoCraft 0.20.2 installed; Film/Design/Effect **absent** |
-| Execution | `/opt/pod-pipeline/bin/*-cli` are **stubs exiting 127**; `routes.py` argv is invented |
+| Execution | Production `/opt/pod-pipeline/bin/*-cli` may still be stubs; `deploy/craft-launchers` are pinned; `routes.py` argv was corrected and staging-proven. Production deploy not applied |
 | MCP | Craft MCP works standalone (33/26 tools) but is **not registered** in DeerFlow |
-| Persistence | `pod` DB empty/schema-only; **no** episode/action/eval/skill tables |
-| Learning | DeerMem facts + skill-evolution host exist; **no** full learner or quality evaluation |
+| Persistence | `pod` untouched; local `forge` DDL + repo/worker/service exist and are scratch-Postgres tested; no production `forge` DB |
+| Verification | local verifier/critic contracts are implemented and tested (8/8, 14/14); **no vision-model accuracy claim** |
+| Learning | DeerMem facts + skill-evolution host exist; **no full learner or quality evaluation**; current level **L0** |
 | Publish | `fourthwall_template_id` unset for all five products; no approval queue |
 | Evidence | README’s live-E2E claim is historical/unreproducible in the current state |
-| Assets | 39 skills, 400 answers, 6 examples, 8 validated diagrams, 131-file package |
+| Assets | 39 skills, 400 answers, 6 examples, 8 validated system diagrams + integration map, **178-file source corpus**, **188-file desktop package** |
 
 The key sentence: **the model/harness is present; the Craft execution path and learning evidence are
 not.** Phase 0 starts there.
@@ -77,22 +80,23 @@ not.** Phase 0 starts there.
   `--headless` + roots; await each `tools/call` (PhotoCraft can interleave).
 - **Gate:** `tools/list` returns 33/26; a real batch produces an artifact.
 
-### I3 — Forge Conductor service (P1)
+### I3 — Forge Conductor service (P1, local core only)
 
-- **Files:** new `blueprint/files/forge/*`, `sql/schema_forge.sql`,
-  `deploy/systemd/forge-conductor.service`, `deploy/systemd/forge-worker.service`.
+- **Files:** `blueprint/files/forge_gateway.py`, `forge_repo.py`, `forge_worker.py`,
+  `forge_service.py`, `sql/schema_forge.sql`; deployment units are not installed.
 - **DB:** 13 tables (episode, event, handoff, tool_call, artifact, gate, critique, eval, job, skill,
-  budget, approval, transition).
-- **Gate:** 18 SQL assertions, 33 Python tests, SKIP LOCKED two-worker test; episode replay.
+  budget, approval, transition), 36 seeded edges; scratch PostgreSQL only.
+- **Gate:** **18/18 SQL assertions**, **33/33 gateway tests**, two-worker `SKIP LOCKED`, 4/4 repository,
+  5/5 service, 2/2 real HTTP→repo→worker→reaper tests. No production DB/service.
 
-### I4 — Evidence verifier + blind critic (P1)
+### I4 — Evidence verifier + blind critic (P1, contract only)
 
-- **Files:** `forge/verifier.py`, `forge/critic.py`, gate adapters.
-- **Ladder:** process → artifact/hash → domain gates → independent render → tile/crop metrics →
-  blind critic → human.
-- **Measured:** global SSIM catches 7/15; tile-min 13/15 but 3/4 false alarms; 5-check composite
-  **15/15 recall, 0/4 false alarms** on the synthetic corpus.
-- **Gate:** missing metric → `UNVERIFIED`; critic cannot override a failed gate.
+- **Files:** `blueprint/files/forge_verifier.py`, `forge_critic.py`, tests.
+- **Ladder:** artifact hash/PNG/DPI + gate-report parser; blind-critic schema + gate/critic/human
+  resolver. Missing evidence → `UNVERIFIED`; critic cannot override a failed gate.
+- **Measured locally:** verifier 8/8; critic 14/14. No vision model was run; earlier synthetic
+  recall/false-alarm figures are **not current evidence** and must not be quoted as measured.
+- **Gate:** real G0 pair passes; tampered/vacuous/failed/malformed inputs refuse by name.
 
 ### I5 — Human approval + publish (P1)
 
@@ -157,11 +161,11 @@ Estimate: 6–10 weeks for Phase 0–2; this is an `ESTIMATE`, not a measured sc
 
 | Goal | Status | Evidence | What moves it |
 |---|---|---|---|
-| G1 execute Craft | **BLOCKED** | stubs + invented argv | I1/P1/P2 |
+| G1 execute Craft | **PARTIAL** | staging launchers/argv proven; production deploy unverified | I1/P1/P2 |
 | G2 native tools | **PARTIAL** | MCP works standalone, not registered | I2/P6 |
-| G3 verify quality | **PARTIAL** | gates exist, can lie; no critic integration | I4/P3/P4 |
-| G4 learn | **NOT STARTED (L0)** | no ledger/eval | I3/I6/P6–P8 |
-| G5 host on VPS | **FEASIBLE** | 2 vCPU, model running | I3 + caps |
+| G3 verify quality | **PARTIAL (local)** | verifier 8/8 + critic contract 14/14; no vision-model accuracy | I4/P3/P4 |
+| G4 learn | **NOT STARTED (L0)** | no ledger/eval/retrieval claim | I3/I6/P6–P8 |
+| G5 host on VPS | **FEASIBLE** | 2 vCPU, model running; no production Forge service | I3 + caps |
 | G6 safe publish | **BLOCKED** | no approval, templates unset | I5/A8 |
 | G7 truth | **IMPROVING** | claim register; README correction pending | docs/ERRATA |
 

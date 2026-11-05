@@ -1,0 +1,82 @@
+# Capability Matrix and Truth Audit — 2026-11-05
+
+**Scope:** DeerFlow Forge local workspace + staging evidence. **No production deploy is claimed.**
+Evidence labels: VERIFIED (executed here), READ (source/docs), HISTORICAL (dated, not current),
+UNVERIFIED. This file is the current capability answer; dated `execution-wave/*` files remain history.
+
+## 1. What the system can do now
+
+| Capability | Status | Evidence | Limit |
+|---|---|---|---|
+| Console navigation/controls | **CAN** | 5 tabs, 15/15 Playwright checks, desktop + 390×844 | static viewer; “Run route” is an animation, not Craft execution |
+| Console copy/download | **CAN** | Copy → `Copied`; download 4,456 bytes | real browser permission prompt unverified |
+| Console build | **CAN** | `vite build` with `node-server`; smoke `ok:true` | no production/VPS deploy |
+| Forge gateway policy | **CAN** | 33/33 tests: allowlist, roots, replay, refusals, verdict ladder | pure logic; executor is injected |
+| Forge DDL | **CAN** | 13 tables/36 edges; apply-twice on scratch PostgreSQL 16 | scratch only; no migration/rollback drill |
+| SQL invariants | **CAN** | 18/18 assertions; `SKIP LOCKED` 9 ms | 4 DB-dependent tests remain skipped without DSN |
+| Repository | **CAN** | 4/4 scratch-Postgres tests; expired lease requeues or abandons | no production DB/role |
+| Worker/lease reaper | **CAN** | 10/10 local worker/service tests; abandoned-at-max test | no supervised daemon |
+| Loopback service | **CAN** | 5/5 tests; real HTTP→repo→worker→reaper 2/2; health 200/503 | no TLS/auth; loopback only |
+| Artifact verifier | **CAN** | 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed refuse | no independent render/tile metrics |
+| Blind-critic contract | **CAN** | 14/14 tests; gate authoritative; disagreement→needs_human | **no vision model or accuracy measurement** |
+| G0 real trace/retouch | **CAN** | independent staging reproduction; 22/22 hashes; 9/9 applicable | no production publish |
+| Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
+| Research corpus | **CAN** | 178 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 188-file desktop package includes 10 skills |
+| Local Forge e2e | **CAN** | full staging suite **126 pass/4 skip** with scratch PG + G0 | not production |
+
+## 2. What it cannot do (do not claim)
+
+| Capability | Status | Blocking fact |
+|---|---|---|
+| Production Forge service/DB | **CANNOT** | no service unit, production `forge` DB/role, TLS/auth, or deploy |
+| Full Craft execution through service | **CANNOT** | gateway/service do not invoke Craft; separate seam |
+| DeerFlow MCP registration | **CANNOT** | config not applied; standalone MCP proof only |
+| DesignCraft/EffectCraft/FilmCraft | **CANNOT** | apps absent; named refusals only |
+| Publish to Fourthwall | **CANNOT** | approval/template/credentials not configured; no publish path |
+| Vision critic accuracy | **CANNOT CLAIM** | model never run; ≥50 labelled defect set not executed |
+| Learning L1/L2 | **CANNOT CLAIM** | verifier/critic contracts exist, but no episode retrieval/promotion loop or A/B |
+| Learning L3/L4 | **CANNOT** | no corpus/GPU/RL fleet |
+| Native GUI/CUA | **CANNOT CLAIM** | no working desktop GUI bridge; headless browser only |
+| All 918 Craft commands | **CANNOT** | only measured VC/PC contracts and 33/26 MCP tools proven |
+
+## 3. Conditional / unverified
+
+| Item | Why unverified | What would prove it |
+|---|---|---|
+| 4 skipped staging tests | DB/DSN-specific setup | run with their required staging service |
+| Clipboard under real permission prompt | headless API stayed pending; fallback tested | manual browser permission test |
+| Service under crash/restart | loopback tests only | systemd + kill/restart + lease recovery |
+| Critic visual precision/recall | no model/corpus | held-out labelled defect run |
+| Production `/opt/pod-pipeline` state | not inspected this pass | read-only VPS inventory + deploy gate |
+| DeepSeek key validity | not exercised | owner-approved live call |
+| Full publish | templates/credentials absent | template IDs + approval + read-back |
+
+## 4. Truth corrections applied
+
+| Old claim | Current truth | Evidence |
+|---|---|---|
+| 207 JS tests (205/2) | **65/65** | `npm.cmd test` |
+| 31 pipeline tests | **126 pass/4 skip** current staging suite | scratch PG + G0 + `pytest` |
+| 131-file package | **178 source / 188 desktop package** | filesystem count |
+| Live VPS effect/publish E2E | **HISTORICAL, not reproducible** | EffectCraft absent; no production deploy/publish |
+| DeerFlow loads Forge tools | **UNVERIFIED/HISTORICAL** | registration not applied |
+| “Do not start W2” | **superseded** | G0 provenance closed; W2 local gate PASS |
+| “No critic integration” | **local contract only** | verifier 8/8, critic 14/14; no model |
+| 8 diagrams | **8 system diagrams + 1 integration map** | corpus |
+| 3/3 promotion rule | **rejected; Wilson LB 0.4385**; n=8 suggestion is simulation only | promotion evidence |
+
+## 5. Algorithm/data accuracy checks
+
+- Promotion: 3/3 Wilson 95% lower bound = **0.4385**; no k passes threshold at n=3–5. The n=8/k≥7
+  variant is a **simulation suggestion**, not an adopted policy.
+- G0 trace report: **9/9 applicable**, retype `applicable:false`, actual trace hash
+  `ab64aad7…`, output 1500×1800 at 299.9994 DPI.
+- Forge SQL: **13 tables / 36 transitions**, 18 assertions, no vacuous counts.
+- Test counts are environment-qualified: “4 skipped” is **not** four passes.
+- UI Copy: the first probe was a **stateful-locator false negative**; stable locator shows `Copied`.
+
+## 6. Authoritative docs updated
+
+`README.md`, `docs/PLAN-CONTINUATION.md`, `research/eko-deerflow-agent/README.md`,
+`00-START-HERE.md`, `ARCHITECTURE.md`, plus this matrix. Dated `execution-wave/*` evidence files were
+not rewritten; their historical counts remain historical.

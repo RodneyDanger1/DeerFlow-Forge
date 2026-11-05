@@ -22,12 +22,12 @@ npm ci
 npm run dev        # http://localhost:8080
 ```
 
-Gates (all green on Windows 11 / Node 26):
+Gates (run individually; current result):
 
 ```bash
-npm run typecheck  # tsc --noEmit
-npm run lint       # eslint .
-npm run test       # scripts/**/*.test.mjs + src/lib tests
+npm run typecheck  # exit 0
+npm run lint       # exit 0, 0 errors / 5 pre-existing warnings
+npm run test       # 65/65
 npm run build      # vite build, then db:migrate (skips without DATABASE_URL)
 ```
 
@@ -90,6 +90,25 @@ HTTP MCP server. It exposes three tools:
 Run the pipeline MCP server on the VPS, then register it in DeerFlow's
 `extensions_config.json` as an MCP server (`type: "http"`, url
 `http://host.docker.internal:8765/`) or use the stdio bridge inside the container.
+
+## Forge local core (not deployed)
+
+See `docs/CAPABILITY-MATRIX.md` for the current can/cannot/unverified matrix and the truth corrections.
+
+`blueprint/files/` also contains the local Forge control-plane modules:
+
+| Module | Current capability |
+|---|---|
+| `forge_gateway.py` | typed tool-call policy, role/cmd allowlist, roots, idempotency, refusal classification |
+| `sql/schema_forge.sql` | 13 tables / 36 transitions; apply-twice + 18 SQL assertions on scratch PostgreSQL 16 |
+| `forge_repo.py` | asyncpg repository, job lease/finish, abandoned-after-max-attempts requeue |
+| `forge_worker.py` | one claim → handler → truthful finish; bounded `LeaseReaper` |
+| `forge_service.py` | loopback HTTP `/healthz`, create/get episode; repository health is required |
+| `forge_verifier.py` | artifact SHA/IHDR/DPI + gate-report parser; fail-closed verdicts |
+| `forge_critic.py` | blind-critic schema + gate/critic/human resolver (gate authoritative) |
+
+None of these are installed as services; there is no production `forge` database, systemd unit, TLS,
+auth, or learning loop. The Run route in the console is a blueprint visualization, not execution.
 
 ## Verification
 
@@ -178,35 +197,33 @@ the client's framing (newline-delimited or Content-Length).
 
 ## Status
 
-Verified on Windows 11 / Node 26.7.0 and on the deployed VPS:
+**Current verified state (2026-11-05, this checkout):**
 
-- Console: typecheck, lint, 207 JS tests (205 pass, 2 skipped), Vercel build,
-  `node-server` build, and a Chrome visual pass over all five sections at
-  desktop and phone widths against **the VPS build over an SSH tunnel** (0
-  console errors, 0 failed requests, 0 horizontal overflow).
-- Pipeline: 31 tests on the VPS against containerised PostgreSQL (27 pure, 4
-  integration using the documented `craft_stub.py` double and a mocked
-  Fourthwall transport).
-- Live end-to-end on the VPS: `trigger_pipeline_job` → detached worker → trace,
-  trim, effect steps all exit 0 → `apparel_final.png` written → product row
-  `draft` with `last_error: "no Fourthwall credentials configured"` (honest
-  refusal, no fake publish). The run is `succeeded`, the asset `processed`.
-- DeerFlow integration: DeerFlow's own `langchain_mcp_adapters` client loads the
-  three Forge tools from `http://172.17.0.1:8765/` and successfully calls
-  `list_pending_assets`.
-- Boot: `deerflow-forge-console.service`, `pod-mcp.service`, `pod-worker.timer`
-  and `docker.service` are all `enabled`; Postgres and nginx restart policies
-  are `unless-stopped`.
+- Console: `npm test` **65/65**, `tsc --noEmit` clean, rebuilt with the `node-server` preset; Chrome
+  visual smoke passes all five sections at desktop and phone widths with **0 console errors, 0 failed
+  requests, 0 horizontal overflow**. A separate Playwright control audit passes 15/15 checks.
+- Pipeline/Forge local suite: **126 passed, 4 skipped** on a throwaway PostgreSQL 16 container with
+  the G0 bundle mounted. The 4 skips are DB-dependent tests outside the Forge scratch DSN.
+- Forge local: gateway **33/33**; SQL **18/18** plus `SKIP LOCKED`; repository **4/4**; service **5/5**;
+  verifier **8/8**; blind-critic contract **14/14**; real HTTP→repo→worker→reaper **2/2**.
+- G0: independent verifier reproduced trace/retouch artifacts byte-identically; **9/9 applicable**
+  gates on the regenerated trace report.
+- DeerFlow MCP registration: **not applied**. No production `forge` DB, service, or storefront
+  publish exists.
+
+**Historical claims corrected:** earlier revisions claimed 207 JS tests (205 pass/2 skipped), 31
+pipeline tests, a live VPS effect/publish E2E, DeerFlow client loading the Forge tools, and enabled
+systemd units. Those are **HISTORICAL and not current evidence**. EffectCraft is absent and publish
+templates are unset, so a full effect→publish E2E cannot be claimed from this checkout.
 
 Windows-specific fixes in this tree: the Vite env-wrapper resolves npm `.cmd`
 shims, the build script re-invokes npm through `npm_execpath`, the test script
 globs correctly under `cmd`, and symlink-dependent tests skip when Developer
 Mode is unavailable.
 
-Known gaps before real pipeline traffic: vendor craft binaries (the shipped
-`craft-bin/*-cli` files exit 127 by design), Fourthwall credentials, and the
-`fourthwall_template_id` values in `config/products.json`. Until those exist the
-pipeline refuses at the publish step with a named error rather than pretending
-to publish.
+Known gaps before real pipeline traffic: absent DesignCraft/EffectCraft/FilmCraft engines (named
+refusals in `craft-bin/*-cli`), Fourthwall credentials, `fourthwall_template_id` values in
+`config/products.json`, and no approved production deployment. Until those exist the pipeline
+refuses at the publish step with a named error rather than pretending to publish.
 
 

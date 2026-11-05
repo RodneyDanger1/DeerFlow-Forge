@@ -49,11 +49,16 @@ claim to beat a human designer.
 - DeerFlow 2.2 is running with `deepseek-flash` (“DeepSeek V4.1 Flash”, 1,048,576 ctx, 8,192 output);
   key validity is **unverified**.
 - VectorCraft 0.21.1 + PhotoCraft 0.20.2 are installed; Film/Design/Effect are **not**.
-- `/opt/pod-pipeline/bin/*-cli` are stubs (exit 127); `routes.py` argv is invented; Craft MCP is not
-  registered.
-- `pod` DB is empty; no learning/eval tables; console is a viewer.
-- 39 skills and 400 answers are research/instructions, not a running agent.
-- Phase 0 is execution repair; Phase 1 is gateway/verifier; learning is L1/L2 only.
+- Production `/opt/pod-pipeline/bin/*-cli` may still be stubs; `deploy/craft-launchers` are pinned;
+  `routes.py` argv was corrected and staging-proven. Production deploy not applied.
+- Craft MCP works standalone but is **not registered** in DeerFlow.
+- Local Forge core exists: gateway, DDL, repository, worker, loopback service, verifier contract and
+  blind-critic contract; all tested on scratch PostgreSQL/local HTTP. **No production service.**
+- `pod` DB is untouched; local `forge` schema is not a production database; no learning/eval claim
+  beyond **L0**; console is a viewer.
+- 39 skills and 400 answers are research/instructions, not a running learner.
+- Phase 0 execution repair is staging-proven; Phase 1 local core is implemented, not deployed;
+  learning remains L1/L2 research only.
 
 ## Evidence labels
 
