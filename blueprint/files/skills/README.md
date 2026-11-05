@@ -23,7 +23,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 `metadata.hermes`); the original skills keep minimal frontmatter and are still installable. Skills may ship a
 `references/` folder (command atlases, recipes, tips); the installer mirrors it to both runtimes.
 
-## Catalogue (33 skills)
+## Catalogue (34 skills)
 
 | Skill | Family | Use it for |
 |---|---|---|
@@ -47,6 +47,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 | `brand-system` | Brand/marketing | logo variants, palette, type, rules |
 | `artcraft-command-catalog` | Engine | find/execute any of 918 commands in 64 groups |
 | `artcraft-command-atlas` | Engine | intent map + full family indexes, tips, recipes for 918/965 commands |
+| `craft-agent-operator` | Agent | plan → execute → verify → episode ledger → evidence-based promotion |
 | `artcraft-path-geometry` | Engine | booleans, path clean/simplify, offset/outline, compound paths |
 | `artcraft-typography-outlines` | Engine | type creation/styles, fonts, text-on-path, outlines |
 | `artcraft-layers-artboards-symbols` | Engine | layers, clipping, artboards, symbols, locking |
@@ -93,7 +94,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 
 ## Quality evidence
 
-- `_meta/validate_skills.py`: **33 checked / 33 passed**, DSH 33 current, Hermes 33 current.
+- `_meta/validate_skills.py`: **34 checked / 34 passed**, DSH 34 current, Hermes 34 current.
 `_meta/build_command_guide.py` regenerates the atlas indexes and asserts 918/965 coverage.
 - `_meta/manifest.json` + `_meta/SKILLS-INDEX.md` are generated from the live scan.
 - Independent audit: vault `30-reference/art-learning/19-SKILLS-QUALITY-AUDIT.md` (snapshot at

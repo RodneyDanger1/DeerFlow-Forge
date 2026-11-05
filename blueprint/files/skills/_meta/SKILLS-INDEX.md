@@ -1,14 +1,14 @@
 # DeerFlow Forge skills index
 
-Generated **2026-11-05T14:50:25Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
+Generated **2026-11-05T16:02:50Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
 
 - Source of truth: `C:\Users\Riley\Desktop\DeerFlow Forge\blueprint\files\skills`
 - DSH runtime: `C:\Users\Riley\.dsh\skills`
 - Hermes runtime: `C:\Users\Riley\.hermes\skills`
 
-**33 skill directories scanned | 33 installable | 0 failing validation.**
+**34 skill directories scanned | 34 installable | 0 failing validation.**
 
-Runtime parity for installable skills: DSH current=33, missing=0, differs=0; Hermes current=33, missing=0, differs=0.
+Runtime parity for installable skills: DSH current=34, missing=0, differs=0; Hermes current=34, missing=0, differs=0.
 
 ## Installable skills
 
@@ -34,6 +34,7 @@ Runtime parity for installable skills: DSH current=33, missing=0, differs=0; Her
 | `artcraft-typography-outlines` | Use when wordmarks, taglines or type need exact ArtCraft handling: create area/point type, styles, threading, fonts/missing fonts, text on a path,… | 140 | 1.0.0 | current | current | `c5cfd9568c8d` |
 | `artcraft-vector-trace` | Use when a raster logo, badge, crest or illustration must become a clean SVG master plus a rendered check PNG: strict white cutout, VectorCraft… | 213 | 1.1.0 | current | current | `4830dec03925` |
 | `brand-system` | Use to assemble a usable brand kit from a mark and palette: four lockups, palette hex + print equivalents, type with licences, clear-space/min-size… | 212 | 1.2.0 | current | current | `92a436ad388c` |
+| `craft-agent-operator` | Use when an AI agent must plan, execute, verify and learn from a real ArtCraft/Craft production job: retrieve similar cases, choose exact command… | 216 | 1.0.0 | current | current | `5bf769b9f64e` |
 | `craft-mcp-drive` | Drive VectorCraft and PhotoCraft over MCP: start the stdio server headless or connected, initialize and list tools, map design jobs to the 33… | 159 | 1.0.0 | current | current | `0d6433c643df` |
 | `embroidery-art` | Produce stitch-legal embroidery artwork (caps, patches, beanies) with measured cap heights, minimum stroke widths and a thread-colour limit —… | 140 | — | current | current | `3835eaa9ea17` |
 | `fourthwall-beanie-embroidery` | Produce the exact Fourthwall Otto Knit Beanie embroidery master for template pro_12abde5f29c34ffbb2 — embroidery_front 5x1.75 in, 1500x525 at 300… | 160 | 1.0.0 | current | current | `2f970dc336e4` |
@@ -45,7 +46,7 @@ Runtime parity for installable skills: DSH current=33, missing=0, differs=0; Her
 | `print-mockup-composite` | Compose a finished print master or design onto a garment/product canvas or a flat mockup for review: exact canvas sizes, integer centring math,… | 158 | 1.0.0 | current | current | `c6300d75ab87` |
 | `shipping-card-tag` | Lay out thank-you cards, package inserts, hang tags and product/QR cards with bleed, safe margins and 300 DPI, exported as print PDF or PNG. Use… | 122 | — | current | current | `fcaf557b3fcc` |
 | `skill-installer` | Install, validate and update DeerFlow Forge skills in the DSH and Hermes runtimes — scan the skills tree, enforce the frontmatter and content… | 167 | 1.0.0 | current | current | `052f810033f9` |
-| `skills-index` | Route work to the right DeerFlow Forge skill — read the generated catalogue instead of guessing, match the user's wording to trigger descriptions,… | 153 | 1.0.0 | current | current | `dcaa2fdc98b9` |
+| `skills-index` | Route work to the right DeerFlow Forge skill — read the generated catalogue instead of guessing, match the user's wording to trigger descriptions,… | 154 | 1.0.0 | current | current | `d5a089a048e6` |
 | `web-banner` | Produce website hero and banner art at desktop (1920x600-800) and mobile (800x1000) sizes, keeping type as HTML wherever possible and exporting… | 134 | — | current | current | `157593e26abb` |
 
 ## Present but not installable

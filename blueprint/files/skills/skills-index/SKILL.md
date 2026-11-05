@@ -54,6 +54,7 @@ Skills are grouped by the job they finish, not by tool. The stable families are:
 | Marketing art | Paid social stills, website banners | `ad-creative`, `web-banner` |
 | Meta tooling | Install, validate and route skills | `skill-installer`, `skills-index` |
 | Command knowledge | Map any job/menu to exact ids, full indexes, tips, recipes | `artcraft-command-atlas`, `artcraft-command-catalog` |
+| Agent operations | Plan, execute, verify, record and promote Craft work | `craft-agent-operator`, `craft-mcp-drive` |
 | Vector editing | Geometry, type, layers/artboards/symbols, colour/styles, export, SVG | `artcraft-path-geometry`, `artcraft-typography-outlines`, `artcraft-layers-artboards-symbols`, `artcraft-color-swatches-styles`, `artcraft-document-export-formats`, `artcraft-svg-production` |
 | PhotoCraft production | Layers/smart objects, selections/masks, adjustments/filters, batch automation | `artcraft-photocraft-layers`, `artcraft-selections-masks`, `artcraft-photocraft-adjustments-filters`, `artcraft-batch-automation` |
 
