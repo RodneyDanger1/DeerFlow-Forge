@@ -53,9 +53,11 @@ if ! id -u "$APP_USER" >/dev/null 2>&1; then
 fi
 
 # --- dependencies + build ----------------------------------------------------
+# Run as root, then hand the tree to the service user: the clone is root-owned at
+# this point, so building as forge would fail with EACCES on node_modules.
 cd "$REPO"
 "$NPM" ci --no-audit --no-fund
-runuser -u "$APP_USER" -- "$NODE" scripts/build-vps.mjs
+"$NODE" scripts/build-vps.mjs
 
 if [[ ! -f "$REPO/.output/server/index.mjs" ]]; then
   echo "build produced no .output/server/index.mjs" >&2
