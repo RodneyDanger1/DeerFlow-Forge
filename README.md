@@ -35,6 +35,20 @@ The console is a **pure viewer**: `src/lib/blueprint/sources.ts` imports the
 pipeline files with Vite's `?raw`, so the built app has no runtime filesystem
 dependency. That makes it cheap to host anywhere Node runs.
 
+### Self-hosting on a VPS (not Vercel)
+
+The build defaults to Nitro's `vercel` preset. For a plain Node host:
+
+```bash
+NITRO_PRESET=node-server npm run build
+PORT=8090 HOST=127.0.0.1 node .output/server/index.mjs
+```
+
+Put Caddy/nginx in front of it, or reach it through an SSH tunnel. No secrets
+are required to serve the console; `VITE_AUTH_ENABLED` is a build-time flag
+(`.grok/app-env.json`) and stays `false` outside the Grok platform.
+
+
 ## Pipeline (VPS)
 
 `blueprint/files/` is the deployable unit. Required configuration lives in

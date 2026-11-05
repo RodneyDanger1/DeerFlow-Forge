@@ -170,7 +170,12 @@ export default defineConfig(({ command, isPreview }) => ({
     ...(command === "build" || isPreview
       ? [
           nitro({
-            preset: "vercel",
+            // Vercel is the deploy target this workspace was built for, but the
+            // console also runs on a plain VPS: `NITRO_PRESET=node-server
+            // npm run build` emits .output/server/index.mjs, runnable with
+            // `node .output/server/index.mjs`. Keep vercel as the default so a
+            // Grok/Vercel deploy is unchanged.
+            preset: process.env.NITRO_PRESET || "vercel",
             // Auto-registers server/middleware/* (the PWA install page +
             // manifest + head-tag middleware). Nitro v3 defaults serverDir to
             // false, so removing this silently unwires /?install=1 on deploys.

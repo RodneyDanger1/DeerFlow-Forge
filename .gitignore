@@ -26,3 +26,7 @@ Thumbs.db
 .grok/*
 !.grok/app-env.json
 
+
+# Nitro node-server output (VPS builds)
+.output/
+
