@@ -70,6 +70,50 @@ Step-list shape (`"id"` is accepted for `"command"`):
  {"command":"document.export","params":{"path":"/tmp/out.svg","format":"svg","svg":{"decimals":3}}}]
 ```
 
+## Document/state semantics (agent-critical)
+
+- Catalogue rows carry `enabled`. In a headless session most document commands (`imageTrace.make`,
+  `select.all`, `document.export`) show `enabled:false` until a document is open — that is **not** a
+  missing command. Open with `file.new` (VectorCraft `run --cmd file.new`) or `--in FILE`; PhotoCraft
+  uses `run FILE` or `run --new JSON`. There is no `needsDocument` field in the 918-row snapshot;
+  infer by opening a document first.
+- Success envelope per step: `{"command":"<id>","result":<json>,"step":"cmd"}`. Failure: exit 1 and a
+  stderr line naming the step/command (e.g. `step 0 (imageTrace.make): nothing selected`). Parse the
+  envelope; do not treat a missing result as success.
+- `--export` is a batch export of the result; use a `document.export` step when you need `ppi`,
+  `artboard`, `selectedOnly`, `svg.decimals` or format-specific options.
+- VectorCraft `run` can start from a new document (`--cmd file.new`) with no `--in`; PhotoCraft
+  requires exactly one of `FILE` or `--new`.
+- `commands` is a static catalogue; it does not validate your current selection. Selection errors only
+  appear when the command runs.
+
+## Agent operating protocol (follow every time)
+
+**Preflight**
+1. `--version` both CLIs; record versions.
+2. Query the target group and read the exact `params` text for every id you plan to use.
+3. Confirm the input exists and the output path is new.
+4. Decide whether the job needs a document (`file.new`/`--in`/`--new`) or is document-free.
+
+**Execution loop**
+1. One-command probe on a copy; parse stdout JSON; confirm the result shape and output artifact.
+2. Build the step list; run it; assert each step returned a result; export to a new path.
+3. Verify the file (`identify`, size/DPI/format); only then claim success.
+
+**Evidence contract**
+Quote the command, the JSON result(s), the output path/size/dimensions, and any gate values.
+Exit 0 alone is not proof; a missing JSON result is a failure.
+
+**Stop / escalate**
+Unknown id; command disabled and no document route; missing exporter/plugin; missing font; batch
+limits exceeded (256 steps / 8 MiB / 16 MiB); permission/read-only errors. Name the missing piece.
+
+**Output contract**
+Return versions, ids confirmed, commands run, artifacts, gate values, UNVERIFIED list.
+
+**Never**
+Invent an id/parameter; run on the source; assume exit 0 means output; edit installed catalogues.
+
 ## CLI contract — verified facts
 
 - `vectorcraft-cli run` accepts `--in FILE`, `--cmd ID` + `--params JSON` (the params bind to the
@@ -135,7 +179,8 @@ objects); VectorCraft `image` has only `image.info` — use `file.place`, `objec
 1. Translate the job to a group; list ids; read the params text; check `enabled`.
 2. Run one command on a copy; parse stdout JSON; confirm the result shape and that the output exists.
 3. Write the step list; keep steps atomic/ordered; export to a new path and verify with `identify`.
-4. Before saving a skill/script that quotes ids, run `python _meta/check_skill_commands.py`.
+4. Before saving a skill/script that quotes ids, run `cd blueprint/files/skills && python _meta/check_skill_commands.py` (or the absolute path).
+5. If the snapshot catalogues are stale, regenerate `_meta/catalogues/` from the installed CLIs.
 
 ## Gates
 

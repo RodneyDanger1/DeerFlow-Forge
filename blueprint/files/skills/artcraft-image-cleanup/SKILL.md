@@ -100,6 +100,18 @@ Verify (`%x`/`%y` px/cm: 118.11 = 300 DPI, 28.35 = 72 DPI):
 identify -format '%f %wx%h %x %y %[colorspace]\n' /tmp/photo_clean.png
 ```
 
+## Preflight math (agent-critical)
+
+Before touching pixels, compute and record:
+
+- `target_px = print_inches × dpi` (or the screen box).
+- `upscale = target_px / source_px`. **Refuse if > 2.5×** and send to `ai-image-upscale-print` or
+  regenerate; name the ratio in the report.
+- Crop bounds: `x ≥ 0`, `y ≥ 0`, `x+width ≤ source_width`, `y+height ≤ source_height`; otherwise the
+  crop params are wrong for that file.
+- Output path differs from input; PhotoCraft refuses same-path `--out` unless `--in-place`.
+- Read `info` before/after: size, mode, depth, resolution.
+
 ## Workflow / state machine
 
 1. `info` → record size, depth, resolution; confirm the file is readable.
@@ -163,6 +175,24 @@ white-cutout only if transparency is needed.
 - JPEG recompression loses quality; keep PNG/TIFF intermediates and set `--quality` only at the end.
 - `photocraft-cli convert --quality` warns "lossy compression"; for flat art the lossy WebP can be
   *larger* than the lossless one (measured 2,718 B vs 1,372 B on a 1080² flat test) — compare bytes.
+
+## Agent operating protocol (follow every time)
+
+**Preflight:** run `info`; confirm mode/depth/resolution; compute target px, DPI, upscale ratio and
+crop bounds; confirm the original is preserved; refuse >2.5× upscale or out-of-bounds crop.
+
+**Execution loop:** run one filter step, parse its JSON result (filters echo params;
+`image.adjustments.*` returns null — null is success here, but exit code must be 0); verify the image
+after each destructive step; only then chain.
+
+**Evidence:** `identify` before/after, step JSON, output path/size/DPI/colourspace, sharpness/visual
+check; exit 0 is not proof.
+
+**Stop/escalate:** missing input; crop out of bounds; >2.5× upscale; no verified repair tool for the
+defect; CMYK/proof needed; batch name collision without `--naming`.
+
+**Never:** overwrite the source; sharpen before final resize; trust a lossy export byte-size blindly;
+claim CMYK proof from an RGB screen.
 
 ## Sources & verification
 

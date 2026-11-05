@@ -197,7 +197,7 @@ def verify(source_rgba: Image.Image, final_art: Image.Image, args: argparse.Name
     labels = measure.label(final_alpha)
     components = measure.regionprops(labels)
     specks = sum(1 for region in components if region.area < 150)
-    coverage = float(final_alpha.sum()) / float(final_alpha.size)
+    coverage = min(1.0, float(final_alpha.sum()) / float(args.canvas_px[0] * args.canvas_px[1]))
     grey_source = np.asarray(source_rgba.convert("L"), dtype=np.float32) / 255.0
     grey_final = np.asarray(final_small.convert("L"), dtype=np.float32) / 255.0
     sharp_ratio = edge_sharpness(grey_final) / max(1e-6, edge_sharpness(grey_source))

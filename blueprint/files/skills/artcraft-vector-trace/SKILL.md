@@ -41,8 +41,10 @@ PY=/opt/pod-pipeline/.venv/bin/python
 
 **Step 1 — strict white cutout.** Every neutral white transparent (owner rule); cream/tan stays.
 `prep_print_art` computes `usable = min(width_px - 2*margin, print_width_in*dpi)`, crops to
-`subject_bbox`, scales the subject to `usable`, and centres it on `width_px × height_px`. Use the
-source W×H if you want a 1:1 prep canvas:
+`subject_bbox`, scales the subject to `usable`, and centres it on `width_px × height_px`. The command
+below assumes a **1024 px square** source; for a different source use its actual W×H and set
+`--print-width-in` to `W/300` (or your intended print width). If the input is already a clean alpha
+cutout, use `--mode alpha` instead of removing white again:
 
 ```bash
 $PY -m tools.prep_print_art --input /tmp/art.png --output /tmp/art_cut.png \
@@ -96,6 +98,11 @@ $PY -m tools.vectorize_art --input /tmp/art.png --svg /tmp/art_vec.svg --output 
   --canvas-width 2400 --canvas-height 3000 --dpi 300 --print-width-in 8 --cutout white \
   --binary-alpha --report-json /tmp/art_vec.json
 ```
+
+**Coverage note:** `craft_trace` requires `coverage` 0.05–0.95. A provider canvas (tee 4500×5400)
+leaves margins and passes; a canvas exactly equal to the art width can still pass only if the other
+axis has margins, and a design that fills the frame is refused by design. Inspect the report rather
+than guessing.
 
 ## Decision table
 
@@ -162,6 +169,32 @@ SVG, 281 paths, 6 fills, 10 gates passing; Flat Logo produced 3,982 paths / 2.5 
 - **Upscaling is not vectorising** — a blurred source stays blurred in SVG.
 - **`ignoreWhite` + Logo mode**: enclosed transparency can become white unless Ignore White is on
   (docs); verify holes at 100 %.
+
+
+## Agent operating protocol (follow every time)
+
+**Preflight**
+1. Tool versions and source file/dimensions recorded; rights confirmed.
+2. Route decision stated (see the decision table); template/area or canvas chosen.
+3. Output paths are new; source is preserved.
+4. For text: retype JSON exists and the font path resolves on this machine (PIL does the retype, not
+   VectorCraft's font list); check before running.
+
+**Execution loop**
+1. Probe one step on a copy; parse the JSON, not just the exit code.
+2. Run the pipeline; stop at the first failed gate or non-zero step.
+3. Verify the artifact (`identify`, report JSON, previews) before claiming a master.
+
+**Evidence contract**
+Report commands, artifact paths/sizes, the gate table, and unverified items. A mockup is not proof.
+
+**Stop / escalate**
+Missing template/area; missing font; gate still failing after one documented parameter retry; source
+below 150 px per print inch; unlicensed asset; tool unavailable.
+
+**Never**
+Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
+parameter; call a screen render print proof.
 
 ## Sources & verification
 

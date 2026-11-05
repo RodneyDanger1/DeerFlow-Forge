@@ -1,6 +1,6 @@
 # DeerFlow Forge skills index
 
-Generated **2026-11-05T14:06:40Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
+Generated **2026-11-05T14:11:58Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
 
 - Source of truth: `C:\Users\Riley\Desktop\DeerFlow Forge\blueprint\files\skills`
 - DSH runtime: `C:\Users\Riley\.dsh\skills`
@@ -14,15 +14,15 @@ Runtime parity for installable skills: DSH current=22, missing=0, differs=0; Her
 
 | Skill | What it does (trigger summary) | Lines | Version | DSH | Hermes | SHA-256 |
 |---|---|---|---|---|---|---|
-| `ad-creative` | Use when a feed, portrait or story/reel ad still is needed at a standard canvas (1080×1080, 1080×1350, 1080×1920): brand kit, safe margins, one… | 152 | 1.1.0 | current | current | `7235fe38b69f` |
-| `ai-art-vectorize-vectorcraft` | Use for the production path from an AI-generated illustration to a clean vector print master: strict white cutout, AI text erased and retyped,… | 168 | 1.1.0 | current | current | `ce6f3da0bb77` |
-| `ai-diffusion-artifact-cleanup` | Use when an AI-diffusion render looks dirty at print size: soft/haloed edges, grey rim, speckle, semi-transparent fringe or JPEG blocking. Measures… | 167 | 1.1.0 | current | current | `d4393fbae875` |
+| `ad-creative` | Use when a feed, portrait or story/reel ad still is needed at a standard canvas (1080×1080, 1080×1350, 1080×1920): brand kit, safe margins, one… | 183 | 1.1.0 | current | current | `c5323e5269fb` |
+| `ai-art-vectorize-vectorcraft` | Use for the production path from an AI-generated illustration to a clean vector print master: strict white cutout, AI text erased and retyped,… | 212 | 1.1.0 | current | current | `9ffac2d8d220` |
+| `ai-diffusion-artifact-cleanup` | Use when an AI-diffusion render looks dirty at print size: soft/haloed edges, grey rim, speckle, semi-transparent fringe or JPEG blocking. Measures… | 194 | 1.1.0 | current | current | `bf85bbf8f649` |
 | `ai-image-upscale-print` | Decide and execute the print-resolution step for AI/raster art: 150 vs 300 DPI pixel math, the 2.5x upscale gate, when upscaling is acceptable… | 157 | 1.0.0 | current | current | `347658beffd5` |
 | `apparel-print-master` | Build a provider-ready DTG print master at 300 DPI on the exact Fourthwall area geometry — trace or raster route, retype AI text, compose, run the… | 139 | — | current | current | `447d50ca5780` |
-| `artcraft-command-catalog` | Use when you need the exact ArtCraft command id, params or CLI flags for a design job — trace, type, path, colour, layer, artboard, export,… | 171 | 1.0.0 | current | current | `982f7884c182` |
-| `artcraft-image-cleanup` | Use when a supplied photo, scan or AI raster needs cleanup before print or web: crop, dust/scratches, noise, colour cast, levels/curves,… | 176 | 1.0.0 | current | current | `28b8aff357e9` |
-| `artcraft-vector-trace` | Use when a raster logo, badge, crest or illustration must become a clean SVG master plus a rendered check PNG: strict white cutout, VectorCraft… | 173 | 1.1.0 | current | current | `f8f2ea67bebd` |
-| `brand-system` | Use to assemble a usable brand kit from a mark and palette: four lockups, palette hex + print equivalents, type with licences, clear-space/min-size… | 176 | 1.2.0 | current | current | `5a037cf9ec9a` |
+| `artcraft-command-catalog` | Use when you need the exact ArtCraft command id, params or CLI flags for a design job — trace, type, path, colour, layer, artboard, export,… | 216 | 1.0.0 | current | current | `5fd145e0680d` |
+| `artcraft-image-cleanup` | Use when a supplied photo, scan or AI raster needs cleanup before print or web: crop, dust/scratches, noise, colour cast, levels/curves,… | 206 | 1.0.0 | current | current | `f90aa7e15f4e` |
+| `artcraft-vector-trace` | Use when a raster logo, badge, crest or illustration must become a clean SVG master plus a rendered check PNG: strict white cutout, VectorCraft… | 206 | 1.1.0 | current | current | `ea8c4ffe717e` |
+| `brand-system` | Use to assemble a usable brand kit from a mark and palette: four lockups, palette hex + print equivalents, type with licences, clear-space/min-size… | 204 | 1.2.0 | current | current | `251b100fda4d` |
 | `craft-mcp-drive` | Drive VectorCraft and PhotoCraft over MCP: start the stdio server headless or connected, initialize and list tools, map design jobs to the 33… | 159 | 1.0.0 | current | current | `0d6433c643df` |
 | `embroidery-art` | Produce stitch-legal embroidery artwork (caps, patches, beanies) with measured cap heights, minimum stroke widths and a thread-colour limit —… | 140 | — | current | current | `3835eaa9ea17` |
 | `fourthwall-beanie-embroidery` | Produce the exact Fourthwall Otto Knit Beanie embroidery master for template pro_12abde5f29c34ffbb2 — embroidery_front 5x1.75 in, 1500x525 at 300… | 160 | 1.0.0 | current | current | `2f970dc336e4` |

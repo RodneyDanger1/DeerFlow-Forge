@@ -54,7 +54,8 @@ $PY -m tools.craft_trace --input /tmp/art.png \
 ```
 
 Explicit canvas instead of provider geometry (canvas is the full master canvas; art is rendered at
-`print_width_in × dpi` and centred):
+`print_width_in × dpi` and centred). Leave margins on **both axes** if you need coverage in 0.05–0.95;
+a canvas whose width equals the art width has no side margin, so prefer the provider canvas:
 
 ```bash
 $PY -m tools.craft_trace --input /tmp/art.png \
@@ -116,6 +117,23 @@ Stop on any failed gate; never upload an `ok:false` report.
 - `retyped_text_present`: each text box holds ≥2000 alpha pixels and the overlay covers them.
 - Standalone trace: advisory 100–1500 paths, SVG <6 MB, 2–40 fills; no fringe/grain/lost strokes.
 
+### Gate failure → next move (retry once, then escalate)
+
+| Failed gate | First adjustment |
+|---|---|
+| `white_residual_ratio` | re-cutout; raise `--edge-clean-lum`/`--min-component`; inspect step 1 report |
+| `edge_specks` | raise `--noise` (e.g. 12→20), raise `--filter-speckle`, raise cleanup component |
+| `coverage` | use provider canvas with margins; do not crop to art bounds |
+| `vector_fill_colours` | lower `--colors` (e.g. 12→8) and/or simplify source |
+| `edge_definition` | raise `--paths` (65→90), lower `--noise`; check 100 % render |
+| `alpha_hard_edges` | binarise alpha (craft_trace does; don't feed a feathered cutout) |
+| `retyped_text_present` | verify box mapping, font file, and that the overlay actually covers the box |
+| `canvas_geometry` | use `--template/--area` or canvas ≥1500 px each side |
+
+**Font check:** the retype overlay uses Pillow `ImageFont.truetype(font_path)` — the font must exist
+as a file. `text.fontList` is VectorCraft's font list, not this one; verify with
+`ls /usr/share/fonts/**/<font>` or `fc-match <family>`.
+
 **Stale-master caveat:** the live tee master (`rb_tee_craft.json`) was generated before the gate was
 tightened to `edge_specks == 0`; its report shows `edge_specks: 4, pass: true` under the old rule.
 Regenerate before claiming 10/10 today.
@@ -156,6 +174,32 @@ twice or mixing provider/prep canvases reproduces the known ghost-text/misplaced
 - Never reuse another design's retype boxes; wrong boxes = invisible/misplaced text.
 - No mockup as print proof; rendered PNG + physical sample are proof.
 - Do not overwrite an existing master/source.
+
+
+## Agent operating protocol (follow every time)
+
+**Preflight**
+1. Tool versions and source file/dimensions recorded; rights confirmed.
+2. Route decision stated (see the decision table); template/area or canvas chosen.
+3. Output paths are new; source is preserved.
+4. For text: retype JSON exists and the font path resolves on this machine (PIL does the retype, not
+   VectorCraft's font list); check before running.
+
+**Execution loop**
+1. Probe one step on a copy; parse the JSON, not just the exit code.
+2. Run the pipeline; stop at the first failed gate or non-zero step.
+3. Verify the artifact (`identify`, report JSON, previews) before claiming a master.
+
+**Evidence contract**
+Report commands, artifact paths/sizes, the gate table, and unverified items. A mockup is not proof.
+
+**Stop / escalate**
+Missing template/area; missing font; gate still failing after one documented parameter retry; source
+below 150 px per print inch; unlicensed asset; tool unavailable.
+
+**Never**
+Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
+parameter; call a screen render print proof.
 
 ## Sources & verification
 

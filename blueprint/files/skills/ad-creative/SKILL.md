@@ -44,19 +44,20 @@ PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
 Square feed — exact pixels; `ppi:72` means 1 px per point, so a 1080 pt document exports 1080 px:
 
 ```bash
-magick -size 1080x1080 xc:'#101312' /tmp/ad_bg.png
-magick /tmp/brand_art.png -resize 1080x1080^ -gravity center -extent 1080x1080 /tmp/ad_art.png
+magick -size 1080x1080 -units PixelsPerInch -density 72 xc:'#101312' /tmp/ad_bg.png
+magick /tmp/brand_art.png -resize 1080x1080^ -gravity center -extent 1080x1080 -units PixelsPerInch -density 72 /tmp/ad_art.png
 cat > /tmp/ad.json <<'JSON'
 [{"command":"file.new","params":{"width":1080,"height":1080,"units":"Pixels","colorMode":"rgb","backgroundContents":"transparent"}},
- {"command":"file.place","params":{"path":"/tmp/ad_bg.png"}},
- {"command":"file.place","params":{"path":"/tmp/ad_art.png"}},
- {"command":"text.create","params":{"x":80,"y":560,"text":"MADE FOR THE LONG WAY ROUND","font":"FreeSans","style":"Bold","size":72,"color":"#efe6cf"}},
+ {"command":"file.place","params":{"path":"/tmp/ad_bg.png","rect":[0,0,1080,1080]}},
+ {"command":"file.place","params":{"path":"/tmp/ad_art.png","rect":[80,80,920,920]}},
+ {"command":"text.create","params":{"x":80,"y":560,"text":"MADE FOR THE LONG WAY ROUND","font":"FreeSans","style":"Bold","size":52,"color":"#efe6cf"}},
  {"command":"text.create","params":{"x":80,"y":700,"text":"SHOP THE DROP","font":"FreeSans","style":"Bold","size":40,"color":"#d9caa4"}},
  {"command":"document.export","params":{"path":"/tmp/ad_feed.png","format":"png","ppi":72}}]
 JSON
 $VC run --commands /tmp/ad.json
-photocraft-cli convert /tmp/ad_feed.png /tmp/ad_feed.webp --quality 82
+$PC convert /tmp/ad_feed.png /tmp/ad_feed.webp --quality 82
 identify -format '%f %wx%h %m %b\n' /tmp/ad_feed.png /tmp/ad_feed.webp
+convert /tmp/ad_feed.png -format 'corner=%[pixel:p{5,5}] center=%[pixel:p{540,540}]\n' info:
 ```
 
 Portrait/story: same steps with `{"width":1080,"height":1350}` or `{"width":1080,"height":1920}`;
@@ -86,6 +87,10 @@ lossy WebP → thumbnail test → record sources`.
 ## Acceptance gates
 
 - Exact canvas 1080×1080 / 1080×1350 / 1080×1920 (`identify`).
+- **Text bounds fit:** `text.create` returns `bounds`; require `x + width ≤ canvas − 60` and
+  `y + height ≤ canvas − 60`. The original 72 px headline measured **1,229 pt wide**, overflowing a
+  1080 canvas — that is why the example uses 52 px (888 pt). Wrap or shrink before exporting.
+- Background is opaque at the sampled corners (`convert … -format 'corner=…'`), not transparent/white.
 - All text inside safe margins; nothing critical within 60 px of an edge.
 - Headline contrast vs its background ≥4.5:1 (WCAG AA); sample actual pixels.
 - One message, one CTA, one focus; type ≥24 px; no orphan single words.
@@ -141,6 +146,32 @@ bottom 250 px free of text. Export PNG + WebP; check UI bands and thumbnail legi
 - `file.place` uses physical size (see math above); use `rect` or pre-resize.
 - Thumbnail test: design for the small size first.
 - `--quality` on the wrong tool: VectorCraft ignores WebP quality; use PhotoCraft for lossy.
+
+
+## Agent operating protocol (follow every time)
+
+**Preflight**
+1. Tool versions and source file/dimensions recorded; rights confirmed.
+2. Route decision stated (see the decision table); template/area or canvas chosen.
+3. Output paths are new; source is preserved.
+4. For text: retype JSON exists and the font path resolves on this machine (PIL does the retype, not
+   VectorCraft's font list); check before running.
+
+**Execution loop**
+1. Probe one step on a copy; parse the JSON, not just the exit code.
+2. Run the pipeline; stop at the first failed gate or non-zero step.
+3. Verify the artifact (`identify`, report JSON, previews) before claiming a master.
+
+**Evidence contract**
+Report commands, artifact paths/sizes, the gate table, and unverified items. A mockup is not proof.
+
+**Stop / escalate**
+Missing template/area; missing font; gate still failing after one documented parameter retry; source
+below 150 px per print inch; unlicensed asset; tool unavailable.
+
+**Never**
+Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
+parameter; call a screen render print proof.
 
 ## Sources & verification
 

@@ -79,6 +79,8 @@ identify -format '%f %wx%h %x %y\n' /tmp/brand_sheet@1x.png /tmp/brand_sheet@2x.
 **3) Monochrome raster variant and palette chips:**
 
 ```bash
+# create the raster working copy the next command needs (SVG -> PNG at 1200 px)
+magick -background none /tmp/logo.svg -resize 1200x1200 /tmp/logo_1200.png
 $PC run /tmp/logo_1200.png --cmd image.adjustments.desaturate --out /tmp/logo_mono.png
 magick -size 240x240 xc:'#33614a' /tmp/chip_33614a.png
 magick -size 240x240 xc:'#d9caa4' /tmp/chip_d9caa4.png
@@ -167,10 +169,36 @@ and the white-transparent rule so `apparel-print-master` needs no decisions.
 - **Font availability differs**; record fallbacks or embed/outline (check exact status first).
 - **ppi scaling**: pixels = points ÷ 72 × ppi; a 1200 pt doc at ppi 72 = 1200 px, at 144 = 2400 px.
 
+
+## Agent operating protocol (follow every time)
+
+**Preflight**
+1. Tool versions and source file/dimensions recorded; rights confirmed.
+2. Route decision stated (see the decision table); template/area or canvas chosen.
+3. Output paths are new; source is preserved.
+4. For text: retype JSON exists and the font path resolves on this machine (PIL does the retype, not
+   VectorCraft's font list); check before running.
+
+**Execution loop**
+1. Probe one step on a copy; parse the JSON, not just the exit code.
+2. Run the pipeline; stop at the first failed gate or non-zero step.
+3. Verify the artifact (`identify`, report JSON, previews) before claiming a master.
+
+**Evidence contract**
+Report commands, artifact paths/sizes, the gate table, and unverified items. A mockup is not proof.
+
+**Stop / escalate**
+Missing template/area; missing font; gate still failing after one documented parameter retry; source
+below 150 px per print inch; unlicensed asset; tool unavailable.
+
+**Never**
+Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
+parameter; call a screen render print proof.
+
 ## Sources & verification
 
 - **VERIFIED:** `text.fontList` returned 45 families; `document.export` accepts nested
-  `svg {decimals,…}` and `pdf`; ppi scaling (12×10 in at 300 → 2400×3000 recorded earlier);
+  `svg {decimals,…}` and `pdf`; ppi scaling (8×10 in at 300 → 2400×3000; 1200 pt at 72/144/216 ppi → 1200/2400/3600 px, verified);
   `file.place` physical-size rule; PhotoCraft `desaturate` schema; `imageTrace.make` params.
 - **SCHEMA:** VectorCraft/PhotoCraft catalogues at `/opt/craft/catalogues/`; vault 17.
 - **DOCS:** vault 04/15; `assets/brand/README.md`; `assets/print-masters/README.md`.

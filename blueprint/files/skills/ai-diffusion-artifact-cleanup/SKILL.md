@@ -104,11 +104,12 @@ $PY -m tools.artcraft --input /tmp/art.png --canvas-width 1024 --canvas-height 1
   --report-json /tmp/art_ac.json --preview-dir /tmp/prev_ac
 ```
 
-Observed on a synthetic badge: report written, `structure_ssim 0.9011`, `white_residual 0`,
-`magenta_residual 0`, `edge_specks 0`, `edge_sharpness_ratio 1.165`, `svg paths 9`; **coverage 1.0
-fails the 0.03–0.92 gate** because the synthetic art was full-frame — that is the tool refusing a
-full-bleed canvas, not a crash. For production art the residual `ok` is the verdict; it is an
-experimental path, not a replacement for Steps 1–4.
+Observed on a synthetic badge (canvas 1500×1500, print width 3.413 in): report written,
+`structure_ssim 0.9011`, `white_residual 0`, `magenta_residual 0`, `edge_specks 0`,
+`coverage 0.1165` (passes 0.03–0.92 after the coverage metric was fixed to measure art pixels against
+the canvas, not the art frame), `edge_sharpness_ratio 1.165`, `svg paths 9`; **`colour_histogram_corr`
+0.345 fails the 0.65 gate** on two-colour synthetic art. So `ok:false` can be a legitimate quality
+verdict, not a crash. Inspect the gate table; it is an experimental path, not a replacement for Steps 1–4.
 
 ## Workflow / gates
 
@@ -130,6 +131,32 @@ Additional gates: `white_residual_ratio` ≤0.002; `specks_under_150_px` = 0; tr
 `hard_alpha_share` ≥0.85; raster master 300 DPI, `upscale_factor` ≤2.5, no unexpected warnings;
 edge sharpness after unsharp ≥1.0× the same-size pre-sharpen value (verified 1.06× prep, 2.34×
 PhotoCraft chain). Visual: no grey halo, dark rim, speckle, lost thin stroke.
+
+## Artefact → action routing
+
+| Symptom | First move | Retry / stop |
+|---|---|---|
+| white/grey rim after cutout | re-run cutout with correct `--mode white`; audit alpha | still there → key wrong for image; hand-clean or regenerate |
+| speckle in flat fills | `--min-component` higher; `--edge-clean-px` 26–40 | still → trace/grain source; regenerate |
+| soft/fuzzy edge | `prep_print_art --sharpen` at final size; PhotoCraft unsharp | still → upscale decision/regenerate |
+| lettering halo/shadow | erase bands + retype in `craft_trace` | never trace AI text |
+| JPEG blocking | PhotoCraft reduceNoise with `removeJpegArtifact` | still → regenerate at higher quality |
+| colour dull | saturation 1.15–1.25, brightness 1.03–1.06 | verify against brand hex |
+
+## Agent operating protocol (follow every time)
+
+**Preflight:** audit first; record alpha/white/speck/sharpness numbers; route decision (trace vs
+raster) stated; source preserved.
+
+**Execution loop:** one stage, re-audit, compare 100 % on black/white; stop if the metric worsens.
+
+**Evidence:** before/after audit JSON, command output, previews, gate table; no page screenshots.
+
+**Stop/escalate:** no verified filter fixes the defect; melted geometry; full-bleed art that fails the
+chosen gate set; >2.5× upscale needed.
+
+**Never:** claim `tools.artcraft` is production; use `white-flood` by default; raise `edge-clean-lum`
+until cream lettering disappears; call a non-crash failure a success.
 
 ## Refusals / failure modes
 
