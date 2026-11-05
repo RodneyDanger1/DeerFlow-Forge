@@ -1,0 +1,6 @@
+{"path":"data/ai-uploads/rb_tee_clean.png","result":{"fileInfoTitle":"rb_tee_clean.png","format":"png","index":0,"missingLinks":[],"modifiedLinks":[],"restored":false,"title":"rb_tee_clean.png","updatedLinks":[],"warnings":[]},"step":"open"}
+{"command":"select.all","result":{"count":1},"step":"cmd"}
+{"command":"imageTrace.make","result":{"anchors":22166,"colors":12,"id":645,"paths":557,"warnings":["The image is 4500 × 5400 pixels, more than 1500 on a side: it is traced, but more slowly. A lower-fidelity preset or a smaller copy of the image traces faster."]},"step":"cmd"}
+{"command":"imageTrace.expand","result":{"ids":[645]},"step":"cmd"}
+{"result":{"bytes":979800,"format":"svg","path":"data/staging/g0/direct_trace.svg","warnings":[]},"step":"export"}
+{"result":{"bytes":1572959,"format":"pdf","path":"data/staging/g0/direct_trace.pdf","warnings":[]},"step":"export"}

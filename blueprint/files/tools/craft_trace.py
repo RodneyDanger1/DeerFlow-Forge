@@ -209,7 +209,7 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
     strong_edges = int((gradient > 0.08).sum())
     edge_density = strong_edges / float(alpha.sum() or 1)
     corner_ok = bool(not any(bool(alpha[y, x]) for y, x in ((2, 2), (2, width - 3), (height - 3, 2), (height - 3, width - 3))))
-    text_ok = True
+    text_ok: bool | None = True
     if spec is not None:
         if not spec or mapping is None:
             # A retype request with zero boxes, or without a mapping, is not
@@ -241,6 +241,10 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
                 # (ghost AI text or a mountain edge) is not evidence of a retype.
                 if overlay_alpha is None or int(overlay_alpha[by0:by1, bx0:bx1].sum()) < 2000:
                     text_ok = False
+    else:
+        # No retype was requested. The gate is not evidence of text work; keep
+        # the check visible but not applicable rather than reporting a false pass.
+        text_ok = None
     checks = {
         "white_residual_ratio": {"value": float(round(float(near_white.sum()) / max(1, int(alpha.sum())), 5)),
                                  "pass": bool(float(near_white.sum()) / max(1, int(alpha.sum())) <= 0.002)},
@@ -253,9 +257,16 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
         "alpha_hard_edges": {"value": float(round(float(((np.asarray(final_art.getchannel("A")) == 0) | (np.asarray(final_art.getchannel("A")) == 255)).mean()), 4)),
                              "pass": bool(float(((np.asarray(final_art.getchannel("A")) == 0) | (np.asarray(final_art.getchannel("A")) == 255)).mean()) >= 0.85)},
         "transparent_corners": {"value": corner_ok, "pass": corner_ok},
-        "retyped_text_present": {"value": text_ok, "pass": text_ok},
+        "retyped_text_present": {
+            "value": "not_requested" if text_ok is None else text_ok,
+            "pass": text_ok,
+            "applicable": text_ok is not None,
+        },
     }
-    return {"passed": all(bool(check["pass"]) for check in checks.values()), "checks": checks,
+    applicable = [check for check in checks.values() if check.get("applicable", True)]
+    return {"passed": all(bool(check["pass"]) for check in applicable),
+            "applicable_checks": len(applicable),
+            "checks": checks,
             "retype_boxes": len(spec or []),
             "svg_paths": int(svg_text.count("<path")), "svg_bytes": int(svg_path.stat().st_size),
             "src_size": list(src.size)}
@@ -390,6 +401,7 @@ def main(argv: list[str] | None = None) -> int:
                 "trace_params": params,
                 "retyped": bool(args.retype_json),
                 "retype_boxes": int(report.get("retype_boxes", 0)),
+                "applicable_checks": int(report.get("applicable_checks", 0)),
                 "svg_paths": report["svg_paths"],
                 "svg_bytes": report["svg_bytes"],
                 "previews": previews,

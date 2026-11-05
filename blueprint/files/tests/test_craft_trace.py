@@ -84,6 +84,18 @@ def test_empty_retype_request_fails_text_gate() -> None:
     assert report["checks"]["retyped_text_present"]["pass"] is False
 
 
+def test_no_retype_request_is_not_applicable_not_a_false_pass() -> None:
+    """No retype request means no text evidence; do not report a decorative pass."""
+    with tempfile.TemporaryDirectory() as name:
+        tmp = Path(name)
+        source, final, _overlay, _spec, _mapping, svg = _case(tmp)
+        report = verify(source, final, (2400, 2400), 300, svg, None, None, None)
+    assert report["checks"]["retyped_text_present"]["applicable"] is False
+    assert report["checks"]["retyped_text_present"]["pass"] is None
+    assert report["checks"]["retyped_text_present"]["value"] == "not_requested"
+    assert report["passed"] is True
+
+
 def test_research_tool_imports_without_removed_api() -> None:
     module = importlib.import_module("tools.artcraft")
     assert hasattr(module, "flatten_layers")

@@ -1,0 +1,49 @@
+{
+  "ok": true,
+  "checks": {
+    "white_residual_ratio": {
+      "value": 0.0,
+      "pass": true
+    },
+    "edge_specks": {
+      "value": 0,
+      "pass": true
+    },
+    "coverage": {
+      "value": 0.4095,
+      "pass": true
+    },
+    "dpi": {
+      "value": 300,
+      "pass": true
+    },
+    "canvas_geometry": {
+      "value": [
+        1500,
+        1800
+      ],
+      "pass": true
+    },
+    "vector_fill_colours": {
+      "value": 12,
+      "pass": true
+    },
+    "edge_definition": {
+      "value": 0.0923,
+      "pass": true
+    },
+    "alpha_hard_edges": {
+      "value": 1.0,
+      "pass": true
+    },
+    "transparent_corners": {
+      "value": true,
+      "pass": true
+    },
+    "retyped_text_present": {
+      "value": "not_requested",
+      "pass": null,
+      "applicable": false
+    }
+  }
+}

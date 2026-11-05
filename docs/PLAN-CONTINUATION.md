@@ -12,15 +12,24 @@
 | W1-B Craft MCP direct proof | done: 33/26 tools + PhotoCraft `command_batch` |
 | W1-B DeerFlow registration | not applied |
 | G0 real trace/retouch | passed on staging; Lead-run |
-| W1-C skill guidance | **open — doing now** |
-| Independent G0 review | **open** |
-| W2 Forge service/DDL/queue | blocked until W1-C + independent G0 |
+| W1-C skill guidance | **DONE** — 39/39, both runtimes; guidance only |
+| Independent W1-C/console review | **PASS** (`13-INDEPENDENT-REVIEW`) |
+| Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
+| G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
+| W2 Forge service/DDL/queue | **not started — G0 execution provenance is still U** |
 | W3–W6 | not started |
 
-## Next decision
+## Decision
 
-Do W1-C and independent G0 before W2. Rationale: W2 adds durable state and exposure; starting it
-while the execution evidence is only Lead-run would make the ledger inherit an unverified gate.
+Do **not** start W2 yet. The independent reviewer confirmed the artifacts are internally consistent but
+cannot confirm they came from the VPS. Starting a durable ledger on that basis would violate the
+plan's gate. The honest next action is either:
+
+1. owner grants the verifier read-only VPS access so it can rerun G0, or
+2. owner explicitly accepts a **conditional G0** based on Lead-run artifacts + independent artifact
+   consistency, with W2 still local-only until production is separately approved.
+
+No production cutover is proposed either way.
 
 ## W1-C scope and non-goals
 

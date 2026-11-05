@@ -23,6 +23,10 @@ install_skills --targets both --force: installed
 Runtime after install: DSH current=39 missing=0 differs=0 | Hermes current=39 missing=0 differs=0
 ```
 
+The install command's printed "before" line was observed during the run but not retained as a separate
+log; it is historical, not independently reproduced. The current state 39/0/0 is what matters and is
+verified above.
+
 ## Limits
 
 - These are **guidance** changes. They do not prove a runtime enforces the rules.

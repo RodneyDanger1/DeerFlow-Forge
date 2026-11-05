@@ -1,0 +1,2 @@
+vectorcraft-cli: files confined: read /opt/pod-pipeline-staging/data, /opt/pod-pipeline-staging/build; write /opt/pod-pipeline-staging/craft-agent
+vectorcraft-cli: MCP server on stdio (headless)

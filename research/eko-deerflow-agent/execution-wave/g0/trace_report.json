@@ -1,0 +1,89 @@
+{
+  "ok": true,
+  "pipeline": "craft_trace",
+  "vectorcraft": "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli",
+  "svg": "data/staging/g0/trace_master.svg",
+  "output": "data/staging/g0/trace_master.png",
+  "saved": true,
+  "output_sha256": "ab64aad724c50ecdaf99c1a873f3497a9c618ad7e9eebfa96e5df2b3572657a1",
+  "canvas_px": [
+    1500,
+    1800
+  ],
+  "dpi": 300,
+  "art_px": [
+    1500,
+    1800
+  ],
+  "trace_params": {
+    "mode": "color",
+    "palette": "limited",
+    "colors": 12,
+    "paths": 65,
+    "corners": 45,
+    "noise": 16,
+    "ignoreWhite": true,
+    "method": "abutting",
+    "fills": true,
+    "strokes": false,
+    "shapes": false,
+    "autoGrouping": false,
+    "gradients": false
+  },
+  "retyped": false,
+  "retype_boxes": 0,
+  "applicable_checks": 9,
+  "svg_paths": 1109,
+  "svg_bytes": 2465883,
+  "previews": [
+    "data/staging/g0/previews_trace/trace_master_black.jpg",
+    "data/staging/g0/previews_trace/trace_master_white.jpg",
+    "data/staging/g0/previews_trace/trace_master_100pct.png"
+  ],
+  "checks": {
+    "white_residual_ratio": {
+      "value": 0.0,
+      "pass": true
+    },
+    "edge_specks": {
+      "value": 0,
+      "pass": true
+    },
+    "coverage": {
+      "value": 0.4095,
+      "pass": true
+    },
+    "dpi": {
+      "value": 300,
+      "pass": true
+    },
+    "canvas_geometry": {
+      "value": [
+        1500,
+        1800
+      ],
+      "pass": true
+    },
+    "vector_fill_colours": {
+      "value": 12,
+      "pass": true
+    },
+    "edge_definition": {
+      "value": 0.0923,
+      "pass": true
+    },
+    "alpha_hard_edges": {
+      "value": 1.0,
+      "pass": true
+    },
+    "transparent_corners": {
+      "value": true,
+      "pass": true
+    },
+    "retyped_text_present": {
+      "value": "not_requested",
+      "pass": null,
+      "applicable": false
+    }
+  }
+}

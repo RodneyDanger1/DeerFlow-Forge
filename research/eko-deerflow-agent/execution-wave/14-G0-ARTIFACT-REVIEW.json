@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "14-G0-ARTIFACT-REVIEW",
+  "taskId": "task-18",
+  "producer": "wave2-verifier",
+  "independent": true,
+  "date": "2026-11-05",
+  "bundle": "research/eko-deerflow-agent/execution-wave/g0",
+  "writeScope": ["research/eko-deerflow-agent/execution-wave/14-G0-ARTIFACT-REVIEW.md", "research/eko-deerflow-agent/execution-wave/14-G0-ARTIFACT-REVIEW.json"],
+  "sourceOrTestEdits": false,
+  "verdict": {"artifactConsistency": "PASS", "executionProvenance": "U", "g0EvidenceDocSizes": "FAIL in committed HEAD; corrected in working tree during review (uncommitted)"},
+  "concurrentEdits": "11-G0-EVIDENCE.md was modified in the working tree by another seat during this review (sizes 958860/1618404 -> 979800/1572959). This reviewer did not edit it; the review re-read the file and confirms the corrected figures match the artifacts. HEAD remains stale until that edit is committed.",
+  "checks": [
+    {"id": "A1", "check": "MANIFEST SHA-256 + bytes vs files (19 entries)", "observed": "manifest entries=19 ok=19 bad=0", "status": "PASS"},
+    {"id": "A2", "check": "trace_report parse + gate summary", "observed": "ok:true; saved:true; checks:10; all pass:true", "status": "PASS"},
+    {"id": "A3", "check": "canvas_px / art_px", "observed": "[1500,1800] / [1500,1800]", "status": "PASS"},
+    {"id": "A4", "check": "dpi", "observed": "300", "status": "PASS"},
+    {"id": "A5", "check": "output_sha256 vs actual trace_master.png", "observed": "ab64aad724c50ecdaf99c1a873f3497a9c618ad7e9eebfa96e5df2b3572657a1 matches", "status": "PASS"},
+    {"id": "A6", "check": "trace_report output/svg paths resolve to bundle files", "observed": "data/staging/g0/trace_master.png and .svg exist", "status": "PASS"},
+    {"id": "A7", "check": "svg_bytes vs actual trace_master.svg", "observed": "2465883 == 2465883", "status": "PASS"},
+    {"id": "A8", "check": "svg_paths vs actual <path count", "observed": "1109 == 1109", "status": "PASS"},
+    {"id": "A9", "check": "trace_master.png IHDR dimensions", "observed": "1500 x 1800", "status": "PASS"},
+    {"id": "A10", "check": "retouch stdout dimensions", "observed": "image.trim {height:148,width:1438}; image.imageSize {height:148,width:1438}", "status": "PASS"},
+    {"id": "A11", "check": "retouch_master.png IHDR dimensions", "observed": "1438 x 148", "status": "PASS"},
+    {"id": "A12", "check": "encoded DPI via pHYs (retouch + trace masters)", "observed": "11811 px/m = 299.9994 DPI on both", "status": "PASS"},
+    {"id": "A13", "check": "direct SVG size vs captured export line", "observed": "979800 == 979800", "status": "PASS"},
+    {"id": "A14", "check": "direct PDF size vs captured export line", "observed": "1572959 == 1572959", "status": "PASS"},
+    {"id": "A15", "check": "direct_trace.svg SHA-256", "observed": "9f2233e570f46aac3c00039db02200a0d5d42818d39a839553f380c6caa0ad05 (manifest == 11-G0 section 2)", "status": "PASS"},
+    {"id": "A16", "check": "direct_trace.pdf SHA-256", "observed": "66c4697dfb879dac3b4f0607f82d0fa052410932be98690e8ec8f7becaa49b65 (manifest)", "status": "PASS"},
+    {"id": "A17", "check": "MCP VectorCraft tools/list count", "observed": "33 tools", "status": "PASS"},
+    {"id": "A18", "check": "MCP PhotoCraft tools/list count", "observed": "26 tools", "status": "PASS"},
+    {"id": "A19", "check": "command_batch completion + doc_open dimensions", "observed": "completed:1 failed:0; doc_open 1500x525 == retouch_input.png IHDR", "status": "PASS"},
+    {"id": "A20", "check": "repo tree after review", "observed": "only the two new review files untracked; no tracked diff", "status": "PASS"}
+  ],
+  "claims": [
+    {"claim": "MANIFEST hashes/sizes describe the bundle", "status": "PASS", "evidence": "A1"},
+    {"claim": "trace_report 10/10 checks pass", "status": "PASS", "note": "literal; includes a vacuous retype check (D2)", "evidence": "A2"},
+    {"claim": "trace_report canvas 1500x1800, DPI 300, saved true", "status": "PASS", "evidence": "A3/A4/A2; IHDR A9; pHYs A12"},
+    {"claim": "output_sha256 equals trace_master.png", "status": "PASS", "evidence": "A5"},
+    {"claim": "retouch 1438x148", "status": "PASS", "evidence": "A10/A11"},
+    {"claim": "direct trace produces SVG 979800 B / PDF 1572959 B", "status": "PASS", "evidence": "A13/A14"},
+    {"claim": "MCP counts 33 / 26", "status": "PASS", "evidence": "A17/A18"},
+    {"claim": "command_batch completed:1 failed:0", "status": "PASS", "evidence": "A19"},
+    {"claim": "artifacts originate from /opt/pod-pipeline-staging/data/staging/g0 on the VPS", "status": "U", "evidence": "MANIFEST.source text only; no VPS access to confirm provenance"},
+    {"claim": "11-G0-EVIDENCE.md direct-trace sizes SVG 958860 B / PDF 1618404 B (committed HEAD)", "status": "FAIL", "evidence": "actual artifacts + stdout: SVG 979800 B / PDF 1572959 B (D1); working tree corrected during review, uncommitted"}
+  ],
+  "contradictions": [
+    {"id": "D1", "severity": "medium", "title": "11-G0-EVIDENCE.md direct-trace byte sizes were wrong in committed HEAD", "detail": "HEAD said SVG 958,860 B / PDF 1,618,404 B; bundle files, MANIFEST.json and direct_trace_stdout.txt all say 979,800 B / 1,572,959 B. The three SHA-256 values in that doc were already correct. While this review ran, another seat corrected the working-tree file to the right sizes with a note that the earlier figures were transposed; that edit is uncommitted and not this reviewer's. Artifact-vs-HEAD stays inconsistent until it is committed."},
+    {"id": "D2", "severity": "medium", "title": "10/10 includes a vacuous retype check", "detail": "trace_report.json has retyped:false and retype_boxes:0 but retyped_text_present value:true pass:true. craft_trace.py:212-217,256 defaults text_ok=True and only falsifies when spec is not None, so with no retype requested the gate passes without evidence (the vacuity previously flagged in 09-GOAL-GAP-PLAN C9)."},
+    {"id": "D3", "severity": "low", "title": "MANIFEST does not cover every bundle file", "detail": "19 entries vs 24 files on disk; unhashed: MANIFEST.json, g0-artifacts.tgz, and previews_trace/trace_master_{black.jpg,white.jpg,100pct.png} which trace_report.json references as evidence."},
+    {"id": "D4", "severity": "low", "title": "11-G0 section 2 omits the direct_trace.pdf hash", "detail": "The manifest contains and verifies a PDF hash, but the prose evidence table lists only the SVG hash."},
+    {"id": "D5", "severity": "low", "title": "Provenance is self-asserted only", "detail": "MANIFEST.source is a text field; no signed --version/hostname/date capture binds the bundle to the VPS. Internal consistency is strong; origin is U."}
+  ],
+  "notReproduced": [
+    "Execution provenance: bundle allegedly produced in /opt/pod-pipeline-staging; reviewer has no VPS access (SSH known-denied). U, not PASS/FAIL.",
+    "Binary versions / staging pytest / host environment: not captured inside the bundle.",
+    "g0-artifacts.tgz internal hashes: listing matches 19 files + previews_trace/; extracted files already hash-match the manifest, so the archive was not separately hash-compared."
+  ]
+}
