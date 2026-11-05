@@ -45,7 +45,7 @@ DeerFlow runtime and the Craft command engines.
 | D4 | Six-rung evidence ladder: process → artifact → gates → render → blind critic → human. |
 | D5 | Blind critic cannot see exit codes/gates/operator claims; schema requires crop evidence. |
 | D6 | Four stores: hash-chained episode ledger, case retrieval, temporal brand facts, versioned skills. |
-| D7 | Promotion ≥3 independent successes + Wilson lower bound + golden regression + human approval; rollback pointer. |
+| D7 | Promotion uses a pre-declared evaluation horizon + Wilson lower bound above baseline + golden regression + human approval; ≥3 successes is only the minimum sample. **3/3 does not pass** (LB 0.4385); simulation suggests n=8/k≥7/LB>p0 as an input, not a policy. Demotion and suite size must be tested. |
 | D8 | Postgres queue (`FOR UPDATE SKIP LOCKED`), no broker; new `forge` DB/role, `pod` untouched. |
 | D9 | Model = bounded planner/drafter/critic; artifacts by hash on disk; never trust model-reported success. |
 | D10 | No fine-tune/RL/autonomous publish in Phases 0–2. |

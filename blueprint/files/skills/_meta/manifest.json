@@ -22,7 +22,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\ad-creative\\SKILL.md",
@@ -37,11 +37,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "agent-learning-loop",
@@ -54,7 +54,7 @@
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\agent-learning-loop\\SKILL.md",
           "status": "current",
-          "action": "updated",
+          "action": "unchanged",
           "sha256": "4489b06b7738decd84054f3ae1a1285b4d865da1177f928503093e0facfb6151",
           "support": {
             "files": 0,
@@ -64,12 +64,12 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\agent-learning-loop\\SKILL.md",
           "status": "current",
-          "action": "updated",
+          "action": "unchanged",
           "sha256": "4489b06b7738decd84054f3ae1a1285b4d865da1177f928503093e0facfb6151",
           "support": {
             "files": 0,
@@ -79,11 +79,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
-      "action": "installed",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "action": "unchanged",
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "ai-art-vectorize-vectorcraft",
@@ -106,7 +106,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
@@ -121,11 +121,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "ai-diffusion-artifact-cleanup",
@@ -148,7 +148,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
@@ -163,11 +163,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "ai-image-upscale-print",
@@ -190,7 +190,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-image-upscale-print\\SKILL.md",
@@ -205,25 +205,25 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "apparel-print-master",
       "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\apparel-print-master\\SKILL.md",
-      "source_sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
-      "source_lines": 139,
+      "source_sha256": "930aea03c78f21926cf303a9724fcd0d19cb6d01226fd59f41372ec67bd5baa5",
+      "source_lines": 148,
       "description_chars": 363,
       "valid": true,
       "targets": {
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\apparel-print-master\\SKILL.md",
           "status": "current",
-          "action": "unchanged",
-          "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
+          "action": "updated",
+          "sha256": "930aea03c78f21926cf303a9724fcd0d19cb6d01226fd59f41372ec67bd5baa5",
           "support": {
             "files": 0,
             "created": 0,
@@ -232,13 +232,13 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\apparel-print-master\\SKILL.md",
           "status": "current",
-          "action": "unchanged",
-          "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
+          "action": "updated",
+          "sha256": "930aea03c78f21926cf303a9724fcd0d19cb6d01226fd59f41372ec67bd5baa5",
           "support": {
             "files": 0,
             "created": 0,
@@ -247,11 +247,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
-      "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "action": "installed",
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-batch-automation",
@@ -274,7 +274,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-batch-automation\\SKILL.md",
@@ -289,11 +289,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-color-swatches-styles",
@@ -316,7 +316,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-color-swatches-styles\\SKILL.md",
@@ -331,11 +331,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-command-atlas",
@@ -351,14 +351,14 @@
           "action": "unchanged",
           "sha256": "53d0b72a412d7144ef91f30eefa01c135ee07af26d904daad38acb80ea55c765",
           "support": {
-            "files": 28,
+            "files": 27,
             "created": 0,
             "updated": 0,
-            "unchanged": 28,
+            "unchanged": 27,
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-command-atlas\\SKILL.md",
@@ -366,18 +366,18 @@
           "action": "unchanged",
           "sha256": "53d0b72a412d7144ef91f30eefa01c135ee07af26d904daad38acb80ea55c765",
           "support": {
-            "files": 28,
+            "files": 27,
             "created": 0,
             "updated": 0,
-            "unchanged": 28,
+            "unchanged": 27,
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-command-catalog",
@@ -400,7 +400,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-command-catalog\\SKILL.md",
@@ -415,11 +415,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-document-export-formats",
@@ -442,7 +442,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-document-export-formats\\SKILL.md",
@@ -457,11 +457,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-image-cleanup",
@@ -484,7 +484,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-image-cleanup\\SKILL.md",
@@ -499,11 +499,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-layers-artboards-symbols",
@@ -526,7 +526,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-layers-artboards-symbols\\SKILL.md",
@@ -541,11 +541,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-path-geometry",
@@ -568,7 +568,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-path-geometry\\SKILL.md",
@@ -583,11 +583,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-photocraft-adjustments-filters",
@@ -610,7 +610,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-photocraft-adjustments-filters\\SKILL.md",
@@ -625,11 +625,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-photocraft-layers",
@@ -652,7 +652,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-photocraft-layers\\SKILL.md",
@@ -667,11 +667,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-selections-masks",
@@ -694,7 +694,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-selections-masks\\SKILL.md",
@@ -709,11 +709,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-svg-production",
@@ -736,7 +736,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-svg-production\\SKILL.md",
@@ -751,11 +751,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-typography-outlines",
@@ -778,7 +778,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-typography-outlines\\SKILL.md",
@@ -793,11 +793,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "artcraft-vector-trace",
@@ -820,7 +820,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-vector-trace\\SKILL.md",
@@ -835,11 +835,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "brand-system",
@@ -862,7 +862,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\brand-system\\SKILL.md",
@@ -877,11 +877,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "craft-agent-operator",
@@ -894,50 +894,50 @@
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\craft-agent-operator\\SKILL.md",
           "status": "current",
-          "action": "updated",
+          "action": "unchanged",
           "sha256": "5bf769b9f64efbdbbcb7105ed1930c494c2a256b804bd14f6561c0e259495202",
           "support": {
             "files": 2,
             "created": 0,
-            "updated": 1,
-            "unchanged": 1,
+            "updated": 0,
+            "unchanged": 2,
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\craft-agent-operator\\SKILL.md",
           "status": "current",
-          "action": "updated",
+          "action": "unchanged",
           "sha256": "5bf769b9f64efbdbbcb7105ed1930c494c2a256b804bd14f6561c0e259495202",
           "support": {
             "files": 2,
             "created": 0,
-            "updated": 1,
-            "unchanged": 1,
+            "updated": 0,
+            "unchanged": 2,
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
-      "action": "installed",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "action": "unchanged",
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "craft-mcp-drive",
       "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\craft-mcp-drive\\SKILL.md",
-      "source_sha256": "0d6433c643dfcfb146e8b77b6ba31692e540809e20ede4335f7591e4ebd5a176",
-      "source_lines": 159,
+      "source_sha256": "3c98f14ff1541b1a0e2d757513097014f84520ba4466ea4451bd1ecf2fb8420c",
+      "source_lines": 165,
       "description_chars": 408,
       "valid": true,
       "targets": {
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\craft-mcp-drive\\SKILL.md",
           "status": "current",
-          "action": "unchanged",
-          "sha256": "0d6433c643dfcfb146e8b77b6ba31692e540809e20ede4335f7591e4ebd5a176",
+          "action": "updated",
+          "sha256": "3c98f14ff1541b1a0e2d757513097014f84520ba4466ea4451bd1ecf2fb8420c",
           "support": {
             "files": 0,
             "created": 0,
@@ -946,13 +946,13 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\craft-mcp-drive\\SKILL.md",
           "status": "current",
-          "action": "unchanged",
-          "sha256": "0d6433c643dfcfb146e8b77b6ba31692e540809e20ede4335f7591e4ebd5a176",
+          "action": "updated",
+          "sha256": "3c98f14ff1541b1a0e2d757513097014f84520ba4466ea4451bd1ecf2fb8420c",
           "support": {
             "files": 0,
             "created": 0,
@@ -961,11 +961,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
-      "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "action": "installed",
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "embroidery-art",
@@ -988,7 +988,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\embroidery-art\\SKILL.md",
@@ -1003,16 +1003,16 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "forge-harness-architect",
       "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\forge-harness-architect\\SKILL.md",
-      "source_sha256": "62596f95617427c52c05951b1967416c3219b602e114ba35bd61e2cf1ac88697",
+      "source_sha256": "4a15f80245528e0eaf56defd0308f4c03fd0d9426e209e814fc773dc8a8ad7a0",
       "source_lines": 142,
       "description_chars": 455,
       "valid": true,
@@ -1020,8 +1020,8 @@
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\forge-harness-architect\\SKILL.md",
           "status": "current",
-          "action": "unchanged",
-          "sha256": "62596f95617427c52c05951b1967416c3219b602e114ba35bd61e2cf1ac88697",
+          "action": "updated",
+          "sha256": "4a15f80245528e0eaf56defd0308f4c03fd0d9426e209e814fc773dc8a8ad7a0",
           "support": {
             "files": 0,
             "created": 0,
@@ -1030,13 +1030,13 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\forge-harness-architect\\SKILL.md",
           "status": "current",
-          "action": "unchanged",
-          "sha256": "62596f95617427c52c05951b1967416c3219b602e114ba35bd61e2cf1ac88697",
+          "action": "updated",
+          "sha256": "4a15f80245528e0eaf56defd0308f4c03fd0d9426e209e814fc773dc8a8ad7a0",
           "support": {
             "files": 0,
             "created": 0,
@@ -1045,11 +1045,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
-      "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "action": "installed",
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "fourthwall-beanie-embroidery",
@@ -1072,7 +1072,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-beanie-embroidery\\SKILL.md",
@@ -1087,11 +1087,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "fourthwall-catalog-audit",
@@ -1114,7 +1114,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-catalog-audit\\SKILL.md",
@@ -1129,11 +1129,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "fourthwall-hoodie-vector",
@@ -1156,7 +1156,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-hoodie-vector\\SKILL.md",
@@ -1171,11 +1171,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "fourthwall-product-publish",
@@ -1198,7 +1198,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-product-publish\\SKILL.md",
@@ -1213,11 +1213,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "fourthwall-tee-vector",
@@ -1240,7 +1240,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-tee-vector\\SKILL.md",
@@ -1255,11 +1255,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "harness-code-adapter",
@@ -1282,7 +1282,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\harness-code-adapter\\SKILL.md",
@@ -1297,11 +1297,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "merch-mockup-proof",
@@ -1324,7 +1324,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\merch-mockup-proof\\SKILL.md",
@@ -1339,11 +1339,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "print-mockup-composite",
@@ -1366,7 +1366,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\print-mockup-composite\\SKILL.md",
@@ -1381,11 +1381,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "research-corpus-navigator",
@@ -1408,7 +1408,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\research-corpus-navigator\\SKILL.md",
@@ -1423,11 +1423,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "shipping-card-tag",
@@ -1450,7 +1450,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\shipping-card-tag\\SKILL.md",
@@ -1465,11 +1465,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "skill-installer",
@@ -1492,7 +1492,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\skill-installer\\SKILL.md",
@@ -1507,11 +1507,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "skills-index",
@@ -1534,7 +1534,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\skills-index\\SKILL.md",
@@ -1549,11 +1549,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "visual-verification-critic",
@@ -1576,7 +1576,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "hermes": {
           "path": "C:\\Users\\Riley\\.hermes\\skills\\visual-verification-critic\\SKILL.md",
@@ -1591,11 +1591,11 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     },
     {
       "skill": "web-banner",
@@ -1618,7 +1618,7 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         },
         "dsh": {
           "path": "C:\\Users\\Riley\\.dsh\\skills\\web-banner\\SKILL.md",
@@ -1633,18 +1633,18 @@
             "conflicts": [],
             "errors": []
           },
-          "timestamp": "2026-11-05T16:47:06Z"
+          "timestamp": "2026-11-05T19:02:38Z"
         }
       },
       "action": "unchanged",
-      "timestamp": "2026-11-05T16:47:06Z"
+      "timestamp": "2026-11-05T19:02:38Z"
     }
   ],
   "installer": {
     "name": "install_skills.py",
     "version": "1.0.0"
   },
-  "generated_at": "2026-11-05T16:47:06Z",
+  "generated_at": "2026-11-05T19:02:38Z",
   "source_root": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills",
   "targets": {
     "dsh": "C:\\Users\\Riley\\.dsh\\skills",

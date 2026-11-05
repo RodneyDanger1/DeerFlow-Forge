@@ -106,6 +106,15 @@ All ten checks must pass (`ok: true`, exit 0; exit 1 = gate failure, exit 2 = re
 - Mockups prove placement/cut-off only; never present one as print proof.
 - No store change (create/publish/hide/sync) without explicit owner approval.
 
+## Approval binding
+
+- Compute and record the master’s SHA-256 **before** requesting approval: artifact hash, canvas, DPI,
+  template/area, print width and the gate report hash.
+- Bind the owner’s approval to that exact SHA-256. A stale approval (different bytes), a reused
+  approval for another product, or an approval without the gate report is refused by name.
+- Re-run the gates after any re-export or retouch. If the bytes change, the approval is void.
+- The approval is for print/publish only; it is not evidence that the visual result is correct.
+
 ## Worked examples
 
 **1. Tee front_large.** Provider row says 15×18 in, so the canvas is 4500×5400 px at 300 DPI.

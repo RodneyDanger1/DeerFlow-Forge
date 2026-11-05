@@ -1,6 +1,6 @@
 # DeerFlow Forge skills index
 
-Generated **2026-11-05T16:47:06Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
+Generated **2026-11-05T19:02:38Z** by `install_skills.py` 1.0.0. Counts and runtime states are computed at generation time; read this file instead of assuming a fixed catalogue.
 
 - Source of truth: `C:\Users\Riley\Desktop\DeerFlow Forge\blueprint\files\skills`
 - DSH runtime: `C:\Users\Riley\.dsh\skills`
@@ -19,7 +19,7 @@ Runtime parity for installable skills: DSH current=39, missing=0, differs=0; Her
 | `ai-art-vectorize-vectorcraft` | Use for the production path from an AI-generated illustration to a clean vector print master: strict white cutout, AI text erased and retyped,… | 220 | 1.1.0 | current | current | `ad4c1edac10e` |
 | `ai-diffusion-artifact-cleanup` | Use when an AI-diffusion render looks dirty at print size: soft/haloed edges, grey rim, speckle, semi-transparent fringe or JPEG blocking. Measures… | 204 | 1.1.0 | current | current | `8b959d0824b9` |
 | `ai-image-upscale-print` | Decide and execute the print-resolution step for AI/raster art: 150 vs 300 DPI pixel math, the 2.5x upscale gate, when upscaling is acceptable… | 157 | 1.0.0 | current | current | `347658beffd5` |
-| `apparel-print-master` | Build a provider-ready DTG print master at 300 DPI on the exact Fourthwall area geometry — trace or raster route, retype AI text, compose, run the… | 139 | — | current | current | `447d50ca5780` |
+| `apparel-print-master` | Build a provider-ready DTG print master at 300 DPI on the exact Fourthwall area geometry — trace or raster route, retype AI text, compose, run the… | 148 | — | current | current | `930aea03c78f` |
 | `artcraft-batch-automation` | Use when many PhotoCraft images or layers need repeatable processing: action lists, batch folders, naming/serial tokens, droplets, stop-on-error,… | 150 | 1.0.0 | current | current | `e4d26e632653` |
 | `artcraft-color-swatches-styles` | Use when ArtCraft artwork needs controlled colour: named swatches/global/spot colours, fills/strokes, gradients, brand recolour, graphic styles,… | 146 | 1.0.0 | current | current | `f138cacdc913` |
 | `artcraft-command-atlas` | Use when you need to map a design job or menu habit to the exact ArtCraft command across 918 VectorCraft and 965 PhotoCraft commands: intent map,… | 195 | 1.0.0 | current | current | `53d0b72a412d` |
@@ -36,9 +36,9 @@ Runtime parity for installable skills: DSH current=39, missing=0, differs=0; Her
 | `artcraft-vector-trace` | Use when a raster logo, badge, crest or illustration must become a clean SVG master plus a rendered check PNG: strict white cutout, VectorCraft… | 213 | 1.1.0 | current | current | `4830dec03925` |
 | `brand-system` | Use to assemble a usable brand kit from a mark and palette: four lockups, palette hex + print equivalents, type with licences, clear-space/min-size… | 212 | 1.2.0 | current | current | `92a436ad388c` |
 | `craft-agent-operator` | Use when an AI agent must plan, execute, verify and learn from a real ArtCraft/Craft production job: retrieve similar cases, choose exact command… | 216 | 1.0.0 | current | current | `5bf769b9f64e` |
-| `craft-mcp-drive` | Drive VectorCraft and PhotoCraft over MCP: start the stdio server headless or connected, initialize and list tools, map design jobs to the 33… | 159 | 1.0.0 | current | current | `0d6433c643df` |
+| `craft-mcp-drive` | Drive VectorCraft and PhotoCraft over MCP: start the stdio server headless or connected, initialize and list tools, map design jobs to the 33… | 165 | 1.0.0 | current | current | `3c98f14ff154` |
 | `embroidery-art` | Produce stitch-legal embroidery artwork (caps, patches, beanies) with measured cap heights, minimum stroke widths and a thread-colour limit —… | 140 | — | current | current | `3835eaa9ea17` |
-| `forge-harness-architect` | Use when designing or changing the hosted Forge Conductor: a third plane beside the DeerFlow console and pod pipeline, with a supervisor,… | 142 | 1.0.0 | current | current | `62596f956174` |
+| `forge-harness-architect` | Use when designing or changing the hosted Forge Conductor: a third plane beside the DeerFlow console and pod pipeline, with a supervisor,… | 142 | 1.0.0 | current | current | `4a15f8024552` |
 | `fourthwall-beanie-embroidery` | Produce the exact Fourthwall Otto Knit Beanie embroidery master for template pro_12abde5f29c34ffbb2 — embroidery_front 5x1.75 in, 1500x525 at 300… | 160 | 1.0.0 | current | current | `2f970dc336e4` |
 | `fourthwall-catalog-audit` | Independently audit what is actually live in the Ridgeboundia Fourthwall store — Open API state/access/price/image readback, local DB whitelist and… | 157 | 1.0.0 | current | current | `b0a483632828` |
 | `fourthwall-hoodie-vector` | Produce the exact Fourthwall Gildan Classic Hoodie master for template pro_gUu4CvXsRm-BxogjB89KzA — front 14x14 in, 4200x4200 at 300 DPI, 8.5 in… | 158 | 1.0.0 | current | current | `d630d766d759` |

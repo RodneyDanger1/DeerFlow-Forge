@@ -113,6 +113,12 @@ One-shot form: pipe the five lines above into `$VC mcp --headless ...`. `command
 3. `open_file` under the read root; edit with `command_batch`/`command_run`; `doc_inspect` the result.
 4. `render_preview` for pixels; `export`/`save_file` under the write root; parse each reply.
 
+**Await every dependent call.** A `tools/call` is asynchronous: read its matching JSON-RPC response
+(by `id`) before issuing a call that depends on the previous result. PhotoCraft can interleave
+requests; do not pipeline a `doc_open` → `command_batch` → export sequence as if ordering were
+guaranteed. A timeout is a failure, not permission to replay the call. `command_batch` is the safe
+way to preserve order inside one document.
+
 ## Gates
 
 - `initialize` returns serverInfo `vectorcraft` 0.21.1 or `photocraft` 0.20.2, protocol `2025-06-18`.
