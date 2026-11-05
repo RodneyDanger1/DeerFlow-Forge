@@ -32,6 +32,27 @@ async def test_tools_list_publishes_a_closed_schema_per_tool() -> None:
         assert tool.get("description"), f"{name} has no description"
 
 
+async def test_tools_declare_read_only_versus_mutating_annotations() -> None:
+    """An agent client uses these hints for policy; a wrong hint is a capability lie."""
+    resp = await mcp_server.handle_rpc({"jsonrpc": "2.0", "id": 20, "method": "tools/list"})
+    tools = {t["name"]: t for t in resp["result"]["tools"]}
+    for name, tool in tools.items():
+        annotations = tool.get("annotations")
+        assert annotations, f"{name} declares no annotations"
+        assert annotations.get("title"), f"{name} has no annotation title"
+        assert isinstance(annotations.get("readOnlyHint"), bool), name
+        assert isinstance(annotations.get("destructiveHint"), bool), name
+        assert isinstance(annotations.get("idempotentHint"), bool), name
+        assert isinstance(annotations.get("openWorldHint"), bool), name
+    assert tools["list_pending_assets"]["annotations"]["readOnlyHint"] is True
+    assert tools["get_fourthwall_status"]["annotations"]["readOnlyHint"] is True
+    assert tools["trigger_pipeline_job"]["annotations"]["readOnlyHint"] is False
+    # Trigger queues work and spawns a process; it never deletes anything.
+    assert tools["trigger_pipeline_job"]["annotations"]["destructiveHint"] is False
+    # Repeating it while a live run exists returns that run (unique live-run index).
+    assert tools["trigger_pipeline_job"]["annotations"]["idempotentHint"] is True
+
+
 async def test_trigger_requires_both_arguments() -> None:
     for args, expected in (({}, "required"), ({"asset_id": 1}, "product_type must be one of")):
         resp = await mcp_server.handle_rpc(

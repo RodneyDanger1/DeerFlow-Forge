@@ -18,8 +18,10 @@ import asyncio
 import json
 import logging
 import os
+import subprocess
 import sys
 import uuid
+from pathlib import Path
 from typing import Any
 
 from . import db
@@ -50,6 +52,13 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "list_pending_assets",
         "description": "Assets sitting in the inbox or stuck in queued/processing past POD stuck_after_s. Reports returned/truncated so a full page is never mistaken for the whole queue.",
+        "annotations": {
+            "title": "List pending assets",
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": False,
+        },
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -61,7 +70,14 @@ TOOLS: list[dict[str, Any]] = [
     },
     {
         "name": "trigger_pipeline_job",
-        "description": "Enqueue one asset onto one product route and spawn an isolated worker process.",
+        "description": "Enqueue one asset onto one product route and spawn an isolated worker process. Repeating the call while a run is live returns that run instead of creating another.",
+        "annotations": {
+            "title": "Trigger a pipeline job",
+            "readOnlyHint": False,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": True,
+        },
         "inputSchema": {
             "type": "object",
             "properties": {
@@ -75,6 +91,13 @@ TOOLS: list[dict[str, Any]] = [
     {
         "name": "get_fourthwall_status",
         "description": "Local fourthwall_products row plus the live product, if Fourthwall has an id. product_id is our row id or the Fourthwall product id.",
+        "annotations": {
+            "title": "Read Fourthwall product status",
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": True,
+        },
         "inputSchema": {
             "type": "object",
             "properties": {"product_id": {"type": "string"}},
@@ -137,25 +160,52 @@ async def list_pending_assets(arguments: dict[str, Any]) -> dict[str, Any]:
     return {"assets": [_jsonable(r) for r in rows], "returned": len(rows), "truncated": truncated, "limit": limit}
 
 
+_WORKER_PROCS: list[subprocess.Popen[bytes]] = []
+
+
+def _reap_workers() -> None:
+    """Drop finished worker handles so a long-lived server does not accumulate zombies."""
+    _WORKER_PROCS[:] = [proc for proc in _WORKER_PROCS if proc.poll() is None]
+
+
+def spawn_detached(argv: list[str], *, cwd: str, log_path: Path) -> int:
+    """Start the worker as a detached child and return its pid.
+
+    Deliberately subprocess.Popen, not asyncio.create_subprocess_exec. An asyncio
+    child is owned by a SubprocessTransport; when the calling interpreter exits
+    (the one-shot `--call` mode, or a Gateway restart), transport finalisation
+    kills it. Observed on the VPS: the tool answered `spawned: true, pid: 45658`,
+    the pid was gone within a second, the spawn log stayed at 0 bytes and the run
+    sat `queued` — a success claim for a worker that never started. A Popen child
+    belongs to no event loop, so it outlives its caller.
+    """
+    with open(log_path, "ab") as handle:
+        proc = subprocess.Popen(
+            argv,
+            cwd=cwd,
+            env=os.environ.copy(),
+            stdin=subprocess.DEVNULL,
+            stdout=handle,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+            close_fds=True,
+        )
+    _WORKER_PROCS.append(proc)
+    return proc.pid
+
+
 async def _spawn_worker(settings: Settings, run_id: uuid.UUID) -> int:
     log_path = settings.job_logs / "mcp-spawn.log"
     await asyncio.to_thread(log_path.parent.mkdir, 0o750, True, True)
-    handle = await asyncio.to_thread(open, log_path, "ab")
+    argv = [sys.executable, "-m", "pod_pipeline.worker", "--run-id", str(run_id)]
     try:
-        proc = await asyncio.create_subprocess_exec(
-            sys.executable, "-m", "pod_pipeline.worker", "--run-id", str(run_id),
-            cwd=str(settings.root),
-            env=os.environ.copy(),
-            stdin=asyncio.subprocess.DEVNULL,
-            stdout=handle,
-            stderr=asyncio.subprocess.STDOUT,
-            start_new_session=True,
-        )
-    finally:
-        handle.close()
-    if proc.pid is None:
+        pid = await asyncio.to_thread(spawn_detached, argv, cwd=str(settings.root), log_path=log_path)
+    except OSError as exc:
+        raise ToolError(f"worker did not start ({exc})") from exc
+    _reap_workers()
+    if not pid:
         raise ToolError(f"run {run_id} is queued but the worker pid was not assigned")
-    return proc.pid
+    return pid
 
 
 async def trigger_pipeline_job(arguments: dict[str, Any]) -> dict[str, Any]:
