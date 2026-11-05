@@ -82,6 +82,7 @@ const VECTORCRAFT_CLI = "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/
 const ARTCRAFT_ATLAS = "/srv/vaults/storefront/30-reference/art-learning/07-ARTCRAFT-COMMAND-ATLAS.md";
 const ARTCRAFT_WORKFLOWS = "/srv/vaults/storefront/30-reference/art-learning/09-WORKFLOWS.md";
 const SKILLS_DIR = "blueprint/files/skills";
+const SKILLS_RUNTIMES = "DSH: %USERPROFILE%\\.dsh\\skills · Hermes: %USERPROFILE%\\.hermes\\skills";
 const IMAGINEER_TEMPLATES = "/srv/vaults/storefront/30-reference/art-learning/10-IMAGINEER-PROMPT-TEMPLATES.md";
 
 /**
@@ -269,8 +270,8 @@ cd /opt/pod-pipeline
             <dd className="font-mono break-all">{ARTCRAFT_WORKFLOWS} · {IMAGINEER_TEMPLATES}</dd>
           </div>
           <div>
-            <dt className="font-mono text-muted">agent skills (8)</dt>
-            <dd className="font-mono break-all">{SKILLS_DIR}</dd>
+            <dt className="font-mono text-muted">agent skills (22, DSH + Hermes)</dt>
+            <dd className="font-mono break-all">{SKILLS_DIR} · {SKILLS_RUNTIMES}</dd>
           </div>
         </dl>
         <p className="max-w-3xl text-xs text-pretty text-muted">
@@ -280,9 +281,9 @@ cd /opt/pod-pipeline
           colour count, edge definition, hard alpha edges, transparent corners, retyped text present. A failed gate is
           a failed run. Full command atlas (918 commands in 64 groups), the execute-verified command/MCP playbook
           (VectorCraft 33 + PhotoCraft 26 MCP tools), 1,016 canonical tutorial URLs (18 pages fetched and read),
-          the seven core workflows plus apparel/embroidery/vectorising/ads/shipping-insert workflows, and the 8
+          the seven core workflows plus apparel/embroidery/vectorising/ads/shipping-insert workflows, and the 22
           agent skills in WORKFLOW_SKILLS live in the vault Art Learning folder; see 15-APPAREL-PRINT-MARKETING-WORKFLOWS.md,
-          16-TUTORIAL-WAVE4.md, 17-CRAFT-COMMAND-PLAYBOOK.md and 18-KNOWLEDGE-MAP-AND-AUDIT.md.
+          16-TUTORIAL-WAVE4.md, 17-CRAFT-COMMAND-PLAYBOOK.md, 18-KNOWLEDGE-MAP-AND-AUDIT.md, 19-SKILLS-QUALITY-AUDIT.md and 20-SKILLS-CATALOG.md.
         </p>
       </section>
       <div className="flex flex-wrap gap-2">
