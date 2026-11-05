@@ -5,7 +5,7 @@ Craft apps, and what must DeerFlow Forge add before it truly learns?*
 
 ## Read in this order
 
-1. **[REPORT.md](REPORT.md)** — the 200-question dossier, executive decision, build-vs-integrate
+1. **[REPORT.md](../REPORT.md)** — the 200-question dossier, executive decision, build-vs-integrate
    table, reference architecture, 90-day plan, claim register, evidence gaps and bibliography.
 2. **Installed protocol:** `craft-agent-operator` skill (`SKILL.md` + `references/memory-ledger.md` +
    `references/evaluation.md`) — the loop an agent should follow, and the ledger/eval contracts it
