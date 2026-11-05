@@ -31,23 +31,31 @@ def inspect_png(path: str | Path) -> dict[str, Any]:
         return _fail("E_ARTIFACT_EMPTY", f"{p} is zero bytes")
     try:
         with Image.open(p) as img:
+            image_format = img.format
             width, height = img.size
             dpi = img.info.get("dpi")
     except Exception as exc:
         return _fail("E_ARTIFACT_FORMAT", f"{p}: {exc}")
-    dpi_value = None
-    if isinstance(dpi, (tuple, list)) and len(dpi) >= 1:
-        dpi_value = float(dpi[0])
+    if image_format != "PNG":
+        return _fail("E_ARTIFACT_FORMAT", f"{p}: expected PNG, got {image_format!r}")
+    dpi_x = dpi_y = None
+    if isinstance(dpi, (tuple, list)) and len(dpi) >= 2:
+        dpi_x, dpi_y = float(dpi[0]), float(dpi[1])
+    elif isinstance(dpi, (tuple, list)) and len(dpi) == 1:
+        dpi_x = dpi_y = float(dpi[0])
     elif isinstance(dpi, (int, float)):
-        dpi_value = float(dpi)
+        dpi_x = dpi_y = float(dpi)
     return {
         "ok": True,
         "path": str(p),
         "bytes": len(data),
         "sha256": hashlib.sha256(data).hexdigest(),
+        "format": image_format,
         "width": width,
         "height": height,
-        "dpi": dpi_value,
+        "dpi": dpi_x,
+        "dpi_x": dpi_x,
+        "dpi_y": dpi_y,
     }
 
 
@@ -100,9 +108,12 @@ def verify_artifact(path: str | Path, report: dict[str, Any], *,
         return _fail("E_DIMENSION_MISMATCH",
                      f"actual={info['width']}x{info['height']} expected={expected_px}")
     if expected_dpi is not None:
-        if info["dpi"] is None or abs(info["dpi"] - expected_dpi) > dpi_tolerance:
+        dpi_x, dpi_y = info.get("dpi_x"), info.get("dpi_y")
+        if (dpi_x is None or dpi_y is None
+                or abs(dpi_x - expected_dpi) > dpi_tolerance
+                or abs(dpi_y - expected_dpi) > dpi_tolerance):
             return _fail("E_DPI_MISMATCH",
-                         f"actual={info['dpi']!r} expected={expected_dpi}±{dpi_tolerance}")
+                         f"actual=(x={dpi_x!r}, y={dpi_y!r}) expected={expected_dpi}±{dpi_tolerance}")
     return {"ok": True, "verdict": "pass", **gate, "artifact": info}
 
 

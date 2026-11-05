@@ -27,12 +27,16 @@ def evaluate_goldens(results: Iterable[dict[str, Any]]) -> dict[str, Any]:
         raise ValueError("E_EVAL_EMPTY: at least one golden result is required")
     failed: list[str] = []
     regressions: list[str] = []
+    seen_ids: set[str] = set()
     for index, row in enumerate(rows):
         if not isinstance(row, dict):
             raise ValueError(f"E_EVAL_INVALID: result {index} is not an object")
         golden_id = row.get("id")
         if not isinstance(golden_id, str) or not golden_id.strip():
             raise ValueError(f"E_EVAL_INVALID: result {index} has no id")
+        if golden_id in seen_ids:
+            raise ValueError(f"E_EVAL_DUPLICATE_ID: {golden_id!r} appears more than once")
+        seen_ids.add(golden_id)
         if not isinstance(row.get("passed"), bool):
             raise ValueError(f"E_EVAL_INVALID: {golden_id} passed must be boolean")
         if not isinstance(row.get("regression", False), bool):
@@ -67,6 +71,8 @@ def propose_promotion(*, successes: int, n: int, baseline: float = 0.5,
         raise ValueError("E_EVAL_INVALID: human_approved must be a boolean")
     if regressions > n:
         raise ValueError("E_EVAL_INVALID: regressions cannot exceed n")
+    if successes + regressions > n:
+        raise ValueError("E_EVAL_INVALID: successes + regressions cannot exceed n")
     lb = wilson_lower_bound(successes, n)
     common = {"n": n, "successes": successes, "wilson_lower": lb,
               "baseline": baseline, "active": False}

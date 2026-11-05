@@ -84,6 +84,10 @@ def combine(gate_ok: bool | None, critique: Any | None, *, human: str | None = N
         return {"verdict": "unverified", "reason": "E_GATE_MISSING"}
     if gate_ok is False:
         return {"verdict": "fail", "reason": "E_GATE_FAILED"}
+    if gate_ok is not True:
+        return {"verdict": "unverified", "reason": "E_GATE_INVALID"}
+    if human not in (None, "accept", "reject"):
+        return {"verdict": "unverified", "reason": "E_HUMAN_INVALID"}
     if critique is None:
         return {"verdict": "unverified", "reason": "E_CRITIC_MISSING"}
     checked = validate_critique(critique)
