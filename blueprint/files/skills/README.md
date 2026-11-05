@@ -13,7 +13,8 @@ installed into **both** agent runtimes:
 python "blueprint/files/skills/_meta/install_skills.py" --check                 # validate only
 python "blueprint/files/skills/_meta/install_skills.py" --targets both          # install/update both runtimes
 python "blueprint/files/skills/_meta/install_skills.py" --targets both --force  # replace changed copies
-python "blueprint/files/skills/_meta/validate_skills.py"                        # table + non-zero on failure
+python "blueprint/files/skills/_meta/validate_skills.py"                        # structural table + non-zero on failure
+python "blueprint/files/skills/_meta/check_skill_commands.py"                   # semantic: every quoted command id exists
 ```
 
 The installer refuses to overwrite a differing target unless `--force`, skips unchanged files by
@@ -68,8 +69,15 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
   `photocraft-cli convert --quality` for lossy WebP, and check bytes.
 - VectorCraft presets overfit AI art (Flat Logo 3,982 paths); use the custom limited-palette params.
 - A mockup is placement/cut-off proof, not print proof — order a sample.
+- `file.place` uses a raster's **physical size at its ppi**, not its pixel count: 2000×1500 @300 ppi
+  lands 480×360 centred at (300,360) on a 1080 canvas; @72 ppi it lands 2000×1500 at (−460,−210).
+  Use `rect` or pre-resize with `magick -resize WxH^ -extent WxH`.
+- VectorCraft WebP is lossless-only (quality ignored); use PhotoCraft `convert --quality` for lossy
+  WebP — and compare bytes, because q82 can be larger than lossless on flat art (2,718 vs 1,372 B).
 - Vector art is not a stitch file; `.DST/.PES/.EXP` needs a digitizer.
 - The live tee master predates the zero-speck gate: regenerate before claiming 10/10.
+- `document.export` accepts nested `svg {decimals,…}`, `pdf`, and `ppi`; PhotoCraft `run` takes the file
+  positionally and `--quality` makes lossy WebP; `batch --recursive` flattens names (use `--naming`).
 
 ## Quality evidence
 

@@ -1,44 +1,47 @@
 ---
 name: ad-creative
-description: Produce social and paid-ad creatives at exact pixel canvases (1080 square, 1080x1350, 1080x1920) with safe margins, one message, readable type and correct exports. Use when the user says make an ad, Instagram post, Facebook creative, story ad, sale graphic, promo image, paid social asset, or launch creative.
+description: "Use when a feed, portrait or story/reel ad still is needed at a standard canvas (1080×1080, 1080×1350, 1080×1920): brand kit, safe margins, one message, exact-pixel PNG plus lossy WebP. Triggers: make an ad, Instagram post, Facebook creative, story ad, sale graphic, promo image, paid social asset, launch creative."
+version: 1.1.0
+author: DeerFlow Forge
+license: original
+platforms: [windows, linux, macos]
+metadata:
+  hermes:
+    tags: [ads, social, creative, design, webp, safe-margins, brand]
+    related_skills: [brand-system, web-banner, shipping-card-tag, artcraft-command-catalog]
 ---
 
 # Ad creative
 
-Builds a finished ad image with the brand kit, at the platform's pixel size, with the text
-inside safe margins and one job per creative. Output is PNG/WebP at exact dimensions; the
-copy deck and claims stay the owner's responsibility.
+Builds a finished ad still with the brand kit, at the platform's pixel size, text inside safe
+margins, one job per creative. Output is PNG + lossy WebP at exact dimensions; copy/claims remain
+the owner's responsibility.
 
-## When to use
+## When to use / not use
 
-- A feed, portrait or story/reel ad is needed at a standard canvas.
-- A sale/launch announcement needs a consistent template across sizes.
-- Existing creative must be resized without re-laying it out badly.
-- You need a repeatable ad template for the store's brand kit.
-
-## When not to use
-
-- Website hero/banner work — `web-banner` (different sizes and crops).
-- Print or garment art — apparel/shipping skills.
-- Video or motion creatives — this skill produces stills only.
-- Ad platform policy review, audience targeting or performance claims — outside this skill.
+- Use for feed, portrait or story/reel ads at a standard canvas.
+- Use for sale/launch announcements that need the same template across sizes.
+- Use to resize existing creative without re-laying it out badly.
+- Not for website hero/banner (`web-banner`), print/garment art, video, or platform policy/targeting.
+- Not a licence/claims review — refuse unlicensed assets and unapproved claims.
 
 ## Required inputs
 
-- Offer and the single message; approved claims and any legally required wording.
+- Offer and the single message; approved claims and required wording.
 - Canvas: 1080×1080 feed, 1080×1350 portrait, 1080×1920 story/reel.
-- Brand assets: logo SVG, palette hex, approved art/photo (licensed).
-- CTA and landing URL text (the URL is usually overlaid by the platform, not baked in).
-- Where the file must be delivered and any platform file-size cap.
+- Brand assets: logo SVG, palette hex, licensed art/photo.
+- CTA and landing URL text (the platform usually overlays the URL).
+- Delivery path and platform file-size cap.
 
-## Exact commands
+## Exact commands (verified 2026-11-05)
 
 ```bash
 cd /opt/pod-pipeline
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
+PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
 ```
 
-Square feed — 1080 px document, exact-pixel export (verified: `ppi:72` means 1 px per point):
+Square feed — exact pixels; `ppi:72` means 1 px per point, so a 1080 pt document exports 1080 px:
 
 ```bash
 magick -size 1080x1080 xc:'#101312' /tmp/ad_bg.png
@@ -56,64 +59,94 @@ photocraft-cli convert /tmp/ad_feed.png /tmp/ad_feed.webp --quality 82
 identify -format '%f %wx%h %m %b\n' /tmp/ad_feed.png /tmp/ad_feed.webp
 ```
 
-Portrait / story: same steps with `{"width":1080,"height":1350}` or
-`{"width":1080,"height":1920}`; keep the message inside the central safe band.
+Portrait/story: same steps with `{"width":1080,"height":1350}` or `{"width":1080,"height":1920}`;
+keep the message inside the central safe band.
 
-Brand assets helper: `document.export` for SVG logos at any size, `imageTrace.make` when only a
-raster logo exists (see `brand-system`).
+**Placement math (important):** `file.place` brings raster images in at **100 % of their physical
+size** (the file's ppi, else 72), not their pixel count. A 2000×1500 image at 300 ppi lands as
+**480×360 pt centred at (300, 360)** on a 1080 canvas; at 72 ppi it lands **2000×1500 centred at
+(−460, −210)**. Two safe options:
+- pre-resize to the final pixel box with `magick … -resize WxH^ -gravity center -extent WxH` (72 ppi),
+  or
+- place with `rect: [x, y, w, h]` (fit inside, aspect kept) — schema-verified, not executed here.
 
-## Workflow
+## Workflow / state machine
 
-1. Write the one-sentence message. If there are two messages, split into two creatives.
-2. Pick the canvas and the safe margins: ≥60 px each side; for story, keep text clear of the
-   top ~250 px and bottom ~250 px where platform UI sits.
-3. Lay out: logo, headline, proof point, CTA. Type ≥24 px at 1080 (headline 64–96 px).
-4. Place art so the subject is not cropped by the safe margin; check contrast where text
-   crosses art.
-5. Export PNG for QC; VectorCraft writes only lossless WebP, so produce the delivery WebP with `photocraft-cli convert /tmp/ad_feed.png /tmp/ad_feed.webp --quality 82` (lossy, verified) and check bytes.
-6. View at 100 % and at thumbnail (phone size) — if the headline is unreadable at thumbnail,
-   fix the hierarchy.
-7. Record the canvas, copy and claim sources next to the file.
+`brief → canvas + safe zone → layout (logo, headline, proof, CTA) → contrast check → export PNG →
+lossy WebP → thumbnail test → record sources`.
+
+1. Write the one-sentence message; two messages = two creatives.
+2. Safe margins ≥60 px each side; story keeps text out of the top/bottom ~250 px UI bands.
+3. Type ≥24 px at 1080; headline 64–96 px; one visual focus; CTA overlaid by the platform.
+4. Check contrast where text crosses art; add a scrim or move type rather than eyeball.
+5. Export PNG; convert to lossy WebP; inspect both bytes and dimensions.
+6. View at 100 % and at phone-thumbnail size; fix hierarchy if unreadable.
+7. Record canvas, copy and claim sources next to the files.
 
 ## Acceptance gates
 
-- Exact canvas: 1080×1080, 1080×1350 or 1080×1920 — verified with `identify`.
-- All text inside the safe margin; nothing critical within 60 px of an edge.
-- Headline contrast against its background ≥4.5:1 (WCAG AA for text); sample the actual pixels,
-  do not eyeball.
-- One message, one CTA, one visual focus.
-- Type ≥24 px at 1080; no line breaks that orphan a single word.
-- Logo legible at thumbnail size; no stretched or recoloured mark.
-- File size within the platform's cap (team default ≤500 KB for stills).
+- Exact canvas 1080×1080 / 1080×1350 / 1080×1920 (`identify`).
+- All text inside safe margins; nothing critical within 60 px of an edge.
+- Headline contrast vs its background ≥4.5:1 (WCAG AA); sample actual pixels.
+- One message, one CTA, one focus; type ≥24 px; no orphan single words.
+- Logo legible at thumbnail; nothing stretched/recoloured.
+- File size within the platform cap (team default ≤500 KB for stills).
 - No unlicensed fonts/imagery; claims match owner-approved wording.
 
-## Refusal conditions
+Contrast check (WCAG relative luminance) — save as `contrast.py` and run with sampled hex values:
 
-- Unlicensed fonts, stock photos or AI art with unclear rights — refuse to ship.
-- No browser automation here: you cannot preview the ad inside the platform's feed. Say so;
-  a local render is the proof you have.
-- No performance or "guaranteed conversion" claims; no fabricated reviews or screenshots.
-- Do not bake in platform UI or fake engagement counts.
-- No dry-run in the CLIs — export to new paths and inspect every time.
+```python
+def lum(h):
+    c=[int(h[i:i+2],16)/255 for i in (1,3,5)]
+    c=[x/12.92 if x<=0.04045 else ((x+0.055)/1.055)**2.4 for x in c]
+    return 0.2126*c[0]+0.7152*c[1]+0.0722*c[2]
+def ratio(a,b):
+    la,lb=sorted([lum(a),lum(b)], reverse=True)
+    return (la+0.05)/(lb+0.05)
+print(ratio('#efe6cf','#101312'))
+```
+
+## Refusals / failure modes
+
+- Unlicensed fonts/stock/AI art with unclear rights — refuse to ship.
+- No browser automation: cannot preview inside the platform feed; local render is the proof.
+- No performance/"guaranteed conversion" claims; no fabricated reviews/screenshots.
+- Do not bake in platform UI or fake engagement counts; do not duplicate the platform CTA text.
+- No dry-run in either CLI; export to new paths and inspect.
+- `backgroundContents` accepts only `transparent|white` (verified); coloured grounds are placed images.
+- WebP: VectorCraft writes lossless-only (quality ignored); PhotoCraft `convert --quality` makes
+  lossy WebP — and on flat art the lossy file can be **larger** (measured 2,718 B vs 1,372 B for a
+  1080² flat test). Compare both, keep the smaller acceptable file.
 
 ## Worked examples
 
-**1. 1080×1080 sale card.** Dark ground, art placed right-of-centre, headline at 72 px, CTA at
-40 px, both inside 80 px margins. Export `ad_feed.png` (1080×1080); make lossy WebP with PhotoCraft `convert --quality 82` (VectorCraft's WebP is lossless-only). Check thumbnail legibility and the contrast of `#efe6cf` on `#101312`.
+**1. 1080×1080 sale card.** Dark ground, art right-of-centre, headline 72 px, CTA 40 px, both inside
+80 px margins. Export `ad_feed.png`; convert lossy WebP `--quality 82`; verify 1080×1080 and
+contrast of `#efe6cf` on `#101312`.
 
-**2. 1080×1920 story.** Same message, larger type (88 px), subject in the middle band, CTA at
-1,600 px height. Keep the top 250 px and bottom 250 px free of text for platform chrome. Export
-PNG and WebP; verify the dimensions and that nothing important sits in the UI bands.
+**2. 1080×1920 story.** Same message, headline 88 px, subject middle band, CTA around y=1600; top and
+bottom 250 px free of text. Export PNG + WebP; check UI bands and thumbnail legibility.
+
+## Integration handoffs
+
+- Brand assets/rules → `brand-system`.
+- Website hero → `web-banner`; print inserts → `shipping-card-tag`.
+- Product art → `apparel-print-master`; never bake a mockup into an ad as if it were the product.
 
 ## Pitfalls
 
-- **Safe zones are not optional** — profile name, CTA button and swipe-up chrome eat the edges.
-- **Text over busy art** is the usual contrast failure; add a scrim or move the type.
-- **One message per creative** — cramming price, story and CTA halves the read.
-- **Baked-in CTA vs platform CTA**: don't duplicate the button text in the image.
-- **Thumbnail test** — most feeds show the creative small; design for that size.
-- **WebP quality**: VectorCraft ignores `quality` for WebP (lossless only, verified); use PhotoCraft `convert --quality` for lossy delivery and re-check bytes after every change. Raised quality inflates size
-  cap demands it.
-- **`file.place` uses the file's physical size, not its pixel dimensions** — 2000×1500 at 300 ppi lands as 480×360 at (−460,−210) on a 1080 canvas; at 72 ppi it lands 2000×1500. Pre-resize/extent with `magick … -resize WxH^ -gravity center -extent WxH`.
-- **`backgroundContents` only accepts `transparent|white`** (verified) — coloured grounds are
-  placed images, as in the example.
+- Safe zones are not optional; platform chrome eats the edges.
+- Text over busy art is the usual contrast failure — scrim or move.
+- One message per creative; cramming kills the read.
+- `file.place` uses physical size (see math above); use `rect` or pre-resize.
+- Thumbnail test: design for the small size first.
+- `--quality` on the wrong tool: VectorCraft ignores WebP quality; use PhotoCraft for lossy.
+
+## Sources & verification
+
+- **VERIFIED:** PhotoCraft `convert --quality` runs and warns "lossy compression"; q82 vs lossless
+  byte sizes on a 1080² flat test; VectorCraft `document.export ppi` exact pixels; `file.place`
+  physical-size rule (schema + earlier probe); `backgroundContents` values; `text.fontList` 45 families.
+- **SCHEMA:** `file.place {path|name|dataBase64, at, rect, page, crop, link, …}`;
+  `document.export {path, format, ppi, scale, background, svg:{…}}`; PhotoCraft `convert/run`.
+- **DOCS:** vault 15; WCAG contrast formula.

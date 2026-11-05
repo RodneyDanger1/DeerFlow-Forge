@@ -1,37 +1,45 @@
 ---
 name: artcraft-image-cleanup
-description: PhotoCraft raster cleanup in the Photoshop order — crop, retouch, colour, sharpen last, export at the right DPI — plus the strict white cutout when art must go to print. Use when the user says clean up this image, retouch this photo, fix the colour, remove dust and scratches, denoise, set 300 DPI, prepare a raster for print, or the scan/phone photo looks dull or dirty.
+description: "Use when a supplied photo, scan or AI raster needs cleanup before print or web: crop, dust/scratches, noise, colour cast, levels/curves, saturation, sharpen last, exact DPI — then a strict white cutout if it feeds print/trace. Triggers: clean image, retouch photo, remove dust, denoise, fix colour cast, set 300 DPI, prepare raster for print, sharpen image, PhotoCraft cleanup."
+version: 1.0.0
+author: DeerFlow Forge
+license: original
+platforms: [windows, linux, macos]
+metadata:
+  hermes:
+    tags: [artcraft, photocraft, retouch, cleanup, print, dpi, sharpen]
+    related_skills: [ai-image-upscale-print, artcraft-vector-trace, ai-diffusion-artifact-cleanup, apparel-print-master]
 ---
 
 # ArtCraft image cleanup
 
-Raster retouch for supplied or AI images that stay raster. The output is a corrected image at
-a known size and DPI; flat art that should become vector belongs to `artcraft-vector-trace`.
+Raster retouch for supplied or AI images that stay raster. Output is a corrected image at a known
+size and DPI. Flat art that should become vector belongs to `artcraft-vector-trace`.
 
 ## When to use
 
-- A photo, scan or AI raster needs crop/retouch/colour correction before print or web use.
-- The image must carry the right pixel dimensions and DPI for a provider.
+- A photo, scan or AI raster needs crop/retouch/colour before print or web.
+- The image must carry exact pixel dimensions and DPI for a provider.
 - Dust, scratches, speckle, noise or a colour cast must go.
-- Art needs a clean transparent cutout before tracing or compositing.
+- Art needs a clean transparent cutout before tracing/compositing.
 
 ## When not to use
 
 - Flat logo/illustration that should be vector — trace it.
-- AI-rendered text that needs to be crisp — erase/retype in the trace pipeline.
-- Upscaling beyond 2.5× — regenerate the source instead; this skill does not invent detail.
-- Embroidery, stitch files or ad layouts — different skills.
-- Colour-managed CMYK proofing: conversion may be possible, but proofing is not verified.
+- AI lettering that must be crisp — erase/retype in the trace pipeline.
+- Upscale beyond 2.5× — regenerate; this skill does not invent detail.
+- Embroidery/stitch files, ad layout or colour-managed CMYK proofing — different skills; CMYK
+  conversion may exist but press proofing is not verified.
 
 ## Required inputs
 
-- Source file and its current size/depth/colour mode.
-- Destination: print (physical inches, target DPI) or screen (pixel box, format).
-- What "wrong" means: crop, dust, colour cast, dull colour, softness.
-- Rights to the image, and whether the original must be preserved.
-- Vendor colour mode if the result goes to a print shop.
+- Source file and its current size/depth/mode/resolution.
+- Destination: print inches + DPI, or screen pixel box + format.
+- The defect: crop, dust, colour cast, dull colour, softness, noise.
+- Rights and whether the original must be preserved (it must; never overwrite).
+- Vendor colour mode for print.
 
-## Exact commands
+## Exact commands (verified 2026-11-05)
 
 ```bash
 cd /opt/pod-pipeline
@@ -39,22 +47,25 @@ PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
 PY=/opt/pod-pipeline/.venv/bin/python
 ```
 
-Inspect first — size, mode, depth, resolution, layer tree:
+Inspect first — PhotoCraft takes the file positionally:
 
 ```bash
 $PC info /tmp/photo.jpg --compact
 ```
 
-Full retouch chain in Photoshop order (crop → retouch → colour → sharpen last → resolution):
+Photoshop-order retouch chain (crop → retouch → colour → sharpen last → resolution). `image.crop`
+exists in PhotoCraft; params include x,y,width,height,angle,deleteCroppedPixels,contentAware,
+targetWidth,targetHeight,resolution,resample. The final `--out` must differ from input unless
+`--in-place`:
 
 ```bash
 $PC run /tmp/photo.jpg \
-  --cmd image.crop --params '{"x":0,"y":0,"width":2400,"height":3000}' \
+  --cmd image.crop --params '{"x":0,"y":0,"width":2400,"height":3000,"deleteCroppedPixels":true}' \
   --cmd filter.noise.dustAndScratches --params '{"radius":1,"threshold":12}' \
   --cmd image.adjustments.levels --params '{"inBlack":4,"gamma":1.05,"inWhite":250}' \
   --cmd image.adjustments.hueSaturation --params '{"saturation":8}' \
   --cmd filter.sharpen.unsharpMask --params '{"amount":90,"radius":1.2,"threshold":2}' \
-  --cmd image.imageSize --params '{"width":2400,"height":3000,"resolution":300}' \
+  --cmd image.imageSize --params '{"width":2400,"height":3000,"resolution":300,"resample":"lanczos"}' \
   --out /tmp/photo_clean.png
 ```
 
@@ -62,15 +73,19 @@ Other verified engine commands: `filter.noise.despeckle`, `filter.noise.median {
 `filter.sharpen.smartSharpen {"amount":100,"radius":1,"reduceNoise":10}`,
 `image.adjustments.curves {"points":[[0,0],[64,72],[192,200],[255,255]]}`,
 `image.adjustments.brightnessContrast`, `image.adjustments.desaturate`, `image.canvasSize`,
-`file.saveACopy {"path":"..."}`, `file.export.quickExport`.
+`file.saveACopy`, `file.export.quickExport`.
 
-Batch a folder with an action list (JSON steps: `{"command":id,"params":{…}}`):
+Lossy export and batch:
 
 ```bash
-$PC batch --actions /tmp/cleanup.json --in /tmp/in --out /tmp/out --recursive --stop-on-error
+$PC convert /tmp/photo_clean.png /tmp/photo_clean.webp --quality 82   # warn: lossy compression
+$PC batch --actions /tmp/cleanup.json --in /tmp/in --out /tmp/out --recursive --stop-on-error --naming '{name}-{serial}'
 ```
 
-Strict white cutout when the cleaned raster feeds print or trace:
+`batch` action steps are `{"command":id,"params":{…}}` / `[id, params]` / bare ids. With
+`--recursive` results flatten into `--out`, so same names overwrite; use `--naming`.
+
+Strict white cutout when the cleaned raster feeds print/trace:
 
 ```bash
 $PY -m tools.prep_print_art --input /tmp/photo_clean.png --output /tmp/clean_cut.png \
@@ -79,62 +94,83 @@ $PY -m tools.prep_print_art --input /tmp/photo_clean.png --output /tmp/clean_cut
   --print-width-in 8 --report-json /tmp/clean_cut.json
 ```
 
-Verify the result (`%x`/`%y` are px/cm: 118.11 = 300 DPI, 28.35 = 72 DPI):
+Verify (`%x`/`%y` px/cm: 118.11 = 300 DPI, 28.35 = 72 DPI):
 
 ```bash
 identify -format '%f %wx%h %x %y %[colorspace]\n' /tmp/photo_clean.png
 ```
 
-## Workflow
+## Workflow / state machine
 
-1. `info` the file; record size, depth and resolution.
-2. Decide print inches × DPI (or the screen pixel box) **before** touching pixels.
+1. `info` → record size, depth, resolution; confirm the file is readable.
+2. Decide output pixels **before** touching pixels: print inches × DPI, or screen box.
 3. Crop/straighten to the final aspect; never crop after sharpening.
-4. Retouch noise/dust with the least destructive filter that works.
+4. Retouch noise/dust with the least destructive filter that works; re-check at 100 %.
 5. Correct colour with levels/curves, then hue/saturation — one intent per step.
-6. Sharpen **last, at final size**; then set size and resolution in one `image.imageSize` call.
-7. Export to a new path, `identify` it, and compare against the original at 100 % and thumbnail.
+6. Sharpen last, at final size; then set size/resolution once with `image.imageSize`.
+7. Export to a new path; `identify`; compare original vs result at 100 % and thumbnail.
+8. If print/trace: run the white cutout and check its report.
+
+States: `inspected → cropped → retouched → colour-corrected → sharpened → sized → exported → verified`.
+A failed step leaves the previous file untouched; never continue on a refused `--out`.
 
 ## Acceptance gates
 
-- Output dimensions equal the requested pixel box; DPI equals the requested value.
-- `identify` reports the expected colourspace (normally sRGB) and bit depth.
-- No upscale beyond 2.5×; record `output_px / source_px` if it is close.
-- Sharpening is visible at 100 % without halos or crunchy edges.
-- Colour matches the reference/original at the same zoom; brand colours sit on the hex list.
-- The original file is unchanged; the result lives at a new path.
-- For print: 300 DPI canvas and every white transparent (owner rule) when applicable.
+- Output dimensions equal the requested box; DPI equals the requested value (`identify`).
+- Colourspace/bit depth expected (normally sRGB 8-bit; 16-bit flatten is a decision).
+- No upscale >2.5×; record `output_px/source_px` when close.
+- Sharpening visible at 100 % with no halos/crunch; denoise did not erase detail.
+- Brand colours land on the hex list; original file unchanged; result at a new path.
+- Print: 300 DPI canvas and every neutral white transparent (owner rule) when applicable.
 
-## Refusal conditions
+## Refusals / failure modes
 
-- No dry-run: `photocraft-cli` has no preview flag. Write to a new path, inspect, and iterate.
-- The CLI refuses `--out` equal to the input (verified: "the result would replace the
-  original"); keep originals and use `--in-place` only deliberately.
-- Clone/heal/spot commands exist in the PhotoCraft registry (`paint.cloneStamp`, `paint.healingBrush`, `paint.spotHealing`, `paint.patch`) but are unverified here; dust & scratches, despeckle and median are the
-  documented retouch tools. If the defect needs structural repair, say so and escalate.
-- No AI upscaler in this environment; do not claim detail was recovered.
-- No browser automation; cannot verify how an image will look inside a live page.
-- CMYK conversion and press proof are not verified — get a printed proof from the vendor.
+- No dry-run. Run on a copy, write a new path, read each step's JSON.
+- `photocraft-cli run --out` equal to input is refused (`--in-place` permits it, deliberately only).
+- Clone/heal/spot ids exist (`paint.cloneStamp`, `paint.healingBrush`, `paint.spotHealing`,
+  `paint.patch`) but their behaviour is **UNVERIFIED** here; dust & scratches, despeckle and median
+  are the verified retouch chain. Structural repair without a verified tool → escalate.
+- No AI upscaler; do not claim detail was recovered. No browser automation; CMYK/press proof
+  unverified — vendor proof required.
+- Batch collision: `--recursive` without `--naming` can overwrite results.
+
+## Integration handoffs
+
+- Flat art → `artcraft-vector-trace` / `ai-art-vectorize-vectorcraft` (after cutout).
+- AI diffusion artefacts → `ai-diffusion-artifact-cleanup` first.
+- Large upscale decision → `ai-image-upscale-print`.
+- Print master → `apparel-print-master` / exact product skill.
+- Web/ad → `web-banner` / `ad-creative`.
 
 ## Worked examples
 
-**1. Phone photo → 4×6 in print.** Source 4032×3024. Final 1200×1800 px at 300 DPI is a
-downscale, so it is allowed: crop to 2:3, dust & scratches, levels, mild saturation, unsharp
-mask, then `image.imageSize {"width":1200,"height":1800,"resolution":300}`. Confirm `%x` = 118.11.
+**1. Phone photo → 4×6 in print.** 4032×3024 source; final 1200×1800 at 300 DPI is a downscale:
+crop to 2:3, dust & scratches, levels, mild saturation, unsharp, then
+`image.imageSize {"width":1200,"height":1800,"resolution":300,"resample":"lanczos"}`. `%x` = 118.11.
 
-**2. Scanned artwork with a yellow cast and dust.** `info` shows 16-bit RGB at 72 DPI.
-Run dust & scratches, levels `{"inBlack":6,"gamma":1.0,"inWhite":248}`, hue/saturation `{"saturation":6}`,
-then unsharp mask; export PNG and cut out white with `prep_print_art --mode white` only if the
-art needs transparency.
+**2. Scanned artwork with yellow cast and dust.** 16-bit RGB at 72 DPI: dust & scratches, levels
+`{"inBlack":6,"gamma":1.0,"inWhite":248}`, hue/saturation `{"saturation":6}`, unsharp; export PNG;
+white-cutout only if transparency is needed.
 
 ## Pitfalls
 
-- **`--params` binds to the `--cmd` before it** — reorder and the parameters land on the wrong
-  filter.
-- **Resolution metadata is not pixels** — `image.imageSize` with new width/height resamples;
-  with only resolution it can set metadata (`keepPrintSize` controls the resample).
-- **Sharpen last at final size** — sharpening before downscale throws the work away.
-- **Filters are destructive** — always keep the original and chain on a copy.
-- **16-bit sources** are reported as depth 16; flattening to 8-bit is a decision, not a default.
-- **JPEG recompression** loses quality each save; keep PNG/TIFF intermediates and set
-  `--quality` only on the final lossy output.
+- **`--params` binds to the preceding `--cmd`** — reorder and params land on the wrong filter.
+- **Resolution metadata ≠ pixels** — `image.imageSize` with width/height resamples; with only
+  resolution it can set metadata; `keepPrintSize` controls the resample (verified schema).
+- **Sharpen last at final size**; sharpening before downscale throws work away.
+- Filters are destructive; chain on a copy and keep the original.
+- 16-bit sources report depth 16; flattening is a decision.
+- JPEG recompression loses quality; keep PNG/TIFF intermediates and set `--quality` only at the end.
+- `photocraft-cli convert --quality` warns "lossy compression"; for flat art the lossy WebP can be
+  *larger* than the lossless one (measured 2,718 B vs 1,372 B on a 1080² flat test) — compare bytes.
+
+## Sources & verification
+
+- **VERIFIED (2026-11-05):** `photocraft-cli` help for `run/convert/batch` (positional input,
+  `--out`, `--quality`, `--format`, `--recursive`, `--stop-on-error`, `--naming`, refusal of
+  same-path output); 965-row registry; `image.crop`, `image.imageSize`, `image.canvasSize`,
+  `filter.noise.*`, `filter.sharpen.*`, `image.adjustments.*` schemas via `commands --json`;
+  `convert --quality` output 2,718 B vs lossless 1,372 B on a flat 1080² test; `text.fontList`
+  returned 45 families.
+- **SCHEMA:** `/opt/craft/catalogues/photocraft-commands.json`; vault 17.
+- **DOCS:** vault 02/15; Pillow UnsharpMask https://pillow.readthedocs.io/en/stable/reference/ImageFilter.html

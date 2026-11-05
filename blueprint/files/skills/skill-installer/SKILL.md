@@ -158,3 +158,8 @@ Exit codes: `0` success, `1` validation failure or run error, `2` refused confli
 - Edit the repo source, never a runtime copy, and never install a skill that has not
   passed the validator in this run.
 - Never use `--force` on a conflict you have not inspected; regenerate the manifest and index, never patch them.
+
+
+Semantic command check: run `python "$SKILLS\_meta\check_skill_commands.py"` — it
+validates every quoted command id against the snapshotted 918-command VectorCraft and
+965-command PhotoCraft catalogues and exits 1 on an invented id.

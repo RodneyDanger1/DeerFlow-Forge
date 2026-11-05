@@ -1,34 +1,39 @@
 ---
 name: artcraft-command-catalog
-description: "Query and execute the ArtCraft command catalogues: 918 VectorCraft commands in 64 groups and the 965-row PhotoCraft engine registry. Use when the user asks what command does X, which id to use, how to batch VectorCraft or PhotoCraft, whether a command exists, or to find exact ids and params instead of guessing a menu name."
+description: "Use when you need the exact ArtCraft command id, params or CLI flags for a design job — trace, type, path, colour, layer, artboard, export, PhotoCraft retouch. Queries the installed 918-command VectorCraft / 965-command PhotoCraft catalogues instead of guessing, and shows the verified batch/convert/batch-getcha contracts. Triggers: command id, which command, does this command exist, CLI flags, PhotoCraft run/convert/batch, ArtCraft catalogue, object.path.simplify, export options."
 version: 1.0.0
 author: DeerFlow Forge
 license: original
 platforms: [windows, linux, macos]
 metadata:
   hermes:
-    tags: [artcraft, vectorcraft, photocraft, command-catalogue, cli, automation, json]
-    related_skills: [ai-art-vectorize-vectorcraft, craft-mcp-drive, artcraft-vector-trace, artcraft-image-cleanup]
+    tags: [artcraft, vectorcraft, photocraft, commands, cli, export, retouch]
+    related_skills: [artcraft-vector-trace, artcraft-image-cleanup, craft-mcp-drive, ai-art-vectorize-vectorcraft]
 ---
 
 # ArtCraft command catalogue
 
-Do not memorise command ids. Query the installed catalogue, then run the exact id. It is the
-contract: 918 VectorCraft commands in 64 groups, and a 965-row PhotoCraft engine registry. A guessed
-id fails by name, not silently.
+Do not memorise command ids — query the installed catalogue and run the exact id. It is the
+contract: **918 VectorCraft commands in 64 groups** and a **965-row PhotoCraft engine registry**
+(snapshot 2026-11-05; re-check before quoting counts). Unknown ids fail by name; typo'd params fail
+or are rejected. A semantic checker (`_meta/check_skill_commands.py`) verifies every id quoted in a
+SKILL.md against these catalogues.
 
 ## When to use / not use
 
-- Use to find the id and params for a design job: trace, type, path, colour, layer, artboard, export.
+- Use to find the id, parameter schema and CLI form for a design job.
 - Use to confirm a command exists, or to port an Illustrator/Photoshop menu habit to a real id.
+- Use to learn the batch/convert/export contracts before writing a script.
 - Not for the AI-art trace recipe (`ai-art-vectorize-vectorcraft`) or MCP transport (`craft-mcp-drive`).
 
 ## Inputs
 
-- The job in menu terms ("simplify paths", "unsharp mask", "export at 300 ppi"), the binary paths
-  below, and an output path; nothing else is needed to query.
+- The job in menu terms ("simplify paths", "unsharp mask", "export at 300 ppi").
+- Installed binaries: `/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli`;
+  `/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli`.
+- An output path under `/tmp`; never overwrite the source.
 
-## Exact commands
+## Exact commands (verified 2026-11-05)
 
 ```bash
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
@@ -36,68 +41,70 @@ PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
 CAT=/opt/craft/catalogues/vectorcraft-commands.json
 ```
 
-List and count — python is the working path on the VPS (VERIFIED 2026-11-05):
+List/count, filter, and read a parameter schema (python works; **jq is not installed**):
 
 ```bash
 $VC commands | python3 -c 'import json,sys,collections; c=json.load(sys.stdin); g=collections.Counter(x["id"].split(".")[0] for x in c); print(len(c), len(g))'
-$VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); print("\n".join(x["id"] for x in c if x["id"].startswith("imageTrace."))); print(next(x["params"] for x in c if x["id"]=="object.path.simplify"))'
-```
-
-`jq` equivalent — **UNVERIFIED: jq is not installed on the VPS or host** (checked 2026-11-05):
-
-```bash
-jq -r '.[] | select(.id|startswith("imageTrace.")) | .id' "$CAT"
-```
-
-PhotoCraft registry — 965 rows; `--json` adds param schemas (VERIFIED):
-
-```bash
+$VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); print("\n".join(x["id"] for x in c if x["id"].startswith("imageTrace.")))'
+$VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); print(next(x["params"] for x in c if x["id"]=="document.export"))'
+$PC commands --filter sharpen          # 965 rows; --json adds param schemas
 $PC commands --json | python3 -c 'import json,sys; c=json.load(sys.stdin); print(next(x["params"] for x in c if x["id"]=="filter.sharpen.unsharpMask"))'
 ```
 
-Execute one command, then a step list (a `--commands` file is the repeatable form):
+Execute one command or a repeatable step list:
 
 ```bash
-$VC run --in /tmp/art.svg --cmd select.all --cmd object.path.simplify \
-  --params '{"level":60}' --export /tmp/art_clean.svg
-$PC run --in /tmp/photo.jpg --cmd filter.noise.reduceNoise --params '{"strength":6}' \
-  --cmd image.adjustments.levels --params '{"inBlack":8,"gamma":1.1,"inWhite":247}' \
-  --cmd filter.sharpen.unsharpMask --params '{"amount":110,"radius":1.0,"threshold":3}' \
-  --out /tmp/photo_clean.png
+$VC run --in /tmp/art.svg --cmd select.all --cmd object.path.simplify --params '{"level":60}' --export /tmp/art_clean.svg
+$VC run --in /tmp/art.png --commands /tmp/steps.json --export /tmp/out.svg
+$PC run /tmp/photo.jpg --cmd filter.noise.reduceNoise --params '{"strength":6}' --cmd image.adjustments.levels --params '{"inBlack":8,"gamma":1.1,"inWhite":247}' --cmd filter.sharpen.unsharpMask --params '{"amount":110,"radius":1.0,"threshold":3}' --out /tmp/photo_clean.png
+$PC convert /tmp/photo.png /tmp/photo.webp --quality 82     # lossy WebP (warning: lossy compression)
 $PC batch --actions /tmp/actions.json --in /tmp/raw --out /tmp/out --recursive --stop-on-error
 ```
 
-Step-list shape (`/tmp/steps.json`; `"id"` is accepted for `"command"`):
+Step-list shape (`"id"` is accepted for `"command"`):
 
 ```json
 [{"command":"select.all"},
- {"command":"imageTrace.make","params":{"params":{"mode":"color","palette":"limited","colors":5,"paths":70,"corners":60,"noise":8,"method":"overlapping","ignoreWhite":true}}},
+ {"command":"imageTrace.make","params":{"enhanced":false,"params":{"mode":"color","palette":"limited","colors":5,"paths":70,"corners":60,"noise":8,"method":"overlapping","ignoreWhite":true}}},
  {"command":"object.path.simplify","params":{"level":60}},
- {"command":"document.export","params":{"path":"/tmp/out.svg","format":"svg"}}]
+ {"command":"document.export","params":{"path":"/tmp/out.svg","format":"svg","svg":{"decimals":3}}}]
 ```
 
-## Key groups (918 commands, 64 groups)
+## CLI contract — verified facts
 
-`object 151 · addon 62 · select 55 · document 35 · text 35 · path 34 · edit 30 · file 28`
-`layer 26 · swatch 23 · type 23 · paint 22 · color 6 · artboard 13 · imageTrace 8 · effect 8 · image 1`
+- `vectorcraft-cli run` accepts `--in FILE`, `--cmd ID` + `--params JSON` (the params bind to the
+  preceding `--cmd`), `--commands FILE|-`, repeated `--export FILE`, `--scale`; one JSON result per
+  step; a failure names the step and command; **no `--dry-run`**.
+- `photocraft-cli run` takes the file **positionally** (`run FILE`, not `--in`), `--new JSON`,
+  `--cmd/--params`, `--out FILE`, `--format EXT`, `--quality 1-100` (lossy WebP/JPEG; no quality =
+  lossless WebP). `--out` equal to input is refused unless `--in-place`.
+- `photocraft-cli convert IN OUT [--quality]` writes a format conversion; an output equal to input is
+  refused unless `--in-place`.
+- `photocraft-cli batch --actions FILE --in DIR --out DIR` supports `--recursive`, `--naming`,
+  `--start-serial`, `--action NAME`, `--stop-on-error`, `--in-place`. With `--recursive`, results go
+  flat into `--out`, so same-named files overwrite earlier ones — use `--naming {name}-{serial}`.
+- `commands --json` and `--filter TEXT` exist on PhotoCraft; `commands` prints a text table.
+- `document.export` accepts `path, format, params? (exporter plug-in), selectedOnly, includeArtboardFill,
+  artboard(s), rect, range, useArtboards, ppi, scale, background, antiAlias, interlaced, embedIcc,
+  quality, colorModel, method, scans, …`; SVG options are also accepted as a nested `svg` object
+  (`styling, outlineText, images, objectIds, decimals, minify, responsive, useArtboards,
+  preserveEditing, metadata, fewerTspans, hiddenLayers, encoding, profile, embedFonts`) or flat.
+  `ppi` wins over `scale` (px = pt ÷ 72 × ppi; 240×160 pt at 300 ppi = 1000×667).
+- `text.fontList` returns the bundled system fonts (45 families on this install; `$VC run --cmd
+  text.fontList` returned the list). A family missing from a document falls back to Source Sans 3
+  with a warning; outlining captures the fallback.
+- Result shapes differ: filter.* echoes params; image.adjustments.* returns null; imageTrace.make
+  returns `{anchors, colors, id, paths}`; expand returns `{ids}`; text.fontList `{families}`.
 
-Traps: `text` (content) and `type` (conversion) differ; `path` is pen/anchor maths while path
-objects live under `object`; `image` has only `image.info` (use `file.place`, `object.cropImage`,
-`object.rasterize`).
+## Key groups
 
-## PhotoCraft engine (965 rows)
+`object 151 · addon 62 · select 55 · document 35 · text 35 · path 34 · edit 30 · file 28 · layer 26 ·
+swatch 23 · type 23 · paint 22 · artboard 13 · imageTrace 8 · effect 8 · image 1`
 
-Every row runs via `run --cmd` or `batch --actions`. Retouch ids and schemas that matter:
-
-- `filter.sharpen.unsharpMask {"amount":1..500=50,"radius":0.1..1000=1,"threshold":0..255=0}`
-- `filter.sharpen.smartSharpen {"amount":100,"radius":1,"reduceNoise":10}`
-- `filter.noise.reduceNoise {"strength":6,"preserveDetails":60,"reduceColorNoise":45}`
-- `filter.noise.dustAndScratches {"radius":1,"threshold":0}`; `filter.noise.median {"radius":1}`;
-  `filter.noise.despeckle {}`; `filter.noise.addNoise {"amount":12.5,"distribution":"uniform"}`
-- `image.adjustments.levels {"inBlack":0,"gamma":1,"inWhite":255,"outBlack":0,"outWhite":255}`
-- `image.adjustments.curves {"points":[[0,0],[64,72],[192,200],[255,255]]}`
-- `image.adjustments.hueSaturation {"hue":0,"saturation":0,"lightness":0}`
-- `paint.sharpen` / `paint.blur` are brush tools, not filters.
+Traps: `text` (content) vs `type` (conversion); `path` (pen/anchor maths) vs `object` (paths as
+objects); VectorCraft `image` has only `image.info` — use `file.place`, `object.cropImage`,
+`object.rasterize`; PhotoCraft has its own `image.*` registry (`image.crop`, `image.imageSize`,
+`image.canvasSize`).
 
 ## Real ids vs menu guesses
 
@@ -106,55 +113,59 @@ Every row runs via `run --cmd` or `batch --actions`. Retouch ids and schemas tha
 | `path.simplify` | absent | `object.path.simplify` |
 | `layer.rename` | absent | `layer.setProps {ids,name}` |
 | `layer.arrange.sendToBack` | absent (arrange is on objects) | `object.arrange.sendToBack {ids}`; `layer.move` |
-| `image.crop`, `image.adjust` | absent in **VectorCraft** (`image` has only `image.info`); PhotoCraft has its own `image.*` registry | `object.cropImage`, `object.rasterize`, `object.maskImage`; PhotoCraft via `photocraft-cli commands` |
+| `image.crop` (VectorCraft) | absent in VectorCraft (`image` has only `image.info`); exists in PhotoCraft | VectorCraft: `object.cropImage`; PhotoCraft: `image.crop` |
 | `text.convertToOutlines` | wrong group | `type.createOutlines` |
-| `trace.*`, `document.cleanup` | absent | `imageTrace.*`; `object.path.cleanUp` + `addon.cleanup.*` |
+| `trace.*` / `document.cleanup` | absent | `imageTrace.*`; `object.path.cleanUp` + `addon.cleanup.*` |
 
-## Pitfalls (gotchas)
+## PhotoCraft retouch ids (schema-verified)
 
-- `select.all` before `imageTrace.make`, `type.createOutlines`, `object.expand`, path ops; else `nothing selected`.
-- Trace settings live under `params.params`; unknown keys are rejected by name, not defaulted.
-- `ppi` wins over `scale`: px = pt ÷ 72 × ppi (240×160 pt at 300 ppi = 1000×667 px).
-- No dry-run in either CLI. Run on a copy, read each step's JSON, export to a new path.
-- `command_batch` caps: ≤256 steps, ≤8 MiB kept results, ≤16 MiB per JSON-RPC line (MCP).
-- `--params` binds to the `--cmd` before it; reorder and it lands on the wrong command.
-- `text.fonts` lists fonts *in the document* (45 are bundled); a missing family falls back to Source Sans 3 with a `warning`, and outlining captures the fallback. Require `status: "exact"`.
-- `--export FILE` derives format from the extension; use a `document.export` step for `ppi`, `artboard`, `selectedOnly`, `svg.decimals`.
-- Result shapes differ: `filter.*` echoes params, `image.adjustments.*` returns `null`.
-- The cheatsheet `/srv/vaults/storefront/30-reference/art-learning/tooling/craft-command-cheatsheet.json`
-  is an excerpt (291/918 VectorCraft, 166/965 PhotoCraft), not the catalogue.
+`filter.sharpen.unsharpMask {amount 1..500=50, radius 0.1..1000=1, threshold 0..255=0}` ·
+`filter.sharpen.smartSharpen {amount=100, radius=1, reduceNoise=10}` ·
+`filter.noise.reduceNoise {strength 0..10=6, preserveDetails=60, reduceColorNoise=45, sharpenDetails=25, removeJpegArtifact}` ·
+`filter.noise.dustAndScratches {radius=1, threshold=0}` · `filter.noise.median {radius=1}` ·
+`filter.noise.despeckle {}` · `image.adjustments.levels {inBlack,gamma,inWhite,outBlack,outWhite}` ·
+`image.adjustments.curves {points}` · `image.adjustments.hueSaturation {hue,saturation,lightness}` ·
+`image.adjustments.desaturate {target}` · `image.crop {x,y,width,height,angle,deleteCroppedPixels,contentAware,targetWidth,targetHeight,resolution,resample}` ·
+`image.imageSize {width,height,units,percent,resolution,keepPrintSize,scaleStyles,resample}` ·
+`image.canvasSize {...}` · `file.saveACopy`, `file.export.quickExport`.
+`paint.sharpen`/`paint.blur` are brush tools, not filters.
 
 ## Workflow
 
-1. Translate the job to a group; query its ids and read the params text; check `enabled`.
-2. Run one command on a copy; parse stdout JSON and confirm the result shape.
-3. Write the step list; keep steps atomic and ordered; export to a new path and verify it.
+1. Translate the job to a group; list ids; read the params text; check `enabled`.
+2. Run one command on a copy; parse stdout JSON; confirm the result shape and that the output exists.
+3. Write the step list; keep steps atomic/ordered; export to a new path and verify with `identify`.
+4. Before saving a skill/script that quotes ids, run `python _meta/check_skill_commands.py`.
 
 ## Gates
 
-- `vectorcraft-cli commands` returns 918 entries across 64 groups; `photocraft-cli commands` 965 rows.
-- Every id appears exactly (case-sensitive) and its params text was read.
-- `run` exits 0 with one JSON object per step; a failure names `step N (command.id)`; the output exists with non-zero bytes and `identify` matches the requested size/DPI.
+- `vectorcraft-cli commands` → 918 entries / 64 groups; `photocraft-cli commands` → 965 rows.
+- Every id is case-exact and its params text was read.
+- `run` exit 0 with one JSON object per step; failure names `step N (command.id)`.
+- Output exists, non-zero bytes; `identify` matches size/DPI; no unknown-key warnings.
 
-## Refusals
+## Refusals / failure modes
 
-- Never invent an id or parameter; if absent, report it and name the real command.
+- Never invent an id or parameter; if absent, name the real command.
 - Do not run `object.pathfinder.unite` on a multi-colour trace: it flattens the palette.
-- Do not claim success without the JSON result; exit 0 alone is not proof of output.
+- Exit 0 is not proof of output; read the JSON and verify the file.
+- No dry-run: run on a copy, write a new path, inspect, then commit.
+- `--recursive` batch flattens names: collisions overwrite silently.
 
 ## Worked example
 
-Find and run path simplification. The query returns `object.path.simplify` with its params
-(`tolerance`, `level` 0–100, `auto`, `cornerAngle`). Run the `$VC run` line above. Observed (vault 17
-§1.8): `{"after":10,"before":12,"ids":[2,3,4],"level":58.0}` — accepted, level derived from selection.
+Path simplification: query returns `object.path.simplify` with `tolerance`, `level` 0–100, `auto`,
+`cornerAngle`, `straightLines`, `wholePaths`. Verified run (vault 17 §1.8):
+`{"after":10,"before":12,"ids":[2,3,4],"level":58.0}`. Then export and inspect.
 
 ## Sources & verification
 
-- **VERIFIED** (probed 2026-11-05 on srv2108523): 918/64; 965 PhotoCraft rows and `--json` schemas;
-  every id named here exists; the python one-liners returned the quoted output; `run`, `commands`,
-  `--help` contracts. `jq` returned `command not found`.
-- **SCHEMA**: `/opt/craft/catalogues/vectorcraft-commands.json`,
-  `/opt/craft/catalogues/photocraft-commands.json`; cheatsheet meta records 291/918 and 166/965.
-- **DOCS**: `/opt/craft/artcraft-docs/mcp.md` (batch limits, key rejection); vault
-  `17-CRAFT-COMMAND-PLAYBOOK.md` §1–§9 (execute-verified ids and gotchas).
-- READMEs (fetched): https://raw.githubusercontent.com/storytold/vectorcraft/main/README.md · https://raw.githubusercontent.com/storytold/photocraft/main/README.md
+- **VERIFIED (2026-11-05, srv2108523):** 918/64; 965 rows; `commands --json/--filter`; all quoted
+  PhotoCraft schemas; `run`/`convert`/`batch` help contracts including `--quality` and
+  `--stop-on-error`; `document.export` schema includes nested `svg {…decimals…}`; `text.fontList`
+  returned 45 families; `select.all` requirement (`nothing selected`); `--params` binding; no
+  `--dry-run`.
+- **SCHEMA:** `/opt/craft/catalogues/*`; cheatsheet excerpt (291/918, 166/965), not the catalogue.
+- **DOCS:** `/opt/craft/artcraft-docs/mcp.md`; vault `17-CRAFT-COMMAND-PLAYBOOK.md`.
+- READMEs fetched: https://raw.githubusercontent.com/storytold/vectorcraft/main/README.md ·
+  https://raw.githubusercontent.com/storytold/photocraft/main/README.md

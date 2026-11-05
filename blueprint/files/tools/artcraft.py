@@ -223,6 +223,21 @@ def verify(source_rgba: Image.Image, final_art: Image.Image, args: argparse.Name
     return {"checks": checks, "passed": sum(1 for check in checks.values() if check["pass"]), "total": len(checks)}
 
 
+def _jsonable(value):
+    """Convert numpy scalars/containers to plain JSON types (the CLI writes JSON)."""
+    if isinstance(value, dict):
+        return {key: _jsonable(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_jsonable(item) for item in value]
+    if isinstance(value, np.bool_):
+        return bool(value)
+    if isinstance(value, np.integer):
+        return int(value)
+    if isinstance(value, np.floating):
+        return float(value)
+    return value
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Artcraft: clean AI art → print vector + verification.")
     parser.add_argument("--input", required=True)
@@ -372,7 +387,7 @@ def main(argv: list[str] | None = None) -> int:
                 **report,
             }
             if args.report_json:
-                Path(args.report_json).write_text(json.dumps(result, indent=2), encoding="utf-8")
+                Path(args.report_json).write_text(json.dumps(_jsonable(result), indent=2), encoding="utf-8")
             print(json.dumps({"ok": result["ok"], "passed": report["passed"], "total": report["total"],
                               "checks": {name: check["value"] for name, check in report["checks"].items()}}, indent=2))
             return 0 if result["ok"] else 1
