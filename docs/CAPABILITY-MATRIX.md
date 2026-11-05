@@ -22,7 +22,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Evaluation/promotion contract | **CAN** | 13/13 tests; Wilson LB; 3/3 refused; 8/8 candidate only with human; regressions refuse | proposal only; **no activation/learning claim** |
 | G0 real trace/retouch | **CAN** | independent staging reproduction; 22/22 hashes; 9/9 applicable | no production publish |
 | Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
-| Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes 10 skills |
+| Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes **6 skills** (`agent-learning-loop`, `craft-agent-operator`, `forge-harness-architect`, `harness-code-adapter`, `research-corpus-navigator`, `visual-verification-critic`) |
 | Local Forge e2e | **CAN** | full staging suite **139 pass/4 skip** with scratch PG + G0 | not production |
 
 ## 2. What it cannot do (do not claim)

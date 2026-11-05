@@ -22,7 +22,7 @@ This file is part of the operating contract for the Forge plan. The plan is in
 
 ## W2 use
 
-1. **Recon first:** target = add the Forge Conductor’s local skeleton (DDL, tool gateway, transition/refusal/idempotency tests); read `execution-wave/02-FORGE-SKELETON.md`, `ARCHITECTURE.md`, `04-HARNESS-DESIGN.md`, `execution-wave/09` §5.2, and the existing `pod_pipeline` DB patterns.
+1. **Recon first:** target = add the Forge Conductor’s local skeleton (DDL, tool gateway, transition/refusal/idempotency tests); read `research/eko-deerflow-agent/execution-wave/02-FORGE-SKELETON.md`, `research/eko-deerflow-agent/ARCHITECTURE.md`, `research/eko-deerflow-agent/wave2/04-HARNESS-DESIGN.md`, `research/eko-deerflow-agent/execution-wave/09-GOAL-GAP-PLAN.md` §5.2, and the existing `pod_pipeline` DB patterns.
 2. **Gate:** write `logic-gatekeeper` Phase 1; no schema/service write before it.
 3. **Implementation order:** pure gateway + tests → DDL → queue/lease → service; no publish, no production.
 4. **Learning:** use `agent-learning-loop` only for the evaluation/promotion part; W2 is not a learning claim.
@@ -31,6 +31,4 @@ This file is part of the operating contract for the Forge plan. The plan is in
 
 ## Current gate decision
 
-G0: **artifact consistency PASS**, **execution provenance U**. W2 may proceed only as local,
-non-deployed source if the owner accepts that provenance caveat; otherwise wait for verifier VPS
-read-only access. No production change either way.
+G0: **artifact consistency PASS**, **execution provenance PASS** — `execution-wave/16-G0-PROVENANCE.md` closed provenance independently with a fresh staging-only run that reproduced artifacts byte-identically. W2 may proceed as local, non-deployed source; no production change either way.
