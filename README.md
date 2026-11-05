@@ -148,14 +148,30 @@ ssh -N -L 8091:127.0.0.1:8091 root@<vps>
 ```
 
 To let DeerFlow drive the pipeline, register the MCP server in DeerFlow's
-`extensions_config.json` (bind `POD_MCP_HOST` to an address the gateway
-container can reach, e.g. the docker bridge, and keep it firewalled):
+`extensions_config.json`:
 
 ```json
 {"mcpServers": {"forge": {"enabled": true, "type": "http",
-  "url": "http://host.docker.internal:8765/",
-  "description": "DeerFlow Forge pod pipeline"}}}
+  "url": "http://172.17.0.1:8765/",
+  "description": "DeerFlow Forge pod pipeline",
+  "session_init_timeout": 30, "tool_call_timeout": 120}}}
 ```
+
+Networking notes learned on a real host:
+
+- The gateway container sits on its own bridge (e.g. `192.168.200.0/24`), so its
+  gateway IP is reachable but a service bound only to `127.0.0.1` is not.
+- With `ufw` active, container-to-host traffic is dropped unless the Docker
+  source ranges are allowed explicitly (published ports bypass this via DNAT,
+  host sockets do not):
+
+  ```bash
+  ufw allow from 172.16.0.0/12 to any port 8765 proto tcp
+  ufw allow from 192.168.200.0/24 to any port 8765 proto tcp   # deer-flow-dev bridge
+  ```
+
+- Bind `POD_MCP_HOST=0.0.0.0` and rely on those rules; verify from **outside**
+  the host that the port stays closed.
 
 The pipeline exposes `list_pending_assets`, `trigger_pipeline_job`, and
 `get_fourthwall_status`; `deploy/mcp-stdio.mjs` is a stdio bridge that mirrors
