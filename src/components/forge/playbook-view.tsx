@@ -77,6 +77,11 @@ const ART_SOP = "/srv/vaults/storefront/10-sops/art-to-print-prep.md";
 const ART_LEARNING = "/srv/vaults/storefront/30-reference/art-learning/00-ART-LEARNING-INDEX.md";
 const ART_TOOL = "tools/prep_print_art.py";
 const VECTOR_TOOL = "tools/vectorize_art.py";
+const CRAFT_TRACE_TOOL = "tools/craft_trace.py";
+const VECTORCRAFT_CLI = "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli";
+const ARTCRAFT_ATLAS = "/srv/vaults/storefront/30-reference/art-learning/07-ARTCRAFT-COMMAND-ATLAS.md";
+const ARTCRAFT_WORKFLOWS = "/srv/vaults/storefront/30-reference/art-learning/09-WORKFLOWS.md";
+const IMAGINEER_TEMPLATES = "/srv/vaults/storefront/30-reference/art-learning/10-IMAGINEER-PROMPT-TEMPLATES.md";
 
 /**
  * Art-to-print procedure, generalised from the first production run.
@@ -217,6 +222,59 @@ set -a; . config/pipeline.env; set +a
           automated tracing of textured or painterly art degrades (banding, key-colour edge specks) — regenerate that art at a
           higher resolution instead. The mockup is a cut-off check, not a print-size proof — order a sample before launch.
           Licensed wordmarks must not be sold.
+        </p>
+      </section>
+      <section className="flex flex-col gap-3 border-t border-fg/10 pt-6">
+        <div>
+          <h3 className="text-lg font-medium">ArtCraft Image Trace (the real Adobe counterpart)</h3>
+          <p className="mt-1 max-w-3xl text-sm text-pretty text-muted">
+            VectorCraft and PhotoCraft are the open-source, agent-drivable counterparts to Illustrator and
+            Photoshop: 918 VectorCraft commands plus a 84 KB PhotoCraft engine, each callable from the headless
+            CLI, MCP server or JSON control channel. Its <span className="font-mono">imageTrace.make</span> is
+            Illustrator&apos;s Image Trace panel (mode, palette, colours, paths, corners, noise, method,
+            ignore white, fills/strokes, snap shapes). Use it for the illustration; retype AI lettering with a
+            real font — tracing cannot repair diffusion-eroded text.
+          </p>
+        </div>
+        <pre className="overflow-x-auto border border-fg/10 p-3 font-mono text-xs leading-relaxed">{`# VectorCraft Image Trace, driven by CLI steps (Illustrator-compatible params)
+${'"'}{"command":"select.all"}},
+{"command":"imageTrace.make","params":{"params":{
+  "mode":"color","palette":"limited","colors":12,"paths":65,"corners":45,
+  "noise":16,"ignoreWhite":true,"method":"abutting","fills":true,"strokes":false}}},
+{"command":"imageTrace.expand"}
+
+# full production master (cutout -> trace -> retype -> 300 DPI canvas -> 10 checks)
+cd /opt/pod-pipeline
+.venv/bin/python -m tools.craft_trace \\
+  --input data/ai-uploads/art.jpg --template <id> --area front_large --dpi 300 --print-width-in 8 \\
+  --retype-json config/<design>-retype.json \\
+  --output data/ai-uploads/master.png --svg data/ai-uploads/master.svg \\
+  --report-json data/ai-uploads/master.json --preview-dir data/ai-uploads/previews_master`}</pre>
+        <dl className="grid gap-2 text-xs sm:grid-cols-2">
+          <div>
+            <dt className="font-mono text-muted">VectorCraft CLI</dt>
+            <dd className="font-mono break-all">{VECTORCRAFT_CLI}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-muted">production tool</dt>
+            <dd className="font-mono break-all">{CRAFT_TRACE_TOOL}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-muted">command atlas (918 + PC)</dt>
+            <dd className="font-mono break-all">{ARTCRAFT_ATLAS}</dd>
+          </div>
+          <div>
+            <dt className="font-mono text-muted">workflows + Imagineer templates</dt>
+            <dd className="font-mono break-all">{ARTCRAFT_WORKFLOWS} · {IMAGINEER_TEMPLATES}</dd>
+          </div>
+        </dl>
+        <p className="max-w-3xl text-xs text-pretty text-muted">
+          Coordinate trap that cost a day: prep crops to the subject bbox and re-centres, and the traced SVG keeps the
+          full canvas, so every box measured on the original art must be transformed through the prep report before
+          erasing or retyping text. The 10 gates: white residual, specks, coverage, 300 DPI, canvas geometry, fill
+          colour count, edge definition, hard alpha edges, transparent corners, retyped text present. A failed gate is
+          a failed run. Full command atlas, 272-link tutorial library, seven workflows and trigger-driven Imagineer
+          contracts are in the vault Art Learning folder.
         </p>
       </section>
       <div className="flex flex-wrap gap-2">

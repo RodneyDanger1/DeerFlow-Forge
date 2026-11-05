@@ -1,0 +1,5 @@
+[
+  {"box": [250, 448, 1000, 570], "text": "RIDGEBOUNDIA", "font": "FreeSansBold.ttf", "fill": "#33614a", "stroke": "#d9caa4", "stroke_px": 6},
+  {"box": [250, 580, 960, 660], "text": "MADE FOR THE LONG WAY ROUND", "font": "FreeSansBold.ttf", "fill": "#e8dcc0", "stroke": "#33614a", "stroke_px": 3},
+  {"box": [110, 588, 250, 662], "text": "", "font": "FreeSansBold.ttf", "fill": "#000000", "stroke_px": 0}
+]
