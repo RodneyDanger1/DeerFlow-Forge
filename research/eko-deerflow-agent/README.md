@@ -1,7 +1,8 @@
 # Ridgeboundia / DeerFlow Forge Agent Program
 
 **Status:** research + execution evidence + implementation plan. **No production repair has been
-applied.** Date: 2026-11-05. Owner: Riley.
+applied.** Phase 0 **staging gate passed** for one real VectorCraft trace and one real PhotoCraft
+retouch; DeerFlow MCP registration remains partial. Date: 2026-11-05. Owner: Riley.
 
 This is the master entry point for the agent-harness work. It explains what exists, what is broken,
 what we are building, the six integrations, eight Python changes, eight agent/tool/skill changes, the

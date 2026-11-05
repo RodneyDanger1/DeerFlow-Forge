@@ -13,8 +13,8 @@ works, use the existing VPS + DeepSeek V4.1 Flash, and be truthful about its lim
 
 | Goal | Desired outcome | Current outcome | Status | Evidence |
 |---|---|---|---|---|
-| **G1** Execute Craft | run trace/retouch/print through the pipeline | execution path is stubs/argv; real CLIs work standalone | **BLOCKED** | `01-EXECUTION-REPAIR.md`; S1/S3 |
-| **G2** Native tools | typed CLI/MCP surface, no GUI guessing | 918/965 commands; 33/26 MCP tools; not registered; no gateway | **PARTIAL** | S3; `02-FORGE-SKELETON` |
+| **G1** Execute Craft | run trace/retouch/print through the pipeline | direct real VC trace + PC retouch + 10/10 CraftTrace checks on staging; production path still stubbed | **PARTIAL (staging)** | `11-G0-EVIDENCE.md`; `01-EXECUTION-REPAIR.md` |
+| **G2** Native tools | typed CLI/MCP surface, no GUI guessing | 33/26 MCP tools listed; PhotoCraft `command_batch` works; DeerFlow registration not applied | **PARTIAL** | S3; `11-G0-EVIDENCE.md`; `02-FORGE-SKELETON` |
 | **G3** Verify | artifact + gates + render + blind critic + human | gates exist but can be vacuous/pre-artifact; no integrated critic | **PARTIAL** | S3; `03-VISUAL-DEFECTS`; `04` |
 | **G4** Learn | improve from verified episodes, remember | no episode/eval/skill tables; DeerMem facts only; L0 | **NOT STARTED (L0)** | S1; S6; `04-PROMOTION-SIM` |
 | **G5** Host | run on the existing VPS/key | DeerFlow 2.2 + `deepseek-flash` running; 2 vCPU/no GPU; key unverified | **FEASIBLE** | S1; S12 |

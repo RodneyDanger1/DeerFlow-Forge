@@ -1,7 +1,8 @@
 # START HERE — Ridgeboundia Agent Harness Research
 
-**Date:** 2026-11-05 · **Status:** research + execution evidence + integration plan complete; **no
-production deploy**. **Owner:** Riley · **Canonical repo path:** `research/eko-deerflow-agent/`.
+**Date:** 2026-11-05 · **Status:** research + execution evidence + integration plan complete; Phase 0
+staging gate passed for one real trace/retouch; **no production deploy**. **Owner:** Riley ·
+**Canonical repo path:** `research/eko-deerflow-agent/`.
 
 ## What this corpus is for
 

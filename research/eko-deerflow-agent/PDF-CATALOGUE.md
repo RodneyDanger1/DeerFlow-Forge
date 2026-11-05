@@ -50,8 +50,8 @@ Measured 2026-11-05 with pypdf 6.21.1 and the three PDF skills:
 
 | Artifact | Result |
 |---|---|
-| Dossier PDF | 19 pages, 39,846 extracted characters, sha256 `849dffb0…` |
-| Plan PDF | 10 pages, 21,109 extracted characters, sha256 `eb24d254…` |
+| Dossier PDF | 19 pages, 40,106 extracted characters, sha256 `86a87b07…` |
+| Plan PDF | 10 pages, 21,109 extracted characters, sha256 `2b19d2e5…` |
 | Original vs byte copy | SAME; 19/19 pages; ratio 1.0000; 0 diff lines; identical text layer |
 | Binder | **29 pages = 19 + 10**; **2 bookmarks**; index ranges `1-19`, `20-29` |
 | Text extraction | 19 and 10 page markers; no thin pages; exit 0 both PDFs |

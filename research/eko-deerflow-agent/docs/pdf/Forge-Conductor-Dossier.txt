@@ -6,7 +6,8 @@ Derived reading copy. Markdown remains the source of record. No source file is m
 ===== PAGE 2 =====
 Ridgeboundia / DeerFlow Forge Agent Program
 **Status:** research + execution evidence + implementation plan. **No production repair has been
-applied.** Date: 2026-11-05. Owner: Riley.
+applied.** Phase 0 **staging gate passed** for one real VectorCraft trace and one real PhotoCraft
+retouch; DeerFlow MCP registration remains partial. Date: 2026-11-05. Owner: Riley.
 This is the master entry point for the agent-harness work. It explains what exists, what is broken,
 what we are building, the six integrations, eight Python changes, eight agent/tool/skill changes, the
 goal evaluation, and how to read the evidence without drowning in it.
@@ -39,9 +40,9 @@ not a new generic superagent, and not a claim of "better than human."
 | Learning | DeerMem facts + skill-evolution host exist; **no** full learner or quality evaluation |
 | Publish | `fourthwall_template_id` unset for all five products; no approval queue |
 | Evidence | README's live-E2E claim is historical/unreproducible in the current state |
-| Assets | 39 skills, 400 answers, 6 examples, 8 validated diagrams, 131-file package |
 
 ===== PAGE 3 =====
+| Assets | 39 skills, 400 answers, 6 examples, 8 validated diagrams, 131-file package |
 The key sentence: **the model/harness is present; the Craft execution path and learning evidence are
 not.** Phase 0 starts there.
 3. Six integrations
@@ -408,10 +409,12 @@ works, use the existing VPS + DeepSeek V4.1 Flash, and be truthful about its lim
 2. Goal-by-goal outcome
 | Goal | Desired outcome | Current outcome | Status | Evidence |
 |---|---|---|---|---|
-| **G1** Execute Craft | run trace/retouch/print through the pipeline | execution path is stubs/argv; real
-CLIs work standalone | **BLOCKED** | `01-EXECUTION-REPAIR.md`; S1/S3 |
-| **G2** Native tools | typed CLI/MCP surface, no GUI guessing | 918/965 commands; 33/26 MCP tools; not
-registered; no gateway | **PARTIAL** | S3; `02-FORGE-SKELETON` |
+| **G1** Execute Craft | run trace/retouch/print through the pipeline | direct real VC trace + PC retouch +
+10/10 CraftTrace checks on staging; production path still stubbed | **PARTIAL (staging)** |
+`11-G0-EVIDENCE.md`; `01-EXECUTION-REPAIR.md` |
+| **G2** Native tools | typed CLI/MCP surface, no GUI guessing | 33/26 MCP tools listed; PhotoCraft
+`command_batch` works; DeerFlow registration not applied | **PARTIAL** | S3; `11-G0-EVIDENCE.md`;
+`02-FORGE-SKELETON` |
 | **G3** Verify | artifact + gates + render + blind critic + human | gates exist but can be
 vacuous/pre-artifact; no integrated critic | **PARTIAL** | S3; `03-VISUAL-DEFECTS`; `04` |
 | **G4** Learn | improve from verified episodes, remember | no episode/eval/skill tables; DeerMem facts
@@ -436,9 +439,9 @@ on the synthetic corpus.
 Not verified / not true
 - The DeepSeek key's live validity.
 - The README's live E2E claim (historical/unreproducible now).
-- FilmCraft/DesignCraft/EffectCraft availability.
 
 ===== PAGE 13 =====
+- FilmCraft/DesignCraft/EffectCraft availability.
 - Real gate/human rates, human inter-rater agreement, cost per accepted artifact.
 - "The agent learns art direction" and "better than a human designer."
 - A production DDL migration or live deployment.
@@ -477,11 +480,11 @@ separation from null |
 -> disable |
 | R7 | Does the blind critic agree with humans? | blind ratings, precision/recall | `R7-RESULT.md` | low
 agreement -> needs_human |
+
+===== PAGE 14 =====
 | R8 | What is the real cost per accepted artifact? | usage ledger + balance delta | `R8-RESULT.md` | budget
 cap exceeded |
 | R9 | Is the key valid without spend? | `/user/balance` + `/models` | `R9-RESULT.md` | 401/402 |
-
-===== PAGE 14 =====
 | R10 | Can publish be made safe? | approval bind + read-back | `R10-RESULT.md` | any unapproved write |
 8. Re-evaluation rule
 Re-run this evaluation after every phase. A goal moves from `BLOCKED/PARTIAL` to `ACHIEVED` only when
