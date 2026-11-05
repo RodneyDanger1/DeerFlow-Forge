@@ -47,7 +47,7 @@ cat > /tmp/banner.json <<'JSON'
 [{"command":"file.new","params":{"width":1920,"height":700,"units":"Pixels","colorMode":"rgb","backgroundContents":"transparent"}},
  {"command":"file.place","params":{"path":"/tmp/banner_bg.png"}},
  {"command":"file.place","params":{"path":"/tmp/banner_art_fit.png"}},
- {"command":"document.export","params":{"path":"/tmp/banner_desktop.webp","format":"webp","quality":82}},
+ {"command":"document.export","params":{"path":"/tmp/banner_desktop.png","format":"png"}},
  {"command":"document.export","params":{"path":"/tmp/banner_desktop.png","format":"png","ppi":72}}]
 JSON
 $VC run --commands /tmp/banner.json
@@ -69,7 +69,7 @@ cat > /tmp/banner_mobile.json <<'JSON'
 [{"command":"file.new","params":{"width":800,"height":1000,"units":"Pixels","colorMode":"rgb","backgroundContents":"transparent"}},
  {"command":"file.place","params":{"path":"/tmp/banner_mobile_bg.png"}},
  {"command":"file.place","params":{"path":"/tmp/banner_art_mobile.png"}},
- {"command":"document.export","params":{"path":"/tmp/banner_mobile.webp","format":"webp","quality":82}}]
+ {"command":"document.export","params":{"path":"/tmp/banner_mobile.png","format":"png"}}]
 JSON
 $VC run --commands /tmp/banner_mobile.json
 identify -format '%f %wx%h %m %b\n' /tmp/banner_mobile.webp
@@ -87,7 +87,7 @@ magick /tmp/banner_desktop.png -gravity center -crop 800x700+0+0 +repage /tmp/ba
 2. Agree the focal point and the desktop/mobile canvases before placing art.
 3. Place art to cover the canvas; never stretch — crop or scale proportionally.
 4. If baking type, keep it inside the central band that survives the mobile crop.
-5. Export WebP (quality ~82) and a PNG working copy; check the byte size.
+5. Export PNG; convert to lossy WebP with `photocraft-cli convert /tmp/banner_desktop.png /tmp/banner_desktop.webp --quality 82` (VectorCraft WebP is lossless-only, verified) and check bytes.
 6. Build the mobile canvas separately; verify the subject still reads at 800 px wide.
 7. Record canvas sizes, focal point and file sizes for the web team.
 8. Confirm the page will set explicit `width`/`height`/`srcset`; the image alone cannot fix CLS.
@@ -95,7 +95,7 @@ magick /tmp/banner_desktop.png -gravity center -crop 800x700+0+0 +repage /tmp/ba
 ## Acceptance gates
 
 - Exact dimensions: desktop 1920×600–800, mobile 800×1000 — verified with `identify`.
-- WebP/PNG byte size within budget (team default ≤200 KB; PNG is the working copy only).
+- WebP/PNG byte size within budget (team default ≤200 KB); PNG is the working copy, lossy WebP is the delivery.
 - Mobile composition preserves the focal point; nothing critical is cropped out.
 - Text (if baked) has ≥4.5:1 contrast and stays out of the outer 60 px.
 - No upscaled art; source resolution explains the final pixels.
@@ -113,7 +113,7 @@ magick /tmp/banner_desktop.png -gravity center -crop 800x700+0+0 +repage /tmp/ba
 ## Worked examples
 
 **1. Storefront hero.** 1920×700 desktop with the product art right of centre and no baked
-headline (HTML renders it). Export WebP at quality 82; if it exceeds 200 KB, reduce quality in
+headline (HTML renders it). Export PNG, convert to lossy WebP with PhotoCraft `--quality 82`; if it exceeds 200 KB, reduce quality in
 steps of 4 and re-check bytes rather than cropping the art. Mobile is a separate 800×1000
 composition with the product centred.
 

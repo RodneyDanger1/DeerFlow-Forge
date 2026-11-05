@@ -68,7 +68,7 @@ magick /tmp/cap_4x.png -resize 25% /tmp/cap_1x.png
 identify -format '%h\n' /tmp/cap_1x.png     # pixels; divide by 300 for inches
 ```
 
-Measured on FreeSansBold: `H` at pointsize 300 → 55 px, i.e. cap ≈ 0.183 × point size.
+Measured on FreeSansBold: `H` at pointsize 300 → 219 px before the 25% downsample used by the 4× render (55 px after it), i.e. cap ≈ 0.183 × point size.
 0.3 in at 300 DPI = 90 px, so point size ≈ 492 (520 gives ≈0.317 in).
 
 Exact-size vector art on the embroidery area (inches strings; `text.create` size is points,

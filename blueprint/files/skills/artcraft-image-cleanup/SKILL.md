@@ -110,7 +110,7 @@ identify -format '%f %wx%h %x %y %[colorspace]\n' /tmp/photo_clean.png
 - No dry-run: `photocraft-cli` has no preview flag. Write to a new path, inspect, and iterate.
 - The CLI refuses `--out` equal to the input (verified: "the result would replace the
   original"); keep originals and use `--in-place` only deliberately.
-- No verified clone/heal/spot-removal command — dust & scratches, despeckle and median are the
+- Clone/heal/spot commands exist in the PhotoCraft registry (`paint.cloneStamp`, `paint.healingBrush`, `paint.spotHealing`, `paint.patch`) but are unverified here; dust & scratches, despeckle and median are the
   documented retouch tools. If the defect needs structural repair, say so and escalate.
 - No AI upscaler in this environment; do not claim detail was recovered.
 - No browser automation; cannot verify how an image will look inside a live page.

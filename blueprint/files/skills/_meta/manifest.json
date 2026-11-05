@@ -1,0 +1,587 @@
+{
+  "schema_version": 1,
+  "skills": [
+    {
+      "skill": "ad-creative",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ad-creative\\SKILL.md",
+      "source_sha256": "b555a1261b12e40735585cfda815022c35fc2a7df804f2e655d6a3d2af78b908",
+      "source_lines": 120,
+      "description_chars": 309,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ad-creative\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "b555a1261b12e40735585cfda815022c35fc2a7df804f2e655d6a3d2af78b908",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ad-creative\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "b555a1261b12e40735585cfda815022c35fc2a7df804f2e655d6a3d2af78b908",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "ai-art-vectorize-vectorcraft",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
+      "source_sha256": "1b1d2255fbd89db70f119ff03d574c0125c3f55219944440b3e5d8306942f83d",
+      "source_lines": 160,
+      "description_chars": 401,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "1b1d2255fbd89db70f119ff03d574c0125c3f55219944440b3e5d8306942f83d",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "1b1d2255fbd89db70f119ff03d574c0125c3f55219944440b3e5d8306942f83d",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "ai-diffusion-artifact-cleanup",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
+      "source_sha256": "a6f19cace7bd48e3121b622acdbe243c533ac867cb5de524a1e2442062cc661a",
+      "source_lines": 159,
+      "description_chars": 527,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "a6f19cace7bd48e3121b622acdbe243c533ac867cb5de524a1e2442062cc661a",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "a6f19cace7bd48e3121b622acdbe243c533ac867cb5de524a1e2442062cc661a",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "ai-image-upscale-print",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ai-image-upscale-print\\SKILL.md",
+      "source_sha256": "347658beffd5f6dc3520ce4ebe12b44dc8c6049a4ed7dadd14d9527d524020f4",
+      "source_lines": 157,
+      "description_chars": 531,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ai-image-upscale-print\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "347658beffd5f6dc3520ce4ebe12b44dc8c6049a4ed7dadd14d9527d524020f4",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-image-upscale-print\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "347658beffd5f6dc3520ce4ebe12b44dc8c6049a4ed7dadd14d9527d524020f4",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "apparel-print-master",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\apparel-print-master\\SKILL.md",
+      "source_sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
+      "source_lines": 139,
+      "description_chars": 363,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\apparel-print-master\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\apparel-print-master\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "artcraft-command-catalog",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\artcraft-command-catalog\\SKILL.md",
+      "source_sha256": "dc842db127e14773941b08437fcae45b30a0904130e0028be7d273ad110a8529",
+      "source_lines": 160,
+      "description_chars": 324,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-command-catalog\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "dc842db127e14773941b08437fcae45b30a0904130e0028be7d273ad110a8529",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-command-catalog\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "dc842db127e14773941b08437fcae45b30a0904130e0028be7d273ad110a8529",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "artcraft-image-cleanup",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\artcraft-image-cleanup\\SKILL.md",
+      "source_sha256": "58a0bc7089f87dcb9d54c13c6e9d8895df45ee6b6712d971c40e77554e85d6c4",
+      "source_lines": 140,
+      "description_chars": 371,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-image-cleanup\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "58a0bc7089f87dcb9d54c13c6e9d8895df45ee6b6712d971c40e77554e85d6c4",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-image-cleanup\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "58a0bc7089f87dcb9d54c13c6e9d8895df45ee6b6712d971c40e77554e85d6c4",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "artcraft-vector-trace",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\artcraft-vector-trace\\SKILL.md",
+      "source_sha256": "4214e6d3f598041e7b835caa98bd956338e20027f06e4d98df94118bc905a81a",
+      "source_lines": 140,
+      "description_chars": 389,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-vector-trace\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "4214e6d3f598041e7b835caa98bd956338e20027f06e4d98df94118bc905a81a",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-vector-trace\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "4214e6d3f598041e7b835caa98bd956338e20027f06e4d98df94118bc905a81a",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "brand-system",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\brand-system\\SKILL.md",
+      "source_sha256": "052c6f199e115e5368d6853f8c2b7faccfcf92a7b17d43a0bb79cd2061922a6f",
+      "source_lines": 140,
+      "description_chars": 391,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\brand-system\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "052c6f199e115e5368d6853f8c2b7faccfcf92a7b17d43a0bb79cd2061922a6f",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\brand-system\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "052c6f199e115e5368d6853f8c2b7faccfcf92a7b17d43a0bb79cd2061922a6f",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "craft-mcp-drive",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\craft-mcp-drive\\SKILL.md",
+      "source_sha256": "0d6433c643dfcfb146e8b77b6ba31692e540809e20ede4335f7591e4ebd5a176",
+      "source_lines": 159,
+      "description_chars": 408,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\craft-mcp-drive\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "0d6433c643dfcfb146e8b77b6ba31692e540809e20ede4335f7591e4ebd5a176",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\craft-mcp-drive\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "0d6433c643dfcfb146e8b77b6ba31692e540809e20ede4335f7591e4ebd5a176",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "embroidery-art",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\embroidery-art\\SKILL.md",
+      "source_sha256": "3835eaa9ea1720d375965a6cba187f5922b2a252e5e8dae34a613d64086fba9f",
+      "source_lines": 140,
+      "description_chars": 323,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\embroidery-art\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "3835eaa9ea1720d375965a6cba187f5922b2a252e5e8dae34a613d64086fba9f",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\embroidery-art\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "3835eaa9ea1720d375965a6cba187f5922b2a252e5e8dae34a613d64086fba9f",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "fourthwall-beanie-embroidery",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-beanie-embroidery\\SKILL.md",
+      "source_sha256": "2f970dc336e4d5c767ae5d3f9395efd2b55d6badf93dee57f7ff1ff1ba185f7f",
+      "source_lines": 160,
+      "description_chars": 586,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-beanie-embroidery\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "2f970dc336e4d5c767ae5d3f9395efd2b55d6badf93dee57f7ff1ff1ba185f7f",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-beanie-embroidery\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "2f970dc336e4d5c767ae5d3f9395efd2b55d6badf93dee57f7ff1ff1ba185f7f",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "fourthwall-catalog-audit",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-catalog-audit\\SKILL.md",
+      "source_sha256": "b0a483632828e683d64bee665b85f84311d899e7b0fa7d7462e33a502395e10e",
+      "source_lines": 157,
+      "description_chars": 450,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-catalog-audit\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "b0a483632828e683d64bee665b85f84311d899e7b0fa7d7462e33a502395e10e",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-catalog-audit\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "b0a483632828e683d64bee665b85f84311d899e7b0fa7d7462e33a502395e10e",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "fourthwall-hoodie-vector",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-hoodie-vector\\SKILL.md",
+      "source_sha256": "d630d766d7590571f446a4c324330f73f452470ed7c1a5b447c0f545a9255396",
+      "source_lines": 158,
+      "description_chars": 559,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-hoodie-vector\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "d630d766d7590571f446a4c324330f73f452470ed7c1a5b447c0f545a9255396",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-hoodie-vector\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "d630d766d7590571f446a4c324330f73f452470ed7c1a5b447c0f545a9255396",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "fourthwall-product-publish",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-product-publish\\SKILL.md",
+      "source_sha256": "a6e7083670faa1058ecb80811b4c7abb3f2ffa6fed4af3377165a666f6d7b6f2",
+      "source_lines": 159,
+      "description_chars": 411,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-product-publish\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "a6e7083670faa1058ecb80811b4c7abb3f2ffa6fed4af3377165a666f6d7b6f2",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-product-publish\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "a6e7083670faa1058ecb80811b4c7abb3f2ffa6fed4af3377165a666f6d7b6f2",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "fourthwall-tee-vector",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-tee-vector\\SKILL.md",
+      "source_sha256": "0c56dc49b7a935c224c72315a58a05787b564de68ef2083387d40405225a58b8",
+      "source_lines": 156,
+      "description_chars": 451,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-tee-vector\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "0c56dc49b7a935c224c72315a58a05787b564de68ef2083387d40405225a58b8",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-tee-vector\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "0c56dc49b7a935c224c72315a58a05787b564de68ef2083387d40405225a58b8",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "merch-mockup-proof",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\merch-mockup-proof\\SKILL.md",
+      "source_sha256": "8f0b3f630e39cd3dafbb3c0372a42891e1b6530eab21b2363f7c8323f0e2721c",
+      "source_lines": 160,
+      "description_chars": 413,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\merch-mockup-proof\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "8f0b3f630e39cd3dafbb3c0372a42891e1b6530eab21b2363f7c8323f0e2721c",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\merch-mockup-proof\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "8f0b3f630e39cd3dafbb3c0372a42891e1b6530eab21b2363f7c8323f0e2721c",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "print-mockup-composite",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\print-mockup-composite\\SKILL.md",
+      "source_sha256": "53ca2bffb10a5c5f4c620dcfe84c83724e9fde1e86627c66e95d0072d335c038",
+      "source_lines": 158,
+      "description_chars": 495,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\print-mockup-composite\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "53ca2bffb10a5c5f4c620dcfe84c83724e9fde1e86627c66e95d0072d335c038",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\print-mockup-composite\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "53ca2bffb10a5c5f4c620dcfe84c83724e9fde1e86627c66e95d0072d335c038",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "shipping-card-tag",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\shipping-card-tag\\SKILL.md",
+      "source_sha256": "dac8a4a85bf43a747f1c318eac7fdc731cd77eb8188b352bb37a8eeb71cfc660",
+      "source_lines": 123,
+      "description_chars": 304,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\shipping-card-tag\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "dac8a4a85bf43a747f1c318eac7fdc731cd77eb8188b352bb37a8eeb71cfc660",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\shipping-card-tag\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "dac8a4a85bf43a747f1c318eac7fdc731cd77eb8188b352bb37a8eeb71cfc660",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "skill-installer",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\skill-installer\\SKILL.md",
+      "source_sha256": "8e293b0c0df70124b6e59daf76a89d7d0ddcf451fc1191b8e5567f8ee089afb2",
+      "source_lines": 160,
+      "description_chars": 458,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\skill-installer\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "8e293b0c0df70124b6e59daf76a89d7d0ddcf451fc1191b8e5567f8ee089afb2",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\skill-installer\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "8e293b0c0df70124b6e59daf76a89d7d0ddcf451fc1191b8e5567f8ee089afb2",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "skills-index",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\skills-index\\SKILL.md",
+      "source_sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+      "source_lines": 150,
+      "description_chars": 433,
+      "valid": true,
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\skills-index\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\skills-index\\SKILL.md",
+          "status": "current",
+          "action": "unchanged",
+          "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "unchanged",
+      "timestamp": "2026-11-05T08:38:38Z"
+    },
+    {
+      "skill": "web-banner",
+      "source": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\web-banner\\SKILL.md",
+      "source_sha256": "10b18d93096f87acbb3f4c14e3ea9240a32b919b9df356bad17780ab16d607d0",
+      "source_lines": 134,
+      "description_chars": 337,
+      "valid": true,
+      "targets": {
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\web-banner\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "10b18d93096f87acbb3f4c14e3ea9240a32b919b9df356bad17780ab16d607d0",
+          "timestamp": "2026-11-05T08:38:38Z"
+        },
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\web-banner\\SKILL.md",
+          "status": "current",
+          "action": "updated",
+          "sha256": "10b18d93096f87acbb3f4c14e3ea9240a32b919b9df356bad17780ab16d607d0",
+          "timestamp": "2026-11-05T08:38:38Z"
+        }
+      },
+      "action": "installed",
+      "timestamp": "2026-11-05T08:38:38Z"
+    }
+  ],
+  "installer": {
+    "name": "install_skills.py",
+    "version": "1.0.0"
+  },
+  "generated_at": "2026-11-05T08:38:38Z",
+  "source_root": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills",
+  "targets": {
+    "dsh": "C:\\Users\\Riley\\.dsh\\skills",
+    "hermes": "C:\\Users\\Riley\\.hermes\\skills"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "mode": "install",
+  "ok": true,
+  "generated_at": "2026-11-05T08:23:06Z",
+  "installer": {
+    "name": "install_skills.py",
+    "version": "1.0.0"
+  },
+  "source_root": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills",
+  "targets": {
+    "dsh": "C:\\Users\\Riley\\.dsh\\skills",
+    "hermes": "C:\\Users\\Riley\\.hermes\\skills"
+  },
+  "selected_targets": [
+    "dsh",
+    "hermes"
+  ],
+  "force": false,
+  "ignored_directories": [
+    "_meta",
+    "fourthwall-beanie-embroidery",
+    "fourthwall-catalog-audit",
+    "merch-mockup-proof"
+  ],
+  "manifest": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\_meta\\manifest.json",
+  "index": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\_meta\\SKILLS-INDEX.md",
+  "summary": {
+    "scanned": 17,
+    "selected": 2,
+    "valid": 2,
+    "invalid": 0,
+    "failed": [],
+    "invalid_unselected": [
+      "fourthwall-product-publish"
+    ],
+    "actions": {
+      "created": 0,
+      "updated": 0,
+      "unchanged": 4,
+      "conflict": 0,
+      "error": 0,
+      "skipped": 0
+    }
+  },
+  "skills": [
+    {
+      "skill": "skill-installer",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\skill-installer\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 160,
+      "description_chars": 458,
+      "sha256": "73ad3b363d3bbe723d6eb996d801bb158d10a458ff30c9c363cbf37a0f79801e",
+      "size_bytes": 7363,
+      "frontmatter": {
+        "name": "skill-installer",
+        "description": "Install, validate and update DeerFlow Forge skills in the DSH and Hermes runtimes — scan the skills tree, enforce the frontmatter and content gates, copy byte-identical files by SHA-256, never overwrite a different target without explicit approval, and regenerate the install manifest and skills index. Use when the user says install skills, sync skills, validate skills, update the skill runtime, check skill health, or add a skill to another agent runtime.",
+        "version": "1.0.0",
+        "author": "Riley Christensen",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "skills",
+              "installer",
+              "validation",
+              "cross-platform",
+              "dsh",
+              "hermes",
+              "sha256"
+            ],
+            "related_skills": [
+              "skills-index"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\skill-installer\\SKILL.md",
+          "status": "current",
+          "sha256": "73ad3b363d3bbe723d6eb996d801bb158d10a458ff30c9c363cbf37a0f79801e",
+          "action": "unchanged"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\skill-installer\\SKILL.md",
+          "status": "current",
+          "sha256": "73ad3b363d3bbe723d6eb996d801bb158d10a458ff30c9c363cbf37a0f79801e",
+          "action": "unchanged"
+        }
+      },
+      "action": "unchanged"
+    },
+    {
+      "skill": "skills-index",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\skills-index\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 150,
+      "description_chars": 433,
+      "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+      "size_bytes": 7496,
+      "frontmatter": {
+        "name": "skills-index",
+        "description": "Route work to the right DeerFlow Forge skill — read the generated catalogue instead of guessing, match the user's wording to trigger descriptions, follow the documented chains, and confirm the skill is installed in both the DSH and Hermes runtimes before acting. Use when the user asks what skills exist, which skill to use, how to discover or list skills, or which skill handles a print, brand, vector, marketing or meta-skill task.",
+        "version": "1.0.0",
+        "author": "Riley Christensen",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "skills",
+              "routing",
+              "catalogue",
+              "discovery",
+              "chains",
+              "dsh",
+              "hermes"
+            ],
+            "related_skills": [
+              "skill-installer"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\skills-index\\SKILL.md",
+          "status": "current",
+          "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+          "action": "unchanged"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\skills-index\\SKILL.md",
+          "status": "current",
+          "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+          "action": "unchanged"
+        }
+      },
+      "action": "unchanged"
+    }
+  ]
+}

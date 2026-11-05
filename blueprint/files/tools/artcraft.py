@@ -81,7 +81,8 @@ def deblur_and_restore(rgb: np.ndarray, alpha: np.ndarray, args: argparse.Namesp
         ], axis=-1)
     image = np.clip(image, 0, 1)
     lab = skcolor.rgb2lab(image)
-    lab[..., 0] = exposure.equalize_adapthist(lab[..., 0], clip_limit=args.clahe)
+    lightness = lab[..., 0] / 100.0
+    lab[..., 0] = exposure.equalize_adapthist(lightness, clip_limit=args.clahe) * 100.0
     image = skcolor.lab2rgb(lab)
     hsv = skcolor.rgb2hsv(image)
     hsv[..., 1] = np.clip(hsv[..., 1] * args.saturation, 0, 1)
@@ -300,7 +301,9 @@ def main(argv: list[str] | None = None) -> int:
             retype = json.loads(Path(args.retype_json).read_text(encoding="utf-8")) if args.retype_json else []
             composed = retype_text(flat_image, retype)
 
-            keyed = flatten_on_key(composed, temp / "keyed.png", colors=0, binary_alpha=True, alpha_threshold=128)
+            composed_path = temp / "composed.png"
+            composed.save(composed_path)
+            keyed = flatten_on_key(composed_path, temp / "keyed.png", colors=0, binary_alpha=True, alpha_threshold=128)
             svg_path = Path(args.svg)
             svg_path.parent.mkdir(parents=True, exist_ok=True)
             vtracer.convert_image_to_svg_py(

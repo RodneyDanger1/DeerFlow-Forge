@@ -1,0 +1,760 @@
+{
+  "mode": "check",
+  "ok": false,
+  "generated_at": "2026-11-05T08:23:07Z",
+  "installer": {
+    "name": "install_skills.py",
+    "version": "1.0.0"
+  },
+  "source_root": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills",
+  "targets": {
+    "dsh": "C:\\Users\\Riley\\.dsh\\skills",
+    "hermes": "C:\\Users\\Riley\\.hermes\\skills"
+  },
+  "ignored_directories": [
+    "_meta",
+    "fourthwall-beanie-embroidery",
+    "fourthwall-catalog-audit",
+    "merch-mockup-proof"
+  ],
+  "require_hermes": false,
+  "summary": {
+    "scanned": 17,
+    "selected": 17,
+    "valid": 16,
+    "invalid": 1,
+    "failed": [
+      "fourthwall-product-publish"
+    ],
+    "invalid_unselected": [],
+    "targets": {
+      "dsh": {
+        "current": 10,
+        "missing": 6,
+        "differs": 0,
+        "unreadable": 0
+      },
+      "hermes": {
+        "current": 10,
+        "missing": 6,
+        "differs": 0,
+        "unreadable": 0
+      }
+    }
+  },
+  "skills": [
+    {
+      "skill": "ad-creative",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ad-creative\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 121,
+      "description_chars": 309,
+      "sha256": "6729a43aabbf8f36f9fcf03484a6ab85641230d0f8f7c69ec867258dc242b7b9",
+      "size_bytes": 6354,
+      "frontmatter": {
+        "name": "ad-creative",
+        "description": "Produce social and paid-ad creatives at exact pixel canvases (1080 square, 1080x1350, 1080x1920) with safe margins, one message, readable type and correct exports. Use when the user says make an ad, Instagram post, Facebook creative, story ad, sale graphic, promo image, paid social asset, or launch creative."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ad-creative\\SKILL.md",
+          "status": "current",
+          "sha256": "6729a43aabbf8f36f9fcf03484a6ab85641230d0f8f7c69ec867258dc242b7b9"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ad-creative\\SKILL.md",
+          "status": "current",
+          "sha256": "6729a43aabbf8f36f9fcf03484a6ab85641230d0f8f7c69ec867258dc242b7b9"
+        }
+      }
+    },
+    {
+      "skill": "ai-art-vectorize-vectorcraft",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 160,
+      "description_chars": 401,
+      "sha256": "994d675c552e488d2223b95b638c19d517acdd9ac9716149e839eb744fabe357",
+      "size_bytes": 8677,
+      "frontmatter": {
+        "name": "ai-art-vectorize-vectorcraft",
+        "description": "AI illustration to clean vector print art with VectorCraft imageTrace.make: pre-cutout, erase and retype AI text, custom limited-palette trace, Expand, SVG export, rsvg at print pixels, 10 gates. Use when the user says vectorise this AI art, trace this illustration, make a print-ready SVG, clean vector art from Midjourney or DALL-E, turn this AI mark into vectors, or prepare vector art for a shirt.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "vectorization",
+              "image-trace",
+              "vectorcraft",
+              "artcraft",
+              "ai-art",
+              "svg",
+              "print"
+            ],
+            "related_skills": [
+              "artcraft-vector-trace",
+              "apparel-print-master",
+              "artcraft-command-catalog",
+              "craft-mcp-drive"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-art-vectorize-vectorcraft\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "ai-diffusion-artifact-cleanup",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 159,
+      "description_chars": 527,
+      "sha256": "767073e8a0aa5b0606d79307f17a55387b2bb198de31587bf9f55cfa19e51c9e",
+      "size_bytes": 10084,
+      "frontmatter": {
+        "name": "ai-diffusion-artifact-cleanup",
+        "description": "Diagnose and remove AI diffusion artefacts before tracing or print export — soft/blurred edges, halo or drop-shadow around lettering, speckle and grain, semi-transparent fringes and JPEG noise — with hard-alpha cutout, edge-fleck and component filtering, saturation/contrast restore and measured deblur/denoise. Use when the user says clean up AI art, remove the halo, fix the fuzzy edges, get rid of the grain or speckle, denoise this AI image, the cutout has a grey fringe, or prep this diffusion render for tracing or print.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "linux",
+          "windows"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "ai-art",
+              "diffusion-artifacts",
+              "cleanup",
+              "alpha",
+              "print",
+              "dtg",
+              "image-processing"
+            ],
+            "related_skills": [
+              "artcraft-image-cleanup",
+              "artcraft-vector-trace",
+              "ai-image-upscale-print",
+              "apparel-print-master"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\ai-diffusion-artifact-cleanup\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "apparel-print-master",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\apparel-print-master\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 139,
+      "description_chars": 363,
+      "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624",
+      "size_bytes": 7238,
+      "frontmatter": {
+        "name": "apparel-print-master",
+        "description": "Build a provider-ready DTG print master at 300 DPI on the exact Fourthwall area geometry — trace or raster route, retype AI text, compose, run the 10 gates, then hand off to publish. Use when the user says put this on a shirt, make a tee/hoodie design, prepare a print master, replace the product art, print this on apparel, or check the print file before upload."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\apparel-print-master\\SKILL.md",
+          "status": "current",
+          "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\apparel-print-master\\SKILL.md",
+          "status": "current",
+          "sha256": "447d50ca578007589be1519ac2d766939a9b8560996af03b504744c23822c624"
+        }
+      }
+    },
+    {
+      "skill": "artcraft-command-catalog",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\artcraft-command-catalog\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 160,
+      "description_chars": 324,
+      "sha256": "0518f0cfda2188cf8bd6a70bd101c124eb979021c2e90fb2634fa4e8788c8bb0",
+      "size_bytes": 8754,
+      "frontmatter": {
+        "name": "artcraft-command-catalog",
+        "description": "Query and execute the ArtCraft command catalogues: 918 VectorCraft commands in 64 groups and the 965-row PhotoCraft engine registry. Use when the user asks what command does X, which id to use, how to batch VectorCraft or PhotoCraft, whether a command exists, or to find exact ids and params instead of guessing a menu name.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "artcraft",
+              "vectorcraft",
+              "photocraft",
+              "command-catalogue",
+              "cli",
+              "automation",
+              "json"
+            ],
+            "related_skills": [
+              "ai-art-vectorize-vectorcraft",
+              "craft-mcp-drive",
+              "artcraft-vector-trace",
+              "artcraft-image-cleanup"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-command-catalog\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-command-catalog\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "artcraft-image-cleanup",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\artcraft-image-cleanup\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 140,
+      "description_chars": 371,
+      "sha256": "0ce2165627f2b9f9c714cf10f0f02f7965ab7a66ab33d0013d8650d1cecb56d1",
+      "size_bytes": 6911,
+      "frontmatter": {
+        "name": "artcraft-image-cleanup",
+        "description": "PhotoCraft raster cleanup in the Photoshop order — crop, retouch, colour, sharpen last, export at the right DPI — plus the strict white cutout when art must go to print. Use when the user says clean up this image, retouch this photo, fix the colour, remove dust and scratches, denoise, set 300 DPI, prepare a raster for print, or the scan/phone photo looks dull or dirty."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-image-cleanup\\SKILL.md",
+          "status": "current",
+          "sha256": "0ce2165627f2b9f9c714cf10f0f02f7965ab7a66ab33d0013d8650d1cecb56d1"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-image-cleanup\\SKILL.md",
+          "status": "current",
+          "sha256": "0ce2165627f2b9f9c714cf10f0f02f7965ab7a66ab33d0013d8650d1cecb56d1"
+        }
+      }
+    },
+    {
+      "skill": "artcraft-vector-trace",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\artcraft-vector-trace\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 140,
+      "description_chars": 389,
+      "sha256": "678567c700c61011b746795cb4af5ab3a39794466cff41e3c996bc5d4a28a9d3",
+      "size_bytes": 7002,
+      "frontmatter": {
+        "name": "artcraft-vector-trace",
+        "description": "Trace raster logos, badges and AI illustration into clean editable SVG with ArtCraft VectorCraft (Illustrator Image Trace equivalent) — white cutout, Illustrator-compatible imageTrace params, Expand, rendered check. Use when the user says vectorise this, trace this logo, make this an SVG, convert image to vector, AI art to vector, clean vector art, trace for print, or brand mark vector."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\artcraft-vector-trace\\SKILL.md",
+          "status": "current",
+          "sha256": "678567c700c61011b746795cb4af5ab3a39794466cff41e3c996bc5d4a28a9d3"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\artcraft-vector-trace\\SKILL.md",
+          "status": "current",
+          "sha256": "678567c700c61011b746795cb4af5ab3a39794466cff41e3c996bc5d4a28a9d3"
+        }
+      }
+    },
+    {
+      "skill": "brand-system",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\brand-system\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 140,
+      "description_chars": 391,
+      "sha256": "052c6f199e115e5368d6853f8c2b7faccfcf92a7b17d43a0bb79cd2061922a6f",
+      "size_bytes": 7212,
+      "frontmatter": {
+        "name": "brand-system",
+        "description": "Assemble a usable brand kit — logo variants (primary, inverse, mono, icon), palette hex, type pairing with licences, clear-space and minimum-size rules, print rules and reusable templates — with the masters stored next to the notes. Use when the user says build a brand kit, brand guidelines, logo variants, colour palette, typography system, brand assets, or make the collection consistent."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\brand-system\\SKILL.md",
+          "status": "current",
+          "sha256": "052c6f199e115e5368d6853f8c2b7faccfcf92a7b17d43a0bb79cd2061922a6f"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\brand-system\\SKILL.md",
+          "status": "current",
+          "sha256": "052c6f199e115e5368d6853f8c2b7faccfcf92a7b17d43a0bb79cd2061922a6f"
+        }
+      }
+    },
+    {
+      "skill": "craft-mcp-drive",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\craft-mcp-drive\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 165,
+      "description_chars": 408,
+      "sha256": "ae473c46889166778fc42ad87a6eb649101267c338ee25dcd2a5ba67a9d69977",
+      "size_bytes": 9606,
+      "frontmatter": {
+        "name": "craft-mcp-drive",
+        "description": "Drive VectorCraft and PhotoCraft over MCP: start the stdio server headless or connected, initialize and list tools, map design jobs to the 33 VectorCraft and 26 PhotoCraft tools, confine file access with automation roots, and run a safe JSON-RPC command batch. Use when the user says drive VectorCraft over MCP, connect an agent to ArtCraft, use the MCP server, or automate the craft apps from an MCP client.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "mcp",
+              "vectorcraft",
+              "photocraft",
+              "artcraft",
+              "json-rpc",
+              "automation",
+              "agent"
+            ],
+            "related_skills": [
+              "artcraft-command-catalog",
+              "ai-art-vectorize-vectorcraft",
+              "artcraft-vector-trace"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\craft-mcp-drive\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\craft-mcp-drive\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "embroidery-art",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\embroidery-art\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 140,
+      "description_chars": 323,
+      "sha256": "feaf6b084f0ec97617e99440880b3c82ed7d72e23b78d9a3766ceb69a7f2d043",
+      "size_bytes": 6822,
+      "frontmatter": {
+        "name": "embroidery-art",
+        "description": "Produce stitch-legal embroidery artwork (caps, patches, beanies) with measured cap heights, minimum stroke widths and a thread-colour limit — artwork only, never a stitch file. Use when the user says embroider this, beanie design, cap logo, patch design, embroidery lockup, stitch-legal art, or asks for a DST/PES/EXP file."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\embroidery-art\\SKILL.md",
+          "status": "current",
+          "sha256": "feaf6b084f0ec97617e99440880b3c82ed7d72e23b78d9a3766ceb69a7f2d043"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\embroidery-art\\SKILL.md",
+          "status": "current",
+          "sha256": "feaf6b084f0ec97617e99440880b3c82ed7d72e23b78d9a3766ceb69a7f2d043"
+        }
+      }
+    },
+    {
+      "skill": "fourthwall-hoodie-vector",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-hoodie-vector\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 194,
+      "description_chars": 562,
+      "sha256": "1af60d20540e0fa219858f025250cd193a705d5d2fae3f872a54d957cb6b80de",
+      "size_bytes": 11058,
+      "frontmatter": {
+        "name": "fourthwall-hoodie-vector",
+        "description": "Produce the exact Fourthwall Gildan Classic Hoodie master for template pro_gUu4CvXsRm-BxogjB89KzA — front 14x14 in, 4200x4200 at 300 DPI, 8.5 in art width, Black, S–2XL — through the same cutout, VectorCraft trace, retype, compose and zero-speck gate as the tee. Warns that the live rb_hoodie_v6.png is a raster with no gate-proven vector master, and separates mockup placement from print proof. Use when the user says hoodie master, hoodie print file, Lost And Learning hoodie, Gildan Classic Hoodie art, vectorise the hoodie, or check the hoodie before upload.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "fourthwall",
+              "dtg",
+              "gildan",
+              "hoodie",
+              "vector",
+              "print-master",
+              "raster-v6",
+              "gates"
+            ],
+            "triggers": [
+              "hoodie master",
+              "hoodie print file",
+              "Lost And Learning hoodie",
+              "Gildan Classic Hoodie art",
+              "vectorise the hoodie"
+            ],
+            "related_skills": [
+              "fourthwall-tee-vector",
+              "apparel-print-master",
+              "artcraft-vector-trace",
+              "fourthwall-product-publish"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-hoodie-vector\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-hoodie-vector\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "fourthwall-product-publish",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-product-publish\\SKILL.md",
+      "valid": false,
+      "errors": [
+        "line count 239 is outside the required 40-220"
+      ],
+      "warnings": [],
+      "line_count": 239,
+      "description_chars": 411,
+      "sha256": "8787eaa4b0154c6de2d369c78db10b5053201b9b0633207ae83cbef3e00f9f5a",
+      "size_bytes": 13779,
+      "frontmatter": {
+        "name": "fourthwall-product-publish",
+        "description": "Publish, replace or retire a Ridgeboundia Fourthwall design product through the exact live pipeline — hidden create, PUBLIC, hide the old generation, storefront index, runFourthwallSync, DB whitelist repair and 200/404 verification. Use when the user says publish this design, put it on the store, replace the tee/hoodie/beanie, new Fourthwall product, go live, republish, hide the old one, or fix what is live.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "fourthwall",
+              "publish",
+              "catalogue",
+              "dtg",
+              "embroidery",
+              "storefront",
+              "ridgeboundia"
+            ],
+            "related_skills": [
+              "apparel-print-master",
+              "embroidery-art",
+              "fourthwall-catalog-audit",
+              "merch-mockup-proof"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-product-publish\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-product-publish\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "fourthwall-tee-vector",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\fourthwall-tee-vector\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 157,
+      "description_chars": 451,
+      "sha256": "27fc5cda78cce568e050c19ea92beb89ae9ccdd471c5d58adc827b7dec060611",
+      "size_bytes": 9486,
+      "frontmatter": {
+        "name": "fourthwall-tee-vector",
+        "description": "Produce the exact Fourthwall Gildan Heavyweight Tee master for template pro_e4677535402b4eeb81 — front_large 15x18 in, 4500x5400 at 300 DPI, 8 in art width, Black, S–2XL with 2XL cost upcharges — through strict cutout, VectorCraft trace, retyped wordmark, provider compose and the zero-speck gate. Use when the user says tee master, shirt print file, Lost And Learning tee, front_large, DTG tee art, regenerate the tee, or check the tee before upload.",
+        "version": "1.0.0",
+        "author": "DeerFlow Forge",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "fourthwall",
+              "dtg",
+              "gildan",
+              "tee",
+              "vector",
+              "print-master",
+              "retype",
+              "gates"
+            ],
+            "triggers": [
+              "tee master",
+              "shirt print file",
+              "Lost And Learning tee",
+              "front_large",
+              "DTG tee art",
+              "regenerate the tee"
+            ],
+            "related_skills": [
+              "apparel-print-master",
+              "artcraft-vector-trace",
+              "fourthwall-product-publish",
+              "brand-system"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\fourthwall-tee-vector\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\fourthwall-tee-vector\\SKILL.md",
+          "status": "missing",
+          "sha256": null
+        }
+      }
+    },
+    {
+      "skill": "shipping-card-tag",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\shipping-card-tag\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 123,
+      "description_chars": 304,
+      "sha256": "dac8a4a85bf43a747f1c318eac7fdc731cd77eb8188b352bb37a8eeb71cfc660",
+      "size_bytes": 6360,
+      "frontmatter": {
+        "name": "shipping-card-tag",
+        "description": "Lay out thank-you cards, package inserts, hang tags and product/QR cards with bleed, safe margins and 300 DPI, exported as print PDF or PNG. Use when the user says thank-you card, shipping insert, hang tag, product tag, clothing label, QR card, packaging insert, or needs a print-ready card for a vendor."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\shipping-card-tag\\SKILL.md",
+          "status": "current",
+          "sha256": "dac8a4a85bf43a747f1c318eac7fdc731cd77eb8188b352bb37a8eeb71cfc660"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\shipping-card-tag\\SKILL.md",
+          "status": "current",
+          "sha256": "dac8a4a85bf43a747f1c318eac7fdc731cd77eb8188b352bb37a8eeb71cfc660"
+        }
+      }
+    },
+    {
+      "skill": "skill-installer",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\skill-installer\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 160,
+      "description_chars": 458,
+      "sha256": "73ad3b363d3bbe723d6eb996d801bb158d10a458ff30c9c363cbf37a0f79801e",
+      "size_bytes": 7363,
+      "frontmatter": {
+        "name": "skill-installer",
+        "description": "Install, validate and update DeerFlow Forge skills in the DSH and Hermes runtimes — scan the skills tree, enforce the frontmatter and content gates, copy byte-identical files by SHA-256, never overwrite a different target without explicit approval, and regenerate the install manifest and skills index. Use when the user says install skills, sync skills, validate skills, update the skill runtime, check skill health, or add a skill to another agent runtime.",
+        "version": "1.0.0",
+        "author": "Riley Christensen",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "skills",
+              "installer",
+              "validation",
+              "cross-platform",
+              "dsh",
+              "hermes",
+              "sha256"
+            ],
+            "related_skills": [
+              "skills-index"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\skill-installer\\SKILL.md",
+          "status": "current",
+          "sha256": "73ad3b363d3bbe723d6eb996d801bb158d10a458ff30c9c363cbf37a0f79801e"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\skill-installer\\SKILL.md",
+          "status": "current",
+          "sha256": "73ad3b363d3bbe723d6eb996d801bb158d10a458ff30c9c363cbf37a0f79801e"
+        }
+      }
+    },
+    {
+      "skill": "skills-index",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\skills-index\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 150,
+      "description_chars": 433,
+      "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc",
+      "size_bytes": 7496,
+      "frontmatter": {
+        "name": "skills-index",
+        "description": "Route work to the right DeerFlow Forge skill — read the generated catalogue instead of guessing, match the user's wording to trigger descriptions, follow the documented chains, and confirm the skill is installed in both the DSH and Hermes runtimes before acting. Use when the user asks what skills exist, which skill to use, how to discover or list skills, or which skill handles a print, brand, vector, marketing or meta-skill task.",
+        "version": "1.0.0",
+        "author": "Riley Christensen",
+        "license": "original",
+        "platforms": [
+          "windows",
+          "linux",
+          "macos"
+        ],
+        "metadata": {
+          "hermes": {
+            "tags": [
+              "skills",
+              "routing",
+              "catalogue",
+              "discovery",
+              "chains",
+              "dsh",
+              "hermes"
+            ],
+            "related_skills": [
+              "skill-installer"
+            ]
+          }
+        }
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\skills-index\\SKILL.md",
+          "status": "current",
+          "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\skills-index\\SKILL.md",
+          "status": "current",
+          "sha256": "0a1ec9daf54a1a1f8a9e5344416f3ee3ce364a87bb4834f98780b128d5e848dc"
+        }
+      }
+    },
+    {
+      "skill": "web-banner",
+      "path": "C:\\Users\\Riley\\Desktop\\DeerFlow Forge\\blueprint\\files\\skills\\web-banner\\SKILL.md",
+      "valid": true,
+      "errors": [],
+      "warnings": [],
+      "line_count": 134,
+      "description_chars": 337,
+      "sha256": "a3b4e60c42f37c1934ab30501fe0363cb129381e414c64621cbf44c06ed7d6c6",
+      "size_bytes": 6801,
+      "frontmatter": {
+        "name": "web-banner",
+        "description": "Produce website hero and banner art at desktop (1920x600-800) and mobile (800x1000) sizes, keeping type as HTML wherever possible and exporting WebP/PNG inside a file-size budget. Use when the user says website banner, hero image, homepage banner, site header art, responsive banner, or needs web art that is light and correctly cropped."
+      },
+      "targets": {
+        "dsh": {
+          "path": "C:\\Users\\Riley\\.dsh\\skills\\web-banner\\SKILL.md",
+          "status": "current",
+          "sha256": "a3b4e60c42f37c1934ab30501fe0363cb129381e414c64621cbf44c06ed7d6c6"
+        },
+        "hermes": {
+          "path": "C:\\Users\\Riley\\.hermes\\skills\\web-banner\\SKILL.md",
+          "status": "current",
+          "sha256": "a3b4e60c42f37c1934ab30501fe0363cb129381e414c64621cbf44c06ed7d6c6"
+        }
+      }
+    }
+  ]
+}

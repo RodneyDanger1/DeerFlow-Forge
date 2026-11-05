@@ -1,0 +1,31 @@
+DeerFlow Forge skill check
+Source: C:\Users\Riley\Desktop\DeerFlow Forge\blueprint\files\skills
+Targets: dsh=C:\Users\Riley\.dsh\skills | hermes=C:\Users\Riley\.hermes\skills
+
+SKILL                          LINES  DESC  ERRORS  WARN  STATUS
+-----------------------------  -----  ----  ------  ----  ------
+ad-creative                    121    309   0       0     PASS
+ai-art-vectorize-vectorcraft   160    401   0       0     PASS
+ai-diffusion-artifact-cleanup  159    527   0       0     PASS
+apparel-print-master           139    363   0       0     PASS
+artcraft-command-catalog       160    324   0       0     PASS
+artcraft-image-cleanup         140    371   0       0     PASS
+artcraft-vector-trace          140    389   0       0     PASS
+brand-system                   140    391   0       0     PASS
+craft-mcp-drive                165    408   0       0     PASS
+embroidery-art                 140    323   0       0     PASS
+fourthwall-hoodie-vector       194    562   0       0     PASS
+fourthwall-product-publish     239    411   1       0     FAIL
+fourthwall-tee-vector          157    451   0       0     PASS
+shipping-card-tag              123    304   0       0     PASS
+skill-installer                160    458   0       0     PASS
+skills-index                   150    433   0       0     PASS
+web-banner                     134    337   0       0     PASS
+
+17 skills checked | 16 passed | 1 failed
+Runtime: DSH current=10 missing=6 differs=0 | Hermes current=10 missing=6 differs=0
+Directories without SKILL.md (not skills): _meta, fourthwall-beanie-embroidery, fourthwall-catalog-audit, merch-mockup-proof
+
+Failures:
+  fourthwall-product-publish
+    - line count 239 is outside the required 40-220

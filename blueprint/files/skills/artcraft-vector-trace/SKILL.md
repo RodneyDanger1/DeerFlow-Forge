@@ -123,7 +123,7 @@ SVG — quote the JSON as evidence, then review the 2400 px render; it is not pr
 
 **2. AI badge → print-ready.** Pre-cutout, custom limited-palette params, SVG at print pixels,
 AI text bands erased and retyped with FreeSansBold at the mapped boxes. Measured on the
-Ridgeboundia badge (vault 09/13, 2026-11-05): ~460 KB SVG, 366 paths, 6–7 fills, all 10 gates
+Ridgeboundia badge (vault 09/13, 2026-11-05): 410,571-byte SVG, 281 paths, 6 fills, all 10 gates
 passing versus Flat Logo's 3,982 paths / 2.5 MB failure.
 
 ## Pitfalls

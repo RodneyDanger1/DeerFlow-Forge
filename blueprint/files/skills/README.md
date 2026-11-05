@@ -1,82 +1,80 @@
-# ArtCraft + Ridgeboundia skills
+# DeerFlow Forge / Ridgeboundia design skills
 
-Reusable agent skills for the design apps (VectorCraft 0.21.1, PhotoCraft 0.20.2) and the
-print pipeline. Each folder holds one `SKILL.md` with YAML frontmatter (`name`, `description`
-with trigger words), exact commands and real paths, a step-by-step workflow, acceptance gates,
-refusal conditions, worked examples and pitfalls.
+Reusable agent skills for the ArtCraft design apps (VectorCraft/PhotoCraft), the Ridgeboundia
+print pipeline, and the exact Fourthwall merch catalogue. One source of truth in this folder;
+installed into **both** agent runtimes:
 
-## Install locations
+- DeepSeek Harness (DSH): `%USERPROFILE%\.dsh\skills\<name>\SKILL.md`
+- Hermes Desktop: `%USERPROFILE%\.hermes\skills\<name>\SKILL.md`
 
-- **Source of truth:** `blueprint/files/skills/<skill-name>/SKILL.md` (this tree, committed with
-  the blueprint).
-- **Agent runtime copy:** `%USERPROFILE%\.dsh\skills\<skill-name>\SKILL.md` — create-only; never
-  overwrite an existing runtime skill. Copy after editing the blueprint copy.
-- Update the blueprint first, then re-copy. One skill, one directory, one file.
+## Install / update / validate
 
-## The eight skills
+```powershell
+python "blueprint/files/skills/_meta/install_skills.py" --check                 # validate only
+python "blueprint/files/skills/_meta/install_skills.py" --targets both          # install/update both runtimes
+python "blueprint/files/skills/_meta/install_skills.py" --targets both --force  # replace changed copies
+python "blueprint/files/skills/_meta/validate_skills.py"                        # table + non-zero on failure
+```
 
-| Skill | Job | Input → output |
+The installer refuses to overwrite a differing target unless `--force`, skips unchanged files by
+SHA-256, and regenerates `_meta/manifest.json` + `_meta/SKILLS-INDEX.md`. New skills use the
+Hermes-superset frontmatter (name, description, version, author, license, platforms,
+`metadata.hermes`); the eight original skills keep minimal frontmatter and are still installable.
+
+## Catalogue (22 skills)
+
+| Skill | Family | Use it for |
 |---|---|---|
-| `artcraft-vector-trace` | Raster → clean editable SVG (Image Trace + Expand, 10 gates) | PNG/JPG → SVG master + rendered check |
-| `artcraft-image-cleanup` | PhotoCraft raster retouch in Photoshop order | Photo/scan/AI raster → corrected raster at known DPI |
-| `apparel-print-master` | Provider canvas at 300 DPI, gated, print-ready | Art + template/area → PNG master + JSON report |
-| `embroidery-art` | Stitch-legal art with measured minimums | Mark/brief + area → art + constraints (never a stitch file) |
-| `brand-system` | Logo variants, palette, type, rules, templates | Mark + palette → brand kit and rules doc |
-| `ad-creative` | Social/paid stills at 1080 canvases | Offer + assets → PNG/WebP creative |
-| `web-banner` | Site hero/banner, desktop + mobile | Art + copy → WebP/PNG within budget |
-| `shipping-card-tag` | Cards, inserts, hang tags with bleed | Spec + copy → print PDF / 300 DPI PNG |
+| `artcraft-vector-trace` | ArtCraft | trace raster logos/badges to clean SVG |
+| `artcraft-image-cleanup` | ArtCraft | PhotoCraft raster cleanup in Photoshop order |
+| `ai-art-vectorize-vectorcraft` | AI art | AI illustration → clean vector print art |
+| `ai-diffusion-artifact-cleanup` | AI art | deblur/dehalo/despeckle AI-diffusion artefacts |
+| `ai-image-upscale-print` | AI art | 150/300 DPI and 2.5x upscale decisions |
+| `print-mockup-composite` | AI art | compose a master onto proof/mockup canvases |
+| `apparel-print-master` | Apparel | provider-ready DTG master + 10 gates |
+| `fourthwall-tee-vector` | Fourthwall | exact Gildan tee product/area/master |
+| `fourthwall-hoodie-vector` | Fourthwall | exact Gildan hoodie product/area/master |
+| `fourthwall-beanie-embroidery` | Fourthwall | stitch-legal beanie wordmark (art only) |
+| `fourthwall-product-publish` | Fourthwall | hidden create → publish → hide old → sync → verify |
+| `fourthwall-catalog-audit` | Fourthwall | live provider/DB/storefront audit |
+| `merch-mockup-proof` | Fourthwall | pull + judge live mockups; sample checklist |
+| `embroidery-art` | Apparel | caps/strokes/thread-count rules |
+| `shipping-card-tag` | Brand/marketing | thank-you cards, hang tags, labels |
+| `ad-creative` | Brand/marketing | 1:1, 4:5, 9:16 ad canvases |
+| `web-banner` | Brand/marketing | hero/banner desktop + mobile crops |
+| `brand-system` | Brand/marketing | logo variants, palette, type, rules |
+| `artcraft-command-catalog` | Engine | find/execute any of 918 commands in 64 groups |
+| `craft-mcp-drive` | Engine | drive VectorCraft/PhotoCraft over MCP (33+26 tools) |
+| `skill-installer` | Meta | install/validate skills on DSH + Hermes |
+| `skills-index` | Meta | discover/route skills and chains |
 
-## How they chain
+## Chains
 
-**trace → master → publish**
+1. **Art → product:** `ai-diffusion-artifact-cleanup` → `ai-art-vectorize-vectorcraft` /
+   `artcraft-vector-trace` → `apparel-print-master` (or product-specific skill) →
+   `fourthwall-product-publish` → `merch-mockup-proof`.
+2. **Supplied raster:** `artcraft-image-cleanup` → `ai-image-upscale-print` → trace/master.
+3. **Embroidery:** `embroidery-art` → `fourthwall-beanie-embroidery` → external digitizer for DST/PES.
+4. **Brand/marketing:** `brand-system` → `ad-creative` / `web-banner` / `shipping-card-tag`.
+5. **Audit/repair:** `fourthwall-catalog-audit` → `skill-installer` / `skills-index`.
 
-1. `artcraft-vector-trace` produces the SVG master (or proves the art must stay raster).
-2. `apparel-print-master` composes it on the provider canvas, retypes text, runs the 10 gates.
-3. Publish is the handoff in `apparel-print-master`: upload → create hidden → `PUBLIC` → hide
-   older versions → sync → verify `/shop` and product pages. It changes the live store, so it
-   needs explicit owner approval.
+## Non-negotiable facts (learned the hard way)
 
-**cleanup → trace**
+- Every neutral white is transparent; keep cream lettering.
+- Providers print DTG rows at 150 DPI native (tee 2250×2700, hoodie 2100×2100); our masters are
+  300 DPI (4500×5400, 4200×4200) — never upload a half-size canvas.
+- AI text must be erased and retyped; tracing cannot repair diffusion erosion/shadow.
+- VectorCraft WebP export is **lossless-only** (the `quality` knob is a no-op); use
+  `photocraft-cli convert --quality` for lossy WebP, and check bytes.
+- VectorCraft presets overfit AI art (Flat Logo 3,982 paths); use the custom limited-palette params.
+- A mockup is placement/cut-off proof, not print proof — order a sample.
+- Vector art is not a stitch file; `.DST/.PES/.EXP` needs a digitizer.
+- The live tee master predates the zero-speck gate: regenerate before claiming 10/10.
 
-`artcraft-image-cleanup` fixes the source (crop, dust, colour, sharpen at final size), then
-`artcraft-vector-trace` traces the cleaned, white-cut raster. Cleanup never pretends to
-vectorise, and trace never traces a dirty image.
+## Quality evidence
 
-**embroidery → art only**
-
-`embroidery-art` ends at measured, stitch-legal artwork plus constraints. There is no stitch
-file in this environment; a digitizer or the provider's embroidery service produces
-`.DST/.PES/.EXP`. Never present the art as a stitch file.
-
-**brand-system feeds the rest**
-
-The kit (logo variants, hex palette, type with licences, print rules) is the input for
-`ad-creative`, `web-banner`, `shipping-card-tag` and the garment/embroidery lockups. Those
-skills consume the kit; they do not re-derive colours or type.
-
-## Shared environment facts
-
-- Pipeline root: `/opt/pod-pipeline` (run tools from there with `.venv/bin/python -m tools.<tool>`).
-- VectorCraft CLI: `/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli`.
-- PhotoCraft CLI: `/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli`.
-- Provider geometry: `/opt/pod-pipeline/config/fourthwall-template-details.json` (623 rows,
-  `areaGeometry` per area with inches and pixels at 300 DPI).
-- Reference notes: `/srv/vaults/storefront/30-reference/art-learning/` (07 command atlas,
-  09 workflows, 10 prompt templates, 13 usage guide, 15 apparel/print/marketing).
-- Fonts: FreeSansBold and NimbusSans-Bold are installed; VectorCraft families include FreeSans,
-  Nimbus Sans, Liberation Sans, Inter, Source Sans 3.
-
-## Non-negotiable rules
-
-- **No dry-run** in the craft CLIs: export to new paths and inspect the per-step JSON.
-- **No browser automation** here: proof is rendered files, not page screenshots.
-- **No stitch-file engine**: art and constraints only.
-- **White rule**: every white transparent on garment art; cream/tan lettering survives.
-- **Mockups are not print proof**: only a physical sample proves scale and colour.
-
-## Verified on
-
-2026-11-05 against the installed CLIs and pipeline: `imageTrace.make`/`expand`, `run` JSON
-steps, `document.export` ppi math, `text.create`/`fontList`, `object.expand`, PDF/WebP export,
-PhotoCraft `info`/`run` chains, `prep_print_art`, and `craft_trace` end-to-end. Commands that
-were not executed are called out inside the individual skills.
+- `_meta/validate_skills.py`: **22 checked / 22 passed**, DSH 22 current, Hermes 22 current.
+- `_meta/manifest.json` + `_meta/SKILLS-INDEX.md` are generated from the live scan.
+- Independent audit: vault `30-reference/art-learning/19-SKILLS-QUALITY-AUDIT.md` (snapshot at
+  08:32Z found 5 blockers; all 5 were fixed and the validator re-run — see the resolution log in
+  that note; the snapshot verdicts are historical).

@@ -50,7 +50,7 @@ cat > /tmp/ad.json <<'JSON'
  {"command":"text.create","params":{"x":80,"y":560,"text":"MADE FOR THE LONG WAY ROUND","font":"FreeSans","style":"Bold","size":72,"color":"#efe6cf"}},
  {"command":"text.create","params":{"x":80,"y":700,"text":"SHOP THE DROP","font":"FreeSans","style":"Bold","size":40,"color":"#d9caa4"}},
  {"command":"document.export","params":{"path":"/tmp/ad_feed.png","format":"png","ppi":72}},
- {"command":"document.export","params":{"path":"/tmp/ad_feed.webp","format":"webp","quality":82}}]
+ {"command":"document.export","params":{"path":"/tmp/ad_feed.png","format":"png","ppi":72}}]
 JSON
 $VC run --commands /tmp/ad.json
 identify -format '%f %wx%h %m %b\n' /tmp/ad_feed.png /tmp/ad_feed.webp
@@ -70,7 +70,7 @@ raster logo exists (see `brand-system`).
 3. Lay out: logo, headline, proof point, CTA. Type ≥24 px at 1080 (headline 64–96 px).
 4. Place art so the subject is not cropped by the safe margin; check contrast where text
    crosses art.
-5. Export PNG for quality control and WebP for delivery; keep filenames versioned.
+5. Export PNG for QC; VectorCraft writes only lossless WebP, so produce the delivery WebP with `photocraft-cli convert /tmp/ad_feed.png /tmp/ad_feed.webp --quality 82` (lossy, verified) and check bytes.
 6. View at 100 % and at thumbnail (phone size) — if the headline is unreadable at thumbnail,
    fix the hierarchy.
 7. Record the canvas, copy and claim sources next to the file.
@@ -99,8 +99,7 @@ raster logo exists (see `brand-system`).
 ## Worked examples
 
 **1. 1080×1080 sale card.** Dark ground, art placed right-of-centre, headline at 72 px, CTA at
-40 px, both inside 80 px margins. Export `ad_feed.png` (1080×1080) and `ad_feed.webp` (82
-quality). Check thumbnail legibility and the contrast of `#efe6cf` on `#101312`.
+40 px, both inside 80 px margins. Export `ad_feed.png` (1080×1080); make lossy WebP with PhotoCraft `convert --quality 82` (VectorCraft's WebP is lossless-only). Check thumbnail legibility and the contrast of `#efe6cf` on `#101312`.
 
 **2. 1080×1920 story.** Same message, larger type (88 px), subject in the middle band, CTA at
 1,600 px height. Keep the top 250 px and bottom 250 px free of text for platform chrome. Export
@@ -113,7 +112,7 @@ PNG and WebP; verify the dimensions and that nothing important sits in the UI ba
 - **One message per creative** — cramming price, story and CTA halves the read.
 - **Baked-in CTA vs platform CTA**: don't duplicate the button text in the image.
 - **Thumbnail test** — most feeds show the creative small; design for that size.
-- **WebP quality**: 82 is a delivery default; raise it for gradients, lower only if the size
+- **WebP quality**: VectorCraft ignores `quality` for WebP (lossless only, verified); use PhotoCraft `convert --quality` for lossy delivery and re-check bytes after every change. Raised quality inflates size
   cap demands it.
 - **`file.place` keeps native pixels** — a 2000×1500 image on a 1080 canvas lands at
   (-460,-210) and overflows (verified); resize/extent to the placement size first.
