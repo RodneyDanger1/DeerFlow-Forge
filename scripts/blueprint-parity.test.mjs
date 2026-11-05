@@ -13,10 +13,13 @@ import { dirname, join } from "node:path";
 import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 
-import { ASSUMPTIONS, FAMILIES } from "../src/lib/blueprint/model.ts";
+import { ASSUMPTIONS, FAMILIES, buildPlan } from "../src/lib/blueprint/model.ts";
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const FILES = join(ROOT, "blueprint", "files");
+const RUN_ID = "8f3c1a9b-4e20-4c11-9a77-0b1d2e3f4a5b";
+const WORK = `/opt/pod-pipeline/sandbox/${RUN_ID}`;
+const BUILD = `/opt/pod-pipeline/build/${RUN_ID}`;
 
 function pythonBin() {
   for (const candidate of process.platform === "win32" ? ["python", "python3"] : ["python3", "python"]) {
@@ -31,9 +34,13 @@ function routeContract(python) {
   const code = `
 import json, sys
 sys.path.insert(0, ${JSON.stringify(FILES)})
-from pod_pipeline.routes import PRODUCT_TYPES, ROUTES
+from pod_pipeline.routes import PRODUCT_TYPES, ROUTES, merged_cfg, render_argv
 out = {"types": list(PRODUCT_TYPES), "routes": {}}
 for pt, route in ROUTES.items():
+    cfg = merged_cfg(pt, {"knitwear": {"knit_grid": "112x140"}})
+    variables = {"src": "${WORK}/input.png", "art": "${WORK}/traced.svg",
+                 "work": "${WORK}", "build": "${BUILD}", "run_id": "${RUN_ID}",
+                 "asset_id": 1, "fallback_dpi": 600, "cfg": cfg}
     out["routes"][pt] = {
         "upload": route.upload,
         "final": route.final,
@@ -42,6 +49,7 @@ for pt, route in ROUTES.items():
                 "name": step.name,
                 "module": step.module,
                 "argv": list(step.argv),
+                "argv_rendered": render_argv(step, variables),
                 "outputs": list(step.outputs),
                 "validators": [list(v) for v in step.validators],
                 "timeout": step.timeout_s,
@@ -96,10 +104,12 @@ test("every console route step matches routes.py by name, module, argv, output, 
     );
     route.steps.forEach((step, index) => {
       const shown = family.steps[index];
+      const plan = buildPlan(family.id, false, true).find((item) => item.id === step.name);
+      assert.ok(plan, `${family.id}[${index}] ${step.name}: not present in the rendered board plan`);
       const where = `${family.id}[${index}] ${step.name}`;
       assert.equal(shown.name, step.name, `${where}: step name drifted`);
       assert.equal(shown.module, step.module, `${where}: module drifted`);
-      assert.deepEqual(tokens(shown.command), [...step.argv], `${where}: command tokens drifted from routes.py argv`);
+      assert.deepEqual(tokens(plan.command), [...step.argv_rendered], `${where}: rendered command drifted from routes.py`);
       assert.equal(step.outputs.length, 1, `${where}: pin assumes one output per route step`);
       assert.equal(shown.output, step.outputs[0], `${where}: output template drifted`);
       const validator = step.validators[0]?.[0] ?? null;
@@ -110,8 +120,13 @@ test("every console route step matches routes.py by name, module, argv, output, 
   }
 });
 
-test("the console's stated assumptions name the vendor-binary gap", () => {
+// OLD → NEW: the console no longer says "craft-bin exits 127" after Phase 0.
+// It must describe the measured contracts and the real absent-app refusals.
+test("the console's stated assumptions describe measured commands and named refusals", () => {
   const text = ASSUMPTIONS.join(" ");
-  assert.match(text, /craft-bin exits 127/);
-  assert.match(text, /stub/);
+  assert.match(text, /measured 0\.21\.1/);
+  assert.match(text, /run --in/);
+  assert.match(text, /DesignCraft, EffectCraft and FilmCraft are absent/);
+  assert.doesNotMatch(text, /never gave a vectorcraft-cli line/i);
+  assert.doesNotMatch(text, /Knitwear adds --palette-limit/i);
 });

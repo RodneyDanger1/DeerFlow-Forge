@@ -72,12 +72,11 @@ docker compose up -d postgres
 
 ### Craft binaries
 
-`deploy/craft-bin/*-cli` are **placeholders** that exit 127 with a message. They
-stand in for five vendor headless binaries (VectorCraft, PhotoCraft, DesignCraft,
-EffectCraft, FilmCraft). Replace each file with the real executable (or point the
-pipeline at `POD_USE_DOCKER=1` and a `pod-craft-runner` image). Until then the
-pipeline starts and reports "vendor binary not installed" per step — it does not
-fabricate output.
+`deploy/craft-launchers/vectorcraft-cli` and `photocraft-cli` are pinned absolute launchers for the
+installed 0.21.1 / 0.20.2 binaries; `setup-pipeline.sh` installs them. `deploy/craft-bin/*-cli` are
+named refusals for the absent DesignCraft/EffectCraft/FilmCraft engines. The pipeline fails with
+`E_TOOL_NOT_INSTALLED` rather than fabricating output. `tests/stubs/craft_stub.py` is the contract
+double, not a production tool.
 
 ## MCP integration with DeerFlow
 

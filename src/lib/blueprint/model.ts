@@ -34,8 +34,8 @@ export const FAMILIES: Family[] = [
         name: "photocraft_trim",
         module: "photocraft",
         command:
-          "photocraft-cli --input {art} --trim-alpha true --target-dpi 300 --color-profile srgb --dimensions 14x16in --out-dir {work}/apparel/",
-        output: "{work}/apparel/trimmed.png",
+          "photocraft-cli run {art} --cmd image.trim --params '{\"basedOn\":\"transparent\"}' --cmd image.imageSize --params '{\"width\":4200,\"height\":4800,\"resolution\":300,\"resample\":\"lanczos\"}' --cmd edit.convertToProfile --params '{\"profile\":\"srgb\"}' --out {work}/trimmed.png",
+        output: "{work}/trimmed.png",
         validator: null,
         timeout: null,
       },
@@ -43,7 +43,7 @@ export const FAMILIES: Family[] = [
         name: "effectcraft_distress",
         module: "effectcraft",
         command:
-          'effectcraft-cli --input {work}/apparel/trimmed.png --filter vintage_screen_300 --output {build}/apparel_final.png',
+          'effectcraft-cli --input {work}/trimmed.png --filter vintage_screen_300 --output {build}/apparel_final.png',
         output: "{build}/apparel_final.png",
         validator: "png_with_alpha",
         timeout: null,
@@ -57,7 +57,7 @@ export const FAMILIES: Family[] = [
     focus: "DesignCraft and VectorCraft",
     upload: "{build}/knitwear_final.bmp",
     note: "A BMP stitch grid may be refused by the image library. The run then ends needs_manual_upload and still counts as processed.",
-    traceExtra: "--palette-limit {cfg[palette_limit]}",
+    traceExtra: "",
     steps: [
       {
         name: "designcraft_stitch_matrix",
@@ -151,16 +151,23 @@ export const FAMILIES: Family[] = [
 ];
 
 export const ASSUMPTIONS = [
-  "The spec never gave a vectorcraft-cli line. routes.py owns the contract: trace --input --svg-out --pdf-out. Knitwear adds --palette-limit.",
+  "The VectorCraft contract is no longer invented. It is the measured 0.21.1 run contract: run --in --cmd select.all --cmd imageTrace.make --params ... --cmd imageTrace.expand --export.",
   "Exit code 1 on that trace is the only automatic fallback. Any other trace exit fails the run.",
-  "The raster fallback expects a PNG inside --out-dir. DPI comes from POD_FALLBACK_RASTER_DPI, default 600.",
-  "stitch_matrix had no input flag in the spec. The route adds --input.",
+  "The raster fallback is PhotoCraft run --cmd image.imageSize --cmd edit.convertToProfile --out; it writes one flat PNG.",
+  "Knitwear's factory palette cap is carried inside the trace JSON colors value; there is no --palette-limit CLI flag.",
   "The stationery cover adds --embed and drops --variable-data order_id. There is no order yet.",
-  "Vendor Craft binaries are not in this tree. deploy/craft-bin exits 127 until they replace those files. tests/stubs/craft_stub.py is the contract double, not a production tool.",
+  "VectorCraft and PhotoCraft are installed; DesignCraft, EffectCraft and FilmCraft are absent and are named refusals until installed.",
+  "The console is a viewer; it does not execute the pipeline or claim that the displayed commands have run.",
 ];
 
 const CFG: Record<string, string> = {
   palette_limit: "6",
+  trace_mode: "color",
+  trace_palette: "limited",
+  trace_colors: "12",
+  trace_paths: "65",
+  trace_corners: "45",
+  trace_noise: "16",
   knit_grid: "112x140",
   template: "fourthwall_crossbody_v1",
   care_text: "100% Polyester",
@@ -236,10 +243,30 @@ export function buildPlan(familyId: FamilyId, traceFails: boolean, docker: boole
   const work = `${ROOT}/sandbox/${RUN_ID}`;
   const build = `${ROOT}/build/${RUN_ID}`;
   const src = `${work}/input.png`;
-  const art = traceFails ? `${work}/raster/raster_600dpi.png` : `${work}/traced.svg`;
+  const art = traceFails ? `${work}/raster.png` : `${work}/traced.svg`;
   const vars: Record<string, string> = { ...CFG, src, art, work, build, run_id: RUN_ID, fallback_dpi: CFG.fallback_dpi };
   const steps: PlanStep[] = [];
   const push = (step: PlanStep) => steps.push(step);
+
+  // Family-specific trace colours: knitwear must honour the factory palette cap.
+  const traceColors = familyId === "knitwear" ? CFG.palette_limit : CFG.trace_colors;
+  const traceParams = JSON.stringify({
+    params: {
+      mode: CFG.trace_mode,
+      palette: CFG.trace_palette,
+      colors: Number(traceColors),
+      paths: Number(CFG.trace_paths),
+      corners: Number(CFG.trace_corners),
+      noise: Number(CFG.trace_noise),
+      ignoreWhite: true,
+      method: "abutting",
+      fills: true,
+      strokes: false,
+      shapes: false,
+      autoGrouping: false,
+      gradients: false,
+    },
+  });
 
   push({
     id: "claim",
@@ -262,8 +289,16 @@ export function buildPlan(familyId: FamilyId, traceFails: boolean, docker: boole
     failed: false,
   });
 
-  const trace = ["vectorcraft-cli trace", `--input ${src}`, `--svg-out ${work}/traced.svg`, `--pdf-out ${work}/traced.pdf`];
-  if (family.traceExtra) trace.push(resolve(family.traceExtra, vars));
+  const trace = [
+    "vectorcraft-cli run",
+    `--in ${src}`,
+    "--cmd select.all",
+    "--cmd imageTrace.make",
+    `--params '${traceParams}'`,
+    "--cmd imageTrace.expand",
+    `--export ${work}/traced.svg`,
+    `--export ${work}/traced.pdf`,
+  ];
   push({
     id: "trace",
     module: "vectorcraft",
@@ -282,13 +317,18 @@ export function buildPlan(familyId: FamilyId, traceFails: boolean, docker: boole
       id: "fallback",
       module: "photocraft",
       title: "raster_fallback",
-      command: resolve(
-        "photocraft-cli --input {src} --trim-alpha false --target-dpi {fallback_dpi} --color-profile srgb --out-dir {work}/raster/",
-        vars,
-      ),
+      command: [
+        "photocraft-cli run",
+        src,
+        "--cmd image.imageSize",
+        `--params '{"resolution":${CFG.fallback_dpi},"resample":"lanczos"}'`,
+        "--cmd edit.convertToProfile",
+        `--params '{"profile":"srgb"}'`,
+        `--out ${work}/raster.png`,
+      ].join(" "),
       sandbox: sandboxFor("craft", docker),
       note: "Tier 1. trace_state becomes raster_fallback. Later steps receive the PNG as {art}.",
-      result: `exit 0 · fsync ${work}/raster/raster_600dpi.png`,
+      result: `exit 0 · fsync ${work}/raster.png`,
       failed: false,
     });
   }

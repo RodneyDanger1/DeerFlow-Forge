@@ -26,6 +26,9 @@ import photoBin from "../../../blueprint/files/deploy/craft-bin/photocraft-cli?r
 import designBin from "../../../blueprint/files/deploy/craft-bin/designcraft-cli?raw";
 import effectBin from "../../../blueprint/files/deploy/craft-bin/effectcraft-cli?raw";
 import filmBin from "../../../blueprint/files/deploy/craft-bin/filmcraft-cli?raw";
+import vectorLauncher from "../../../blueprint/files/deploy/craft-launchers/vectorcraft-cli?raw";
+import photoLauncher from "../../../blueprint/files/deploy/craft-launchers/photocraft-cli?raw";
+import craftExtensions from "../../../blueprint/files/deploy/deerflow-craft-extensions.example.json?raw";
 import conftest from "../../../blueprint/files/tests/conftest.py?raw";
 import craftStub from "../../../blueprint/files/tests/stubs/craft_stub.py?raw";
 import dockerignore from "../../../blueprint/files/.dockerignore?raw";
@@ -75,6 +78,9 @@ export const SOURCES: SourceFile[] = [
   { path: "deploy/craft-bin/designcraft-cli", group: "deploy", source: designBin },
   { path: "deploy/craft-bin/effectcraft-cli", group: "deploy", source: effectBin },
   { path: "deploy/craft-bin/filmcraft-cli", group: "deploy", source: filmBin },
+  { path: "deploy/craft-launchers/vectorcraft-cli", group: "deploy", source: vectorLauncher },
+  { path: "deploy/craft-launchers/photocraft-cli", group: "deploy", source: photoLauncher },
+  { path: "deploy/deerflow-craft-extensions.example.json", group: "deploy", source: craftExtensions },
   { path: ".dockerignore", group: "deploy", source: dockerignore },
   { path: "tests/conftest.py", group: "tests", source: conftest },
   { path: "tests/stubs/craft_stub.py", group: "tests", source: craftStub },

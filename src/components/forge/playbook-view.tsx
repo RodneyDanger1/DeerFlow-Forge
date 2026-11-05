@@ -238,12 +238,12 @@ set -a; . config/pipeline.env; set +a
             real font — tracing cannot repair diffusion-eroded text.
           </p>
         </div>
-        <pre className="overflow-x-auto border border-fg/10 p-3 font-mono text-xs leading-relaxed">{`# VectorCraft Image Trace, driven by CLI steps (Illustrator-compatible params)
-${'"'}{"command":"select.all"}},
-{"command":"imageTrace.make","params":{"params":{
-  "mode":"color","palette":"limited","colors":12,"paths":65,"corners":45,
-  "noise":16,"ignoreWhite":true,"method":"abutting","fills":true,"strokes":false}}},
-{"command":"imageTrace.expand"}
+        <pre className="overflow-x-auto border border-fg/10 p-3 font-mono text-xs leading-relaxed">{`# VectorCraft run contract (0.21.1) — measured, not the old invented "trace" subcommand
+vectorcraft-cli run --in <input.png> \
+  --cmd select.all \
+  --cmd imageTrace.make --params '{"params":{"mode":"color","palette":"limited","colors":12,"paths":65,"corners":45,"noise":16,"ignoreWhite":true,"method":"abutting","fills":true,"strokes":false,"shapes":false,"autoGrouping":false,"gradients":false}}' \
+  --cmd imageTrace.expand \
+  --export master.svg --export master.pdf
 
 # full production master (cutout -> trace -> retype -> 300 DPI canvas -> 10 checks)
 cd /opt/pod-pipeline
@@ -270,7 +270,7 @@ cd /opt/pod-pipeline
             <dd className="font-mono break-all">{ARTCRAFT_WORKFLOWS} · {IMAGINEER_TEMPLATES}</dd>
           </div>
           <div>
-            <dt className="font-mono text-muted">agent skills (22, DSH + Hermes)</dt>
+            <dt className="font-mono text-muted">agent skills (39, DSH + Hermes)</dt>
             <dd className="font-mono break-all">{SKILLS_DIR} · {SKILLS_RUNTIMES}</dd>
           </div>
         </dl>
@@ -281,7 +281,7 @@ cd /opt/pod-pipeline
           colour count, edge definition, hard alpha edges, transparent corners, retyped text present. A failed gate is
           a failed run. Full command atlas (918 commands in 64 groups), the execute-verified command/MCP playbook
           (VectorCraft 33 + PhotoCraft 26 MCP tools), 1,016 canonical tutorial URLs (18 pages fetched and read),
-          the seven core workflows plus apparel/embroidery/vectorising/ads/shipping-insert workflows, and the 22
+          the seven core workflows plus apparel/embroidery/vectorising/ads/shipping-insert workflows, and the 39
           agent skills in WORKFLOW_SKILLS live in the vault Art Learning folder; see 15-APPAREL-PRINT-MARKETING-WORKFLOWS.md,
           16-TUTORIAL-WAVE4.md, 17-CRAFT-COMMAND-PLAYBOOK.md, 18-KNOWLEDGE-MAP-AND-AUDIT.md, 19-SKILLS-QUALITY-AUDIT.md and 20-SKILLS-CATALOG.md.
         </p>

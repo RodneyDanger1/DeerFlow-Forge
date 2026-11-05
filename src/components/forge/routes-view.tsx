@@ -27,7 +27,7 @@ export function RoutesView({ family, onFamily }: { family: FamilyId; onFamily: (
                 <div className="flex flex-col gap-3 border-t border-fg/10 p-3">
                   <p className="text-sm">{item.blanks}</p>
                   <p className="font-mono text-xs text-muted">
-                    trace {item.traceExtra ? `+ ${item.traceExtra}` : "with no extra flags"} · upload {item.upload}
+                    trace {item.traceExtra ? `+ ${item.traceExtra}` : "with the measured vectorcraft-cli run contract"} · upload {item.upload}
                   </p>
                   <ol className="flex flex-col gap-3">
                     {item.steps.map((step, index) => (

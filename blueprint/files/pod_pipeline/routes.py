@@ -137,7 +137,7 @@ def _routes() -> dict[str, Route]:
                   "--out", "{work}/trimmed.png"),
                  ("{work}/trimmed.png",)),
             Step("effectcraft_distress", "effectcraft",
-                 ("effectcraft-cli", "--input", "{work}/apparel/trimmed.png",
+                 ("effectcraft-cli", "--input", "{work}/trimmed.png",
                   "--filter", "vintage_screen_300", "--output", "{build}/apparel_final.png"),
                  ("{build}/apparel_final.png",),
                  validators=(("png_with_alpha", "{build}/apparel_final.png"),)),
