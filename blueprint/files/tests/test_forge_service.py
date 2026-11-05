@@ -8,7 +8,7 @@ import time
 import unittest
 from http.client import HTTPConnection
 
-from forge_service import make_server
+from forge_service import ServiceConfigError, _parse_config, main, make_server
 
 
 class FakeRepo:
@@ -219,6 +219,31 @@ class Wave2ServiceTests(unittest.TestCase):
                 status, body = self._request(port, "POST", "/v1/episodes", case)
                 self.assertEqual(status, 400)
                 self.assertEqual(body["error"]["code"], "E_REQUEST_INVALID")
+
+
+class ServiceConfigTests(unittest.TestCase):
+    def test_valid_config(self):
+        cfg = _parse_config(["--dsn", "postgresql://x/y", "--port", "0"])
+        self.assertEqual(cfg["host"], "127.0.0.1")
+        self.assertEqual(cfg["port"], 0)
+        self.assertEqual(cfg["call_timeout_s"], 30.0)
+
+    def test_missing_dsn_is_named(self):
+        with self.assertRaises(ServiceConfigError):
+            _parse_config([])
+
+    def test_non_loopback_rejected(self):
+        with self.assertRaises(ServiceConfigError):
+            _parse_config(["--dsn", "postgresql://x/y", "--host", "0.0.0.0"])
+
+    def test_bad_port_and_timeout_rejected(self):
+        for argv in (["--dsn", "d", "--port", "70000"],
+                     ["--dsn", "d", "--call-timeout-s", "0"]):
+            with self.subTest(argv=argv), self.assertRaises(ServiceConfigError):
+                _parse_config(argv)
+
+    def test_main_without_dsn_exits_2(self):
+        self.assertEqual(main(["--dsn", ""]), 2)
 
 
 if __name__ == "__main__":

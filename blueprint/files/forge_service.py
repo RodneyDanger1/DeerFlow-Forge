@@ -14,10 +14,12 @@ Wave-2 contract (see docs/TRACE/2026-11-05/RUNTIME-FIXES-W2.md):
 """
 from __future__ import annotations
 
+import argparse
 import asyncio
 import concurrent.futures
 import json
 import logging
+import os
 import re
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -242,3 +244,79 @@ def serve(repo: ServiceRepo | None = None, *, repo_factory=None,
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     return server
+
+
+class ServiceConfigError(ValueError):
+    """Invalid daemon configuration; named so the CLI can exit 2."""
+
+    code = "E_SERVICE_CONFIG"
+
+
+def _parse_config(argv: list[str] | None = None) -> dict[str, Any]:
+    parser = argparse.ArgumentParser(
+        prog="forge_service",
+        description="Loopback-only Forge episode service over PostgreSQL.")
+    parser.add_argument("--dsn", default=os.environ.get("FORGE_DSN"),
+                        help="PostgreSQL DSN (default: FORGE_DSN); never printed")
+    parser.add_argument("--host", default="127.0.0.1",
+                        help="loopback host only: 127.0.0.1, ::1 or localhost")
+    parser.add_argument("--port", type=int, default=8092,
+                        help="TCP port 1..65535 (0 picks an ephemeral port)")
+    parser.add_argument("--call-timeout-s", type=float, default=30.0,
+                        help="per-repo-call timeout in seconds")
+    args = parser.parse_args(argv)
+    dsn = (args.dsn or "").strip()
+    if not dsn:
+        raise ServiceConfigError("--dsn or FORGE_DSN is required")
+    if args.host not in ("127.0.0.1", "::1", "localhost"):
+        raise ServiceConfigError("service must bind a loopback host")
+    if not 0 <= args.port <= 65535:
+        raise ServiceConfigError("--port must be 0..65535")
+    if not (args.call_timeout_s > 0):
+        raise ServiceConfigError("--call-timeout-s must be positive")
+    return {"dsn": dsn, "host": args.host, "port": args.port,
+            "call_timeout_s": args.call_timeout_s}
+
+
+def main(argv: list[str] | None = None) -> int:
+    """Run the Forge service against the real repository until interrupted."""
+    logging.basicConfig(level=logging.INFO,
+                        format="%(asctime)s %(levelname)s %(name)s %(message)s")
+    try:
+        cfg = _parse_config(argv)
+    except ServiceConfigError as exc:
+        log.error("E_SERVICE_CONFIG: %s", exc)
+        return 2
+
+    from forge_repo import ForgeRepo  # local import: DAEMON needs asyncpg, unit tests do not
+
+    async def factory() -> ForgeRepo:
+        return await ForgeRepo.connect(cfg["dsn"])
+
+    try:
+        server = serve(repo_factory=factory, host=cfg["host"], port=cfg["port"],
+                       call_timeout_s=cfg["call_timeout_s"])
+    except Exception:
+        log.exception("service failed to start")
+        return 1
+    log.info("forge service listening on http://%s:%s (loopback)",
+             cfg["host"], server.server_address[1])
+    try:
+        threading.Event().wait()
+    except KeyboardInterrupt:
+        log.info("shutdown requested")
+    finally:
+        server.shutdown()
+        server.server_close()
+        repo = getattr(server, "forge_repo", None)
+        loop = getattr(server, "forge_loop", None)
+        if repo is not None and loop is not None:
+            try:
+                loop.run(repo.close())
+            finally:
+                loop.stop()
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

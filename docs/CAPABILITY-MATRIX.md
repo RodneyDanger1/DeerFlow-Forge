@@ -16,14 +16,14 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | SQL invariants | **CAN** | 18/18 assertions; `SKIP LOCKED` 9 ms | 4 DB-dependent tests remain skipped without DSN |
 | Repository | **CAN** | 4/4 scratch-Postgres tests; expired lease requeues or abandons | no production DB/role |
 | Worker/lease reaper | **CAN** | 10/10 local worker/service tests; abandoned-at-max test | no supervised daemon |
-| Loopback service | **CAN** | 5/5 tests; real HTTP→repo→worker→reaper 2/2; health 200/503; cancellable timeout → `504 E_SERVICE_TIMEOUT`; idempotent replay `200 replayed:true`; strict POST validation | no TLS/auth; loopback only |
+| Loopback service | **CAN** | 5/5 tests; real HTTP→repo→worker→reaper 2/2; health 200/503; cancellable timeout → `504 E_SERVICE_TIMEOUT`; idempotent replay `200 replayed:true`; strict POST validation; runnable `python -m forge_service` daemon | no TLS/auth; loopback only |
 | Artifact verifier | **CAN** | 8/8 tests; real G0 pair passes; PNG-format and both-DPI checks; tamper/vacuous/failed/malformed refuse | no independent render/tile metrics |
 | Blind-critic contract | **CAN** | 14/14 tests; gate authoritative; invalid `human`/non-bool `gate_ok` refuse; disagreement→needs_human | **no vision model or accuracy measurement** |
 | Evaluation/promotion contract | **CAN** | 13/13 tests; Wilson LB; 3/3 refused; 8/8 candidate only with human; regressions refuse | proposal only; **no activation/learning claim** |
 | G0 real trace/retouch | **CAN** | independent staging reproduction; 22/22 hashes; 9/9 applicable | no production publish |
 | Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
 | Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes **6 skills** (`agent-learning-loop`, `craft-agent-operator`, `forge-harness-architect`, `harness-code-adapter`, `research-corpus-navigator`, `visual-verification-critic`) |
-| Local Forge e2e | **CAN** | full staging suite **165 pass/4 skip** with scratch PG + G0 (14.55 s); local Forge-only **111 pass/9 skip** | not production |
+| Local Forge e2e | **CAN** | full staging suite **170 pass/4 skip** with scratch PG + G0 (16.03 s); local Forge-only **116 pass/9 skip** | not production |
 
 ## 2. What it cannot do (do not claim)
 
@@ -57,7 +57,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Old claim | Current truth | Evidence |
 |---|---|---|
 | 207 JS tests (205/2) | **65/65** | `npm.cmd test` |
-| 31 pipeline tests | **165 pass/4 skip** current staging suite; **111 pass/9 skip** local Forge-only | scratch PG + G0 + `pytest`; see `GATE-FINAL-W2.md` |
+| 31 pipeline tests | **170 pass/4 skip** current staging suite; **116 pass/9 skip** local Forge-only | scratch PG + G0 + `pytest`; see `GATE-FINAL-W2.md` |
 | 131-file package | **179 source / 189 desktop package** | filesystem count |
 | Live VPS effect/publish E2E | **HISTORICAL, not reproducible** | EffectCraft absent; no production deploy/publish |
 | DeerFlow loads Forge tools | **UNVERIFIED/HISTORICAL** | registration not applied |

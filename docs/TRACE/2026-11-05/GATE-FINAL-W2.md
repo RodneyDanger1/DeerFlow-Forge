@@ -16,7 +16,7 @@ FORGE_G0_DIR=/opt/pod-pipeline-staging/data/staging/g0
 |---|---|
 | Before fixes | **3 failed**, 160 passed, 4 skipped |
 | After runtime fixes | 163 passed, 4 skipped |
-| After W3 transition/event fix | **165 passed, 4 skipped**, 25 warnings, 6 subtests passed, 15.11 s |
+| After W3 transition/event fix | **170 passed, 4 skipped**, 25 warnings, 8 subtests passed, 16.03 s |
 
 Failures found and fixed:
 
@@ -51,7 +51,7 @@ async gateway runner. No fake adapter was added.
 
 ## Local suite
 
-`python -m unittest discover -s tests -p 'test_forge_*.py'` → **111 passed, 9 skipped in 7.92 s**.
+`python -m unittest discover -s tests -p 'test_forge_*.py'` → **116 passed, 9 skipped in 6.51 s**.
 
 ## Console build and browser gate
 

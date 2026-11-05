@@ -1,238 +1,205 @@
-﻿# DeerFlow Forge
+# DeerFlow Forge
 
-An architecture console and deployable reference package for a **print-on-demand
-asset pipeline**: ingest → vector trace → raster/composite → grid + typography →
-effects → motion. It is designed to be orchestrated by **DeerFlow 2.2** and synced to a
-**Fourthwall** storefront; the local checkout and this session run the console/Forge code
-under **DeepSeek Harness**, and **DeerFlow registration is not applied**.
+**A local architecture console + a local Forge control plane + a deployable print-on-demand pipeline package.**
 
-The repository has two halves:
+DeerFlow Forge is three related things in one repository. It is **not** a production service today, and
+it does **not** currently execute Craft commands through its agent loop.
 
-| Path | What it is |
+| Part | What it is | What it is not |
+|---|---|---|
+| **Console** (`src/`, `public/`, `scripts/`, `server/`) | TanStack Start + Vite + React 19 viewer for the blueprint: Board, Routes, Sandbox, Playbook, Sources | No backend, no agent loop, no Craft execution. “Run route” is an animation. |
+| **Blueprint package** (`blueprint/files/`) | Python `pod_pipeline`, Postgres schemas, Docker/systemd/MCP assets, Craft CLI shims, tests | Not deployed; production Craft binaries and argv are not proven end-to-end |
+| **Forge local core** (`blueprint/files/forge_*.py`) | Gateway policy, Postgres DDL/repository, queue worker/reaper, loopback service, verifier, blind critic, eval/promotion contract | No production DB/service, no real executor wiring, no learning loop |
+
+**Date:** 2026-11-05 · **Production:** untouched · **DeerFlow MCP registration:** not applied.
+
+---
+
+## 1. Verified state
+
+These are commands that were run in this checkout/staging, not architectural intentions.
+
+| Gate | Result |
 |---|---|
-| `src/`, `public/`, `scripts/`, `server/` | The **console** — a TanStack Start + Vite + React 19 app that renders the blueprint: board, routes, sandbox, playbook, and source browser. |
-| `blueprint/files/` | The **deployable package** — Python `pod_pipeline`, Postgres schema, Docker Compose, systemd units, MCP bridge, craft CLI shims, and the real test suite (some integration tests require their named services). |
-| `attachments/` | The original provided pipeline modules the blueprint was fitted to (`config.py`, `db.py`, `fourthwall.py`, `orchestrator.py`, `routes.py`, `runner.py`, `worker.py`, `validators.py`, `logfilter.py`, `ingest.py`, `craft_stub.py`, `conftest.py`). |
-| `migrations/` | SQL migrations applied by `npm run build` when `DATABASE_URL` is set. |
-| `.grok/references/` | Workspace contract captured from the original sandbox — kept for traceability. |
+| Console tests | **65 passed, 0 failed, 0 skipped** (18 suites) |
+| `tsc --noEmit` | exit 0 |
+| Lint | **0 errors / 5 warnings** |
+| Console build | Vite `node-server` build succeeded; `.output/server/index.mjs` serves HTTP 200 |
+| Visual smoke | `ok:true`, zero failures; all five sections non-empty |
+| Playwright controls | **18/18** (tabs, five model radios, route run completes, sandbox `runner.py`, Copy→`Copied`, Download event, mobile 390×844, 34 source options, zero overflow, zero console errors) |
+| Keyboard/a11y | **8/8** (one h1, all controls named, 3 landmarks, 12/12 visible Tab stops, ≥40 px tap targets, zero runtime errors) |
+| Forge local tests | **116 passed, 9 skipped**, 6.51 s |
+| Forge staging suite | **170 passed, 4 skipped**, scratch PostgreSQL 16 + G0 bundle, 16.03 s |
+| Forge gateway | 33/33; role/root/allowlist/replay/verdict tests |
+| Forge SQL | 18/18 assertions + `SKIP LOCKED`; real Postgres |
+| G0 provenance | independently reproduced byte-identically; 22/22 hashes; 9/9 applicable gates |
 
-## Console
+Evidence: [`docs/TRACE/2026-11-05/GATE-FINAL-W2.md`](docs/TRACE/2026-11-05/GATE-FINAL-W2.md) and
+[`docs/CAPABILITY-MATRIX.md`](docs/CAPABILITY-MATRIX.md).
 
-```bash
-npm ci
-npm run dev        # http://localhost:8080
+---
+
+## 2. Architecture and real wiring
+
+```text
+Operator / browser
+      │
+      ▼
+Console (static React viewer) ── no HTTP calls ──► blueprint data in src/lib/blueprint/model.ts
+      │
+      │  (nothing)
+      ▼
+┌─────────────────────── Forge local core ───────────────────────┐
+│ forge_service.py  loopback HTTP: /healthz, /v1/episodes*      │
+│        │ repo factory (runnable: python -m forge_service)     │
+│        ▼                                                       │
+│ forge_repo.py  asyncpg: episodes, jobs, transitions, events    │
+│        ▲                                                       │
+│ forge_worker.py  python -m forge_worker --once (queue/reaper)  │
+│                                                                │
+│ forge_gateway.py  policy + InMemoryRepo + injected Executor    │
+│        │ NO Postgres adapter (W1)   NO real Craft executor     │
+│        ▼                                                       │
+│ forge_verifier.py / forge_critic.py / forge_eval.py            │
+│        └── pure contract libraries; no route/worker consumer   │
+└────────────────────────────────────────────────────────────────┘
+
+blueprint pod_pipeline / Craft CLIs ── separate from Forge service; production not wired
+DeerFlow runtime ── designed front door; MCP registration not applied
 ```
 
-Gates (run individually; current result):
+### Wired
 
-```bash
-npm run typecheck  # exit 0
-npm run lint       # exit 0, 0 errors / 5 pre-existing warnings
-npm run test       # 65/65
-npm run build      # vite build, then db:migrate (skips without DATABASE_URL)
-```
+- **Console → static model:** tabs/controls render from `src/lib/blueprint/model.ts` and `sources.ts`.
+- **Service → repository:** `make_server(repo_factory=…)` and `python -m forge_service` construct
+  `ForgeRepo` on the service event loop; the daemon refuses non-loopback binds.
+- **Worker → repository:** `python -m forge_worker --once` claims jobs, runs a handler, finishes
+  guarded, and reaps expired leases through `ForgeRepo`.
+- **Gateway → policy:** registry, role allowlist, root containment, idempotency key, verdict ladder and
+  `InMemoryRepo` are tested as a unit.
+- **Verifier/critic/eval → tests:** artifact hash/format/dimensions/DPI, blind-critic schema, and Wilson
+  promotion decisions are covered by tests.
+- **G0 artifacts → local evidence:** trace/retouch artifacts and gate reports are verified locally.
 
-The console is a **pure viewer**: `src/lib/blueprint/sources.ts` imports the
-pipeline files with Vite's `?raw`, so the built app has no runtime filesystem
-dependency. That makes it cheap to host anywhere Node runs.
+### Not wired
 
-### Self-hosting on a VPS (not Vercel)
+| Seam | Evidence | Consequence |
+|---|---|---|
+| Gateway → Postgres `Repo` | `forge_gateway.py` `Repo` is sync and returns only `ToolResult`; `forge_tool_call` needs `episode_id`, `tool_id`, `params` | tool-call idempotency is in-memory only; **W1 blocked pending API decision** |
+| Gateway → real Craft executor | `Executor` is injected; no production executor module | gateway cannot execute Craft commands |
+| Verifier/critic/eval → service/worker | contract modules have no route, queue consumer or repo writer | verification/critique/eval are callable libraries, not an automated pipeline |
+| Console → agent/service | console has no API client or agent loop | UI is a viewer only |
+| `pod_pipeline` → real Craft CLI | `/opt/pod-pipeline/bin/*-cli` may be stubs; real binaries live under `/opt/craft` | production pipeline is not proven end-to-end |
+| DeerFlow → Forge | registration not applied | no DeerFlow-hosted Forge tools |
+| Eval → learning loop | no retrieval/A-B/promotion activation/rollback | learning claim remains **L0** |
 
-The build defaults to Nitro's `vercel` preset. For a plain Node host:
+---
 
-```bash
-NITRO_PRESET=node-server npm run build
-PORT=8090 HOST=127.0.0.1 node .output/server/index.mjs
-```
+## 3. Repository map
 
-Put Caddy/nginx in front of it, or reach it through an SSH tunnel. No secrets
-are required to serve the console; `VITE_AUTH_ENABLED` is a build-time flag
-(`.grok/app-env.json`) and stays `false` outside the Grok platform.
-
-
-## Pipeline (VPS)
-
-`blueprint/files/` is the deployable unit. Required configuration lives in
-`blueprint/files/config/pipeline.env.example`:
-
-| Variable | Meaning |
+| Path | Purpose |
 |---|---|
-| `DATABASE_URL`, `POD_DB_PASS` | Postgres connection (Compose file provisions `postgres:16`) |
-| `POD_CREDENTIAL_KEY` | At-rest credential encryption key |
-| `FW_API_USER`, `FW_API_SECRET` | Fourthwall Open API credentials |
-| `POD_USE_DOCKER`, `POD_DOCKER_IMAGE` | Run craft steps in the sandboxed runner image |
-| `POD_MCP_HOST`, `POD_MCP_PORT` | MCP server bind address (default `127.0.0.1:8765`) |
+| `src/components/forge/` | Seven console components: shell, board, routes, sandbox, playbook, sources, copy/download |
+| `src/lib/blueprint/` | Model, sources registry, clipboard fallback; the console’s only data source |
+| `scripts/` | Build/test/visual smoke helpers (`visual-console-smoke.mjs`, `browser-smoke.mjs`) |
+| `blueprint/files/pod_pipeline/` | Existing deterministic print pipeline |
+| `blueprint/files/forge_gateway.py` | Typed tool gateway, policy checks, idempotency key, verdict helpers |
+| `blueprint/files/forge_repo.py` | Async PostgreSQL repository; episodes, jobs, transitions, events |
+| `blueprint/files/forge_worker.py` | Queue worker, `LeaseReaper`, `--once` CLI |
+| `blueprint/files/forge_service.py` | Loopback HTTP service + daemon entry point |
+| `blueprint/files/forge_verifier.py` | Artifact existence/SHA-256/PNG/dimensions/DPI + gate-report verification |
+| `blueprint/files/forge_critic.py` | Blind-critic schema, evidence combination, gate/critic/human resolver |
+| `blueprint/files/forge_eval.py` | Wilson lower bound, golden evaluation, promotion proposal (inactive) |
+| `blueprint/files/sql/schema_forge.sql` | 13-table Forge DDL, state functions, hash-chained events |
+| `blueprint/files/tests/` | Unit, real-Postgres, gateway, service, worker, verifier, critic, eval tests |
+| `docs/` | Current capability matrix, plan continuation, TRACE evidence |
+| `research/eko-deerflow-agent/` | Research corpus, G0 evidence, historical execution waves (do not read as current state) |
 
-Deploy:
+---
 
-```bash
-cd blueprint/files/deploy
-./setup-pipeline.sh          # validates env, applies schema, installs units
-docker compose up -d postgres
-```
+## 4. What it can and cannot do
 
-### Craft binaries
+### Can
 
-`deploy/craft-launchers/vectorcraft-cli` and `photocraft-cli` are pinned absolute launchers for the
-installed 0.21.1 / 0.20.2 binaries; `setup-pipeline.sh` installs them. `deploy/craft-bin/*-cli` are
-named refusals for the absent DesignCraft/EffectCraft/FilmCraft engines. The pipeline fails with
-`E_TOOL_NOT_INSTALLED` rather than fabricating output. `tests/stubs/craft_stub.py` is the contract
-double, not a production tool.
+- Render a five-tab blueprint console, navigate keyboard-only, copy/download source text, switch five
+  product models, and play the documented route animation.
+- Validate Forge tool policy (unknown tool, role denial, root escape, duplicate idempotency key).
+- Create/read episodes through a loopback service over real PostgreSQL; replay duplicate episode keys
+  with `200 replayed:true`; return named 400/404/500/503/504 errors.
+- Claim/finish jobs, requeue or abandon expired leases, and run the worker from a CLI.
+- Verify PNG artifacts by SHA-256, format, dimensions and both DPI axes; combine gate/critic/human
+  evidence into a named verdict; compute Wilson lower bounds and refuse unsupported promotion.
+- Reproduce the G0 trace/retouch artifact evidence locally on scratch infrastructure.
 
-## MCP integration with DeerFlow
+### Cannot / do not claim
 
-`deploy/mcp-stdio.mjs` bridges DeerFlow's stdio MCP transport to the pipeline's
-HTTP MCP server. It exposes three tools:
+- Production Forge DB, service unit, TLS/auth, deploy, or restore drill.
+- Full Craft execution through Forge or the service; no real executor is wired.
+- DeerFlow MCP registration or a DeerFlow-hosted agent loop.
+- Publish to Fourthwall; no approval queue or templates configured.
+- DesignCraft/EffectCraft/FilmCraft; they are absent.
+- Vision-critic accuracy (no model run) or learning L1/L2/L3/L4 (no retrieval/A-B/promotion/rollback).
+- Native GUI/CUA capture; no desktop bridge is available.
+- All 918 Craft commands; only measured VectorCraft/PhotoCraft contracts and 33/26 MCP tools are known.
+- `pod_pipeline` production argv/CLI is proven; the real binaries and shims are separate.
 
-- `list_pending_assets`
-- `trigger_pipeline_job`
-- `get_fourthwall_status`
+---
 
-Run the pipeline MCP server on the VPS, then register it in DeerFlow's
-`extensions_config.json` as an MCP server (`type: "http"`, url
-`http://host.docker.internal:8765/`) or use the stdio bridge inside the container.
+## 5. Run it
 
-## Forge local core (not deployed)
+```powershell
+# console
+npm.cmd test
+npm.cmd run typecheck
+npm.cmd run lint
+$env:NITRO_PRESET='node-server'; cmd /c "npm.cmd run build"
+node .output/server/index.mjs            # PORT defaults to 8092; serve locally
+node scripts/visual-console-smoke.mjs http://127.0.0.1:8092
 
-See `docs/CAPABILITY-MATRIX.md` for the current can/cannot/unverified matrix and the truth corrections.
-
-`blueprint/files/` also contains the local Forge control-plane modules:
-
-| Module | Current capability |
-|---|---|
-| `forge_gateway.py` | typed tool-call policy, role/cmd allowlist, roots, idempotency, refusal classification |
-| `sql/schema_forge.sql` | 13 tables / 36 transitions; apply-twice + 18 SQL assertions on scratch PostgreSQL 16 |
-| `forge_repo.py` | asyncpg repository, job lease/finish, abandoned-after-max-attempts requeue |
-| `forge_worker.py` | one claim → handler → truthful finish; bounded `LeaseReaper` |
-| `forge_service.py` | loopback HTTP `/healthz`, create/get episode; repository health is required |
-| `forge_verifier.py` | artifact SHA/IHDR/DPI + gate-report parser; fail-closed verdicts |
-| `forge_critic.py` | blind-critic schema + gate/critic/human resolver (gate authoritative) |
-| `forge_eval.py` | Wilson lower bound + golden eval + promotion **proposal** (never activates) |
-
-None of these are installed as services; there is no production `forge` database, systemd unit, TLS,
-auth, or learning loop. The Run route in the console is a blueprint visualization, not execution.
-
-## Verification
-
-```bash
-# Console (Node 22+)
-npm run typecheck && npm run lint && npm test && npm run build
-
-# Pipeline (pure tests: no database needed)
+# Forge local tests (no DB)
 cd blueprint/files
-uv run --python 3.12 --with pytest --with pytest-asyncio --with asyncpg \
-  --with httpx --with pillow -- python -m pytest tests/ -q \
-  -k "not integration"
+python -m unittest discover -s tests -p 'test_forge_*.py'
 
-# Pipeline (integration: real PostgreSQL + Craft CLI stubs)
-TEST_DATABASE_URL=postgresql://pod_app:<pass>@127.0.0.1:5432/pod_test \
-  .venv/bin/python -m pytest tests/ -q
+# real-DB staging (separate PostgreSQL 16; never point at production)
+$env:FORGE_TEST_DSN='postgresql://postgres:scratch@127.0.0.1:55439/postgres'
+pytest tests -q
 
-# Visual/forensic smoke: real Chrome, both viewports, screenshots in screenshots/
-npm run build:vps
-PORT=8090 node .output/server/index.mjs &
-node scripts/visual-console-smoke.mjs http://127.0.0.1:8090
+# runnable Forge service (loopback only; real DB required)
+$env:FORGE_DSN='postgresql://forge:...@127.0.0.1:5432/forge'
+python -m forge_service --port 8092
+
+# worker, once
+python -m forge_worker --once --dsn $env:FORGE_DSN --handler my.module:handle
 ```
 
-`npm run build:vps` clears preset-sensitive build caches before building with
-the `node-server` Nitro preset. Skipping that is a real defect: `node_modules/.nitro`
-keeps the previous client manifest, so the SSR HTML can reference a CSS file the
-build never wrote (observed as a 404 on `/assets/styles-*.css` and an unstyled
-page). CSS now uses a deterministic `assets/styles.css` name because Vite's
-client and SSR passes minify it differently and would otherwise hash it
-inconsistently.
+The service refuses non-loopback hosts. Secrets are read from `FORGE_DSN`/environment and are never
+printed by the daemon.
 
-## Deployment (VPS)
+---
 
-Both halves run on one host and never touch each other's services.
+## 6. Current plan and next steps
 
-```bash
-# Console: loopback on 127.0.0.1:8091, systemd unit, private Node 22 install
-sudo git clone https://github.com/RodneyDanger1/DeerFlow-Forge /opt/deerflow-forge
-sudo bash /opt/deerflow-forge/deploy/vps/install-console.sh
+The decision-complete plan is [`docs/PLAN-CONTINUATION.md`](docs/PLAN-CONTINUATION.md). Short form:
 
-# Pipeline: /opt/pod-pipeline + Postgres container + MCP + worker timer
-sudo cp -a /opt/deerflow-forge/blueprint/files/. /opt/pod-pipeline/
-sudo bash /opt/pod-pipeline/deploy/setup-pipeline.sh
-```
+1. **W1 — tool-call idempotency persistence (next).** Decide the API change: extend `ToolResult` with
+   episode/tool/params and make `Gateway`/`Repo` async, then add `ForgeGatewayRepo` and a real-DB
+   duplicate-call test. Rejected alternative: a sync adapter over the async pool.
+2. **W5 — eval persistence.** `forge_eval.py` returns a proposal but writes no `forge_eval` row.
+3. **Executor seam.** Add a registered, absolute-path Craft executor behind `Executor`; no fake success.
+4. **Consumer seam.** Wire verifier/critic/eval into a worker job or service route with evidence rows.
+5. **Production hardening.** systemd, TLS/auth, migration/rollback, backup/restore drill, supervised
+   reaper, DeerFlow registration.
+6. **Learning.** Only after 1–5: episode retrieval, A/B, promotion/rollback; otherwise remain L0.
 
-`setup-pipeline.sh` refuses to install `docker.io` over a running engine, skips
-the craft-runner image unless `POD_USE_DOCKER=1`, and pins Python 3.12 through
-`uv` when available (Ubuntu 26.04's 3.14 has no asyncpg/Pillow wheels yet).
+---
 
-Reach the console through an SSH tunnel:
+## 7. Evidence discipline
 
-```bash
-ssh -N -L 8091:127.0.0.1:8091 root@<vps>
-# then open http://localhost:8091
-```
+- `VERIFIED` = command/output or fetched primary source.
+- `READ` = source/document inspected, not executed.
+- `INFERRED` = reasoned from code; no run.
+- `UNVERIFIED` = no evidence; say what would settle it.
+- `HISTORICAL` = true earlier, not current.
 
-To let DeerFlow drive the pipeline, register the MCP server in DeerFlow's
-`extensions_config.json`:
-
-```json
-{"mcpServers": {"forge": {"enabled": true, "type": "http",
-  "url": "http://172.17.0.1:8765/",
-  "description": "DeerFlow Forge pod pipeline",
-  "session_init_timeout": 30, "tool_call_timeout": 120}}}
-```
-
-Networking notes learned on a real host:
-
-- The gateway container sits on its own bridge (e.g. `192.168.200.0/24`), so its
-  gateway IP is reachable but a service bound only to `127.0.0.1` is not.
-- With `ufw` active, container-to-host traffic is dropped unless the Docker
-  source ranges are allowed explicitly (published ports bypass this via DNAT,
-  host sockets do not):
-
-  ```bash
-  ufw allow from 172.16.0.0/12 to any port 8765 proto tcp
-  ufw allow from 192.168.200.0/24 to any port 8765 proto tcp   # deer-flow-dev bridge
-  ```
-
-- Bind `POD_MCP_HOST=0.0.0.0` and rely on those rules; verify from **outside**
-  the host that the port stays closed.
-
-The pipeline exposes `list_pending_assets`, `trigger_pipeline_job`, and
-`get_fourthwall_status`; `deploy/mcp-stdio.mjs` is a stdio bridge that mirrors
-the client's framing (newline-delimited or Content-Length).
-
-## Status
-
-**Current verified state (2026-11-05, this checkout):**
-
-- Console: `npm test` **65/65**, `tsc --noEmit` clean, lint **0 errors / 5 warnings**, rebuilt with the
-  `node-server` preset; Chrome visual smoke passes all five sections at desktop and phone widths with
-  **0 console errors, 0 failed requests, 0 horizontal overflow**. A Playwright control probe passes
-  **18/18** checks (tabs, model radios, run completion, sandbox open, Copy→`Copied`, Download event,
-  mobile select) and a keyboard/a11y probe passes **8/8** (one h1, named controls, landmarks,
-  12/12 visible Tab stops, no overflow, ≥40 px tap targets, zero runtime errors).
-- Pipeline/Forge staging suite: **165 passed, 4 skipped** on a throwaway PostgreSQL 16 container with
-  the G0 bundle mounted (14.55 s). The 4 skips are DB-dependent tests outside the Forge scratch DSN.
-  Local Forge-only discovery: **111 passed, 9 skipped**.
-- Forge local: gateway **33/33**; SQL **18/18** plus `SKIP LOCKED`; repository **4/4**; service **5/5**;
-  verifier **8/8**; blind-critic contract **14/14**; real HTTP→repo→worker→reaper **2/2**.
-  Wave-2 fixes add cancellable service timeout (`504 E_SERVICE_TIMEOUT`), idempotent replay
-  (`200 replayed:true`), `E_REPO_SHAPE` instead of silent 404, strict POST validation, guarded
-  `finish_job`, and `python -m forge_worker --once`. Evidence: `docs/TRACE/2026-11-05/GATE-FINAL-W2.md`.
-- G0: independent verifier reproduced trace/retouch artifacts byte-identically; **9/9 applicable**
-  gates on the regenerated trace report.
-- DeerFlow MCP registration: **not applied**. No production `forge` DB, service, or storefront
-  publish exists.
-
-**Historical claims corrected:** earlier revisions claimed 207 JS tests (205 pass/2 skipped), 31
-pipeline tests, a live VPS effect/publish E2E, DeerFlow client loading the Forge tools, and enabled
-systemd units. Those are **HISTORICAL and not current evidence**. EffectCraft is absent and publish
-templates are unset, so a full effect→publish E2E cannot be claimed from this checkout.
-
-Windows-specific fixes in this tree: the Vite env-wrapper resolves npm `.cmd`
-shims, the build script re-invokes npm through `npm_execpath`, the test script
-globs correctly under `cmd`, and symlink-dependent tests skip when Developer
-Mode is unavailable.
-
-Known gaps before real pipeline traffic: absent DesignCraft/EffectCraft/FilmCraft engines (named
-refusals in `craft-bin/*-cli`), Fourthwall credentials, `fourthwall_template_id` values in
-`config/products.json`, and no approved production deployment. Until those exist the pipeline
-refuses at the publish step with a named error rather than pretending to publish.
-
-
+Historical execution-wave files retain their original claims; the current-status answer is
+`docs/CAPABILITY-MATRIX.md`, `docs/PLAN-CONTINUATION.md`, and the latest TRACE gate report.

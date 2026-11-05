@@ -1,109 +1,98 @@
-﻿# Plan continuation — 2026-11-05
+# Plan continuation — DeerFlow Forge (2026-11-05)
 
-**Read first:** `research/eko-deerflow-agent/README.md`, `GOALS.md`, `ARCHITECTURE.md`,
-`execution-wave/09-GOAL-GAP-PLAN.md`, `execution-wave/11-G0-EVIDENCE.md`, `docs/TRACE/03-fixes.md`.
+**Status:** wave-2 closeout complete for runtime, worker, verifier/critic/eval guards, service
+entry point, console browser gates, and authoritative docs. **No production deployment.** Next
+implementation is W1, blocked on an API decision documented below.
 
-## Status
+Verified by command (not prose): console **65/65**; Forge local **116 passed / 9 skipped**; staging
+**170 passed / 4 skipped** on scratch PostgreSQL 16 + G0; gateway **33/33**; SQL **18/18**; browser
+controls **18/18**; keyboard/a11y **8/8**. Full receipts: `docs/TRACE/2026-11-05/GATE-FINAL-W2.md`
+and `docs/CAPABILITY-MATRIX.md`.
 
-| Step | Status |
+## Outcome
+
+The next increment makes Forge tool calls durable and replay-safe across process restarts. Today the
+gateway can compute and honour an idempotency key only inside an `InMemoryRepo`; the PostgreSQL table
+exists but no adapter writes it. After W1, a caller that loses a response can reissue the same call and
+receive the stored result without re-executing the tool, and the service/worker can prove that with a
+real-DB duplicate-call test.
+
+## Current behavior (evidence)
+
+- Service: `forge_service.py` exposes `/healthz`, create/get episode; strict request validation;
+  timeout → 504; duplicate episode → 200 replay; `python -m forge_service` constructs `ForgeRepo` on
+  the service loop and refuses non-loopback binds.
+- Repository: `forge_repo.py` creates/gets episodes, transitions with exactly one event append,
+  claims/finishes jobs, reaps expired leases. `transition`/`append_event` use `SELECT * FROM fn(...)`.
+- Worker: `python -m forge_worker --once` with guarded finish and named errors.
+- Gateway: `Gateway.execute()` is synchronous and uses `Repo.find/store`; the only implementation is
+  `InMemoryRepo`. `forge_tool_call` exists in `sql/schema_forge.sql` with a unique key and
+  `forge_replay_tool_call(p_key)`.
+- Verifier/critic/eval: pure functions with tests; no service/worker route or row writer.
+- Console: static viewer; no HTTP client to Forge. Browser controls and a11y are verified.
+
+## Decisions
+
+1. **W1 API — accepted direction:** extend `ToolResult` with `episode_id`, `tool_id` and normalized
+   `params`; make `Gateway.execute` and `Repo.find/store` async; implement `ForgeGatewayRepo` over
+   `asyncpg`; keep `InMemoryRepo` as a classified test double.
+   *Rejected:* a synchronous wrapper around the async pool (two execution paths, unsafe loop use) and
+   writing tool calls after execution without an atomic pre-write marker (replay can duplicate effects).
+2. **W1 persistence point:** insert an `in_flight` row before executor invocation, then update to
+   `succeeded|failed|refused`; a duplicate key while `in_flight` returns a named retryable refusal,
+   not a fake result. This preserves once-only execution under concurrent callers.
+3. **Service remains loopback-only.** No auth/TLS claim until W8.
+4. **Console remains a viewer.** Do not add a fake run/backend control.
+5. **No learning claim.** W4-B remains out of scope until verification and eval persistence exist.
+
+## File-by-file change for W1
+
+| File | Change | Edge cases / errors |
+|---|---|---|
+| `blueprint/files/forge_gateway.py` | `ToolResult` gains episode/tool/params; `Repo` and `Gateway.execute` become async; `execute` validates context before lookup; preserve all named refusals | empty episode/tool, bad key, duplicate in-flight, executor timeout, store conflict |
+| `blueprint/files/forge_repo.py` | New `ForgeGatewayRepo` adapter with async `find`/`store`; SQL uses `forge_tool_call` and `forge_replay_tool_call`; JSON params bounded | `23505` on same key, shape errors, 65,536-byte params limit |
+| `blueprint/files/forge_service.py` | Add `/v1/tool-calls` POST only if the gateway has a real caller; otherwise W1 remains library-level | 400 boundary, 409 in-flight, 200 replay, 504 timeout |
+| `blueprint/files/tests/test_forge_gateway.py` | Convert awaited calls; add async duplicate, in-flight, executor-not-called-on-replay tests | no test weakening; `InMemoryRepo` remains a test double |
+| `blueprint/files/tests/test_forge_repo.py` | Real-DB test: first store → second find returns same result; unique key enforced; row state transitions | scratch DSN only; skip explicitly without `FORGE_TEST_DSN` |
+
+**Rollback:** revert the W1 commit; `InMemoryRepo` path remains; DDL is unchanged; no data migration.
+**Acceptance command:** `FORGE_TEST_DSN=... python -m pytest tests/test_forge_gateway.py
+tests/test_forge_repo.py -q` plus full staging suite; all green with named skips.
+**Out of scope:** real Craft executor, production auth/TLS, DeerFlow registration, publish.
+
+## Done — crossed off
+
+| Item | Evidence |
 |---|---|
-| W0 docs integrity | done |
-| W1-A launcher/argv/preflight/mutation/gate truth | done on staging; **historical** W1-A gate: 53 pass/4 skip |
-| W1-B Craft MCP direct proof | done: 33/26 tools + PhotoCraft `command_batch` |
-| W1-B DeerFlow registration | not applied |
-| G0 real trace/retouch | passed on staging; Lead-run |
-| W1-C skill guidance | **DONE** — 39/39, both runtimes; guidance only |
-| Independent W1-C/console review | **PASS** (`13-INDEPENDENT-REVIEW`) |
-| Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
-| G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
-| G0 provenance | **CLOSED independently** (`16-G0-PROVENANCE.md`): fresh staging-only run reproduced artifacts byte-identically |
-| W2 Forge service/DDL/queue | **W2 local gate PASS**; current full suite **165 pass/4 skip**; 18/18 SQL; real HTTP→repo→worker→reaper e2e. No production deploy |
-| W2b worker CLI + guarded finish | **DONE**: `python -m forge_worker --once`; 12 CLI + 6 worker tests; explicit SQL skip without DSN |
-| Wave-2 runtime defects D1/D2/D6/D7 | **DONE**: cancellable timeout→504, replay→200, `E_REPO_SHAPE`, strict POST validation; staging green |
-| UI/agent bug audit | **DONE for tested surfaces**: copy fallback, health 503, verifier malformed check, reaper abandoned; **18/18** control + **8/8** a11y browser checks; 165 pass/4 skip |
-| W3-A verifier | **DONE**: 8/8 tests; real G0 pair passes; PNG + both-DPI checks; staging 165 pass/4 skip |
-| W3 transition-event ownership | **CLOSED**: `SELECT * FROM` composite fix; exactly one `episode.transition` event asserted on real PostgreSQL |
-| W3-B critic | **DONE (contract)**: 14/14 blind-critic tests; gate authoritative; invalid human/gate refuse; no model claim |
-| W4-A eval/promotion | **DONE (contract)**: 13/13 tests; duplicate goldens refuse; 3/3 refused, 8/8 candidate only with human; no activation/learning claim |
-| W4-B learning loop | not started |
+| Console viewer + copy/download + mobile | 65/65; visual smoke; 18/18 controls; 8/8 a11y |
+| Forge DDL, 13 tables/36 transitions, apply-twice | 18/18 SQL; scratch PG |
+| Repository episode/job/lease/abandon path | real-PG tests; W3 event-count pin |
+| Worker CLI + guarded finish + reaper | 12 CLI + worker tests; staging green |
+| Service create/get/health + timeout/replay/shape/validation | service tests + e2e; **service daemon entry point** |
+| Gateway policy/idempotency/verdict | 33/33 (in-memory) |
+| Verifier PNG/SHA/DPI/gate report | 8/8 + real G0 pair |
+| Blind critic contract | 14/14; invalid human/gate refused |
+| Eval/promotion contract | 13/13; duplicate/sanity refusals; inactive proposal |
+| G0 provenance | independent byte-identical reproduction; 9/9 gates |
+| Truth audit / docs corrections | README, CAPABILITY-MATRIX, this plan; historical docs labelled |
+| Wave-2 RED→GREEN + full staging | 170/4 |
 
-## Decision
+## Next steps in order
 
-G0 is closed: artifact consistency PASS and independent provenance PASS. W2 is closed **locally**
-(gateway, DDL, repository, worker, loopback service; no production DB or deploy), with the wave-2
-runtime/worker fixes verified on staging. W3-A verifier, W3-B critic contract and W3 transition-event ownership are local and tested.
-The rebuilt console passes the real browser control and a11y gates
-(`docs/TRACE/2026-11-05/GATE-FINAL-W2.md`). Production cutover, a supervised service, DeerFlow MCP
-registration, W1 idempotency persistence, W5 eval persistence and any learning claim remain blocked/unverified.
+1. **W1** per the decision above — real-DB duplicate-call proof.
+2. **W5 eval persistence** — write `forge_eval` rows from a consumer; schema exists, no writer.
+3. **Executor seam** — registered absolute-path Craft executor; prove a real trace/retouch path and
+   reject absent engines by name.
+4. **Consumer seam** — verifier/critic/eval called by worker/service with persisted evidence.
+5. **W7 clean-env deps** — verify `asyncpg`/`Pillow` from a clean install, not an ambient venv.
+6. **W8 production hardening** — systemd, loopback+TLS/auth, migration/rollback, backup/restore drill.
+7. **DeerFlow registration** — apply only after the executor/consumer seams are real.
+8. **Learning** — retrieval/A-B/promotion/rollback after 1–7; otherwise stay L0.
 
-**Current next step is the W1 API decision below**, then W5 eval persistence. Do not claim W1/W5 closed
-until each lands with a real-DB test. W3 is closed by the event-count test. Full staging is
-**165 passed, 4 skipped**; local Forge-only is **111 passed, 9 skipped**.
+## Blockers / not claimed
 
-Historical note: earlier text in this file instructed “do not start W2” until provenance was
-independently closed. That condition was satisfied by `16-G0-PROVENANCE.md`; the instruction is
-superseded and retained only in history.
-
-## Historical W1-C scope (completed; kept for audit)
-
-**Goal:** patch only skills whose guidance still contradicts Phase 0 or omits a safety boundary.
-
-**Files:**
-- `blueprint/files/skills/forge-harness-architect/SKILL.md` — promotion rule is stale (3/3).
-- `blueprint/files/skills/craft-mcp-drive/SKILL.md` — await dependent MCP calls; interleaving.
-- `blueprint/files/skills/apparel-print-master/SKILL.md` — bind approval to artifact SHA-256.
-- `blueprint/files/skills/craft-agent-operator/SKILL.md` — already has evidence/preflight; no rewrite.
-- `blueprint/files/skills/harness-code-adapter/SKILL.md` — already has donor provenance; no rewrite.
-
-**Not goal:** runtime code, new skills, renaming installed skills, claiming behavior is enforced.
-
-**Verify:** `validate_skills.py` → 39/39; `check_skill_commands.py` → 0 unknown; install both runtimes;
-then run a fresh verifier on local tests and G0 evidence (VPS access is a known verifier limitation).
-
----
-
----
-
-## Wiring gaps — current position (2026-11-05, wave 2 closeout)
-
-Source: `docs/TRACE/2026-11-05/PLAN-WIRING-AUDIT.md` and `GATE-FINAL-W2.md`.
-
-Closed in this wave:
-
-- **W2 worker entry point:** `python -m forge_worker --once` (`--lease-s`, `--worker-id`, `--dsn`,
-  `--handler module:async_callable`), bounded one-line JSON errors, exit 0/1/2.
-- **W2b guarded finish (D3):** `FinishRefused` for `E_JOB_STATE`/`E_PARAM_REJECTED`/`E_TIMEOUT`;
-  other driver errors become `E_REPO`; no swallowed finish.
-- **W3 transition-event ownership:** `forge_repo.transition()` and `append_event()` used
-  `SELECT fn(...)`, returning a single composite column that `_row()` correctly refused. Changed to
-  `SELECT * FROM fn(...)`. A real-PostgreSQL test now asserts exactly one `episode.transition` event
-  with `from=intake`, `to=briefed`. **W3 CLOSED.**
-- **W6 SQL invariants:** `tests/test_forge_sql.py` collects the existing assertion + SKIP LOCKED
-  scripts and skips explicitly without `FORGE_TEST_DSN`; `pytest.ini` registers `sql_integration`.
-
-Next step — **W1 tool-call idempotency persistence is blocked by a contract mismatch, not by time**:
-
-- `forge_gateway.py:241-243`: `Repo.find(key) -> ToolResult | None` / `store(key, result)` is
-  synchronous and carries no episode/tool/params context.
-- `schema_forge.sql:324-351`: `forge_tool_call` requires `episode_id`, `tool_id`, `params`, and a
-  constraint-valid `sha256:...` key; `forge_replay_tool_call(p_key)` already exists.
-- A sync adapter cannot safely use the async `asyncpg` pool.
-
-Decision (implement one, with a real-DB duplicate-call test):
-
-1. **Preferred:** extend `ToolResult` with `episode_id`, `tool_id`, `params`; make `Gateway.execute`
-   and `Repo` async; add `ForgeGatewayRepo` over `asyncpg`; keep `InMemoryRepo` as a classified test
-   double. This changes the gateway API and every caller/test in one deliberate commit.
-2. Alternative: keep the sync gateway and add an async `execute_async` wrapper that owns persistence;
-   rejected unless a caller proves it needs sync execution, because it duplicates the execution path.
-
-Remaining, in order:
-
-1. **W1** as decided above.
-2. **W5 eval persistence** — `forge_eval.py` is a pure decision function; no `forge_eval` row writer.
-3. **W7 clean-env deps** — `asyncpg` and `Pillow` are present; validate a clean install in CI.
-4. **W8 service auth** — owned by the existing security plan; service is loopback-only today.
-
-Do not claim W1/W5 closed until their owning task lands with a real-DB test. Do not claim full Craft
-execution, production service, DeerFlow registration, publish, vision-critic accuracy, or learning
-above L0.
+- No production `forge` DB, service unit, TLS/auth, deploy, or publish.
+- No real executor; gateway cannot run Craft today.
+- No verifier/critic/eval consumer; they are libraries.
+- No DeerFlow MCP registration; no native GUI/CUA bridge.
+- 4 staging skips require their named services; vision accuracy and learning above L0 unmeasured.
