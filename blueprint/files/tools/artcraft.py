@@ -30,6 +30,7 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 from skimage import color as skcolor
 from skimage import exposure, filters, measure, morphology, restoration
+from skimage.metrics import structural_similarity as ssim_fn
 from scipy.cluster.vq import kmeans2
 
 from tools.prep_print_art import drop_small_components
@@ -92,7 +93,6 @@ def deblur_and_restore(rgb: np.ndarray, alpha: np.ndarray, args: argparse.Namesp
 
 def flatten_layers(rgb: np.ndarray, alpha: np.ndarray, args: argparse.Namespace) -> np.ndarray:
     """Bilateral denoise + Lab k-means + per-colour morphological cleanup."""
-    smooth = filters.rank.mean  # placeholder to keep import list honest if unused later
     image = rgb.astype(np.float32) / 255.0
     if args.bilateral_sigma > 0:
         image = restoration.denoise_bilateral(
@@ -188,9 +188,7 @@ def verify(source_rgba: Image.Image, final_art: Image.Image, args: argparse.Name
     if mask.sum() < 100:
         ssim = 0.0
     else:
-        ssim = float(measure.compare_ssim(
-            source_rgb[mask], final_rgb[mask], data_range=1.0, channel_axis=-1 if source_rgb.shape[-1] == 3 else None,
-        ))
+        ssim = float(ssim_fn(source_rgb, final_rgb, data_range=1.0, channel_axis=2))
     rgb_u8 = np.asarray(final_small.convert("RGB"), dtype=np.uint8)
     near_white = np.all(rgb_u8 >= 245, axis=-1) & final_alpha
     magenta = (np.abs(rgb_u8[..., 0].astype(int) - 255) + rgb_u8[..., 1].astype(int) + np.abs(rgb_u8[..., 2].astype(int) - 255)) < 120

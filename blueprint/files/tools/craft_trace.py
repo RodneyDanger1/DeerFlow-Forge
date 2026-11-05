@@ -190,7 +190,8 @@ def compose_canvas(art: Image.Image, canvas_w: int, canvas_h: int) -> Image.Imag
 
 
 def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int], dpi: int,
-           svg_path: Path, spec: list[dict] | None, mapping: dict | None) -> dict:
+           svg_path: Path, spec: list[dict] | None, mapping: dict | None,
+           overlay: Image.Image | None = None) -> dict:
     src = source.convert("RGBA").resize(final_art.size, Image.LANCZOS)
     final_rgb = final_art.convert("RGB")
     final = np.asarray(final_rgb, dtype=np.uint8)
@@ -203,7 +204,8 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
     svg_text = svg_path.read_text(encoding="utf-8")
     fills = set(re.findall(r'fill="#([0-9a-fA-F]{6})"', svg_text))
     grey_final = np.asarray(final_rgb.convert("L"), dtype=float) / 255.0
-    strong_edges = int((np.abs(filters.laplace(grey_final)) > 0.35).sum())
+    gradient = filters.sobel(grey_final)
+    strong_edges = int((gradient > 0.08).sum())
     edge_density = strong_edges / float(alpha.sum() or 1)
     corner_ok = bool(not any(bool(alpha[y, x]) for y, x in ((2, 2), (2, width - 3), (height - 3, 2), (height - 3, width - 3))))
     text_ok = True
@@ -213,6 +215,7 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
         offset_x, offset_y = mapping["offset"]
         prep_scale = mapping["scale"]
         art_scale = final_art.width / canvas_w
+        overlay_alpha = np.asarray(overlay.getchannel("A"), dtype=np.uint8) > 127 if overlay is not None else None
         for item in spec:
             if not item.get("text"):
                 continue
@@ -227,15 +230,20 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
             by0, by1 = max(0, box[1]), min(height, box[3])
             if bx1 <= bx0 or by1 <= by0 or int(alpha[by0:by1, bx0:bx1].sum()) < 2000:
                 text_ok = False
+                continue
+            # The retyped overlay must actually cover the box; art showing through
+            # (ghost AI text or a mountain edge) is not evidence of a retype.
+            if overlay_alpha is None or int(overlay_alpha[by0:by1, bx0:bx1].sum()) < 2000:
+                text_ok = False
     checks = {
         "white_residual_ratio": {"value": float(round(float(near_white.sum()) / max(1, int(alpha.sum())), 5)),
                                  "pass": bool(float(near_white.sum()) / max(1, int(alpha.sum())) <= 0.002)},
-        "edge_specks": {"value": specks, "pass": bool(specks <= 10)},
+        "edge_specks": {"value": specks, "pass": bool(specks == 0)},
         "coverage": {"value": float(round(coverage, 4)), "pass": bool(0.05 <= coverage <= 0.95)},
         "dpi": {"value": int(dpi), "pass": bool(dpi >= 300)},
         "canvas_geometry": {"value": [int(canvas[0]), int(canvas[1])], "pass": bool(canvas[0] >= 1500 and canvas[1] >= 1500)},
         "vector_fill_colours": {"value": len(fills), "pass": bool(2 <= len(fills) <= 40)},
-        "edge_definition": {"value": float(round(edge_density, 4)), "pass": bool(edge_density >= 0.002)},
+        "edge_definition": {"value": float(round(edge_density, 4)), "pass": bool(edge_density >= 0.01)},
         "alpha_hard_edges": {"value": float(round(float(((np.asarray(final_art.getchannel("A")) == 0) | (np.asarray(final_art.getchannel("A")) == 255)).mean()), 4)),
                              "pass": bool(float(((np.asarray(final_art.getchannel("A")) == 0) | (np.asarray(final_art.getchannel("A")) == 255)).mean()) >= 0.85)},
         "transparent_corners": {"value": corner_ok, "pass": corner_ok},
@@ -316,9 +324,14 @@ def main(argv: list[str] | None = None) -> int:
             cleaned_alpha = drop_small_components(art.getchannel("A").copy(), 800).point(lambda v: 255 if v >= 128 else 0)
             art.putalpha(cleaned_alpha)
             spec = json.loads(Path(args.retype_json).read_text(encoding="utf-8")) if args.retype_json else None
+            overlay = None
             if spec:
                 overlay = retype_overlay(spec, mapping, print_width_px)
                 art = Image.alpha_composite(art, overlay)
+                # Re-clean after the overlay: text antialiasing must not create specks,
+                # and the final alpha stays binary so the speck gate means what it says.
+                merged_alpha = drop_small_components(art.getchannel("A").copy(), 300).point(lambda v: 255 if v >= 128 else 0)
+                art.putalpha(merged_alpha)
             colour = art.convert("RGB")
             colour = ImageEnhance.Color(colour).enhance(args.saturation)
             colour = ImageEnhance.Brightness(colour).enhance(args.brightness)
@@ -344,7 +357,7 @@ def main(argv: list[str] | None = None) -> int:
                 crop.save(crop_path)
                 previews.append(str(crop_path))
 
-            report = verify(original, art, (canvas_w, canvas_h), args.dpi, svg_path, spec, mapping)
+            report = verify(original, art, (canvas_w, canvas_h), args.dpi, svg_path, spec, mapping, overlay)
             result = {
                 "ok": bool(report["passed"]),
                 "pipeline": "craft_trace",
