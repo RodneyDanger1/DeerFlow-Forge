@@ -273,8 +273,10 @@ cd /opt/pod-pipeline
           full canvas, so every box measured on the original art must be transformed through the prep report before
           erasing or retyping text. The 10 gates: white residual, specks, coverage, 300 DPI, canvas geometry, fill
           colour count, edge definition, hard alpha edges, transparent corners, retyped text present. A failed gate is
-          a failed run. Full command atlas, 272-link tutorial library, seven workflows and trigger-driven Imagineer
-          contracts are in the vault Art Learning folder.
+          a failed run. Full command atlas, 881 unique tutorial leads (18 fetched and read), the seven core workflows
+          plus apparel/embroidery/vectorising/ads/shipping-insert workflows and trigger-driven Imagineer contracts
+          (CLOTHING_GRAPHIC, EMBROIDERY_ART, VECTORIZE_AI_IMAGE, IMAGE_CLEANUP, AD_CREATIVE, WEB_BANNER,
+          SHIPPING_CARD_TAG) live in the vault Art Learning folder; see 15-APPAREL-PRINT-MARKETING-WORKFLOWS.md.
         </p>
       </section>
       <div className="flex flex-wrap gap-2">
