@@ -134,6 +134,10 @@ Stop on any failed gate; never upload an `ok:false` report.
 as a file. `text.fontList` is VectorCraft's font list, not this one; verify with
 `ls /usr/share/fonts/**/<font>` or `fc-match <family>`.
 
+**Gate truth:** the report includes `retype_boxes`; `retyped_text_present` defaults to true when there
+is no retype spec. `pass:true` with `retype_boxes:0` is vacuous — if the art has text, you must pass
+`--retype-json` or stop; never cite that gate as text proof.
+
 **Stale-master caveat:** the live tee master (`rb_tee_craft.json`) was generated before the gate was
 tightened to `edge_specks == 0`; its report shows `edge_specks: 4, pass: true` under the old rule.
 Regenerate before claiming 10/10 today.
@@ -195,7 +199,8 @@ Report commands, artifact paths/sizes, the gate table, and unverified items. A m
 
 **Stop / escalate**
 Missing template/area; missing font; gate still failing after one documented parameter retry; source
-below 150 px per print inch; unlicensed asset; tool unavailable.
+below 150 px per print inch; unlicensed asset; tool unavailable; missing print width/template/text/
+font/rights — ask, do not invent.
 
 **Never**
 Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a

@@ -250,6 +250,7 @@ def verify(source: Image.Image, final_art: Image.Image, canvas: tuple[int, int],
         "retyped_text_present": {"value": text_ok, "pass": text_ok},
     }
     return {"passed": all(bool(check["pass"]) for check in checks.values()), "checks": checks,
+            "retype_boxes": len(spec or []),
             "svg_paths": int(svg_text.count("<path")), "svg_bytes": int(svg_path.stat().st_size),
             "src_size": list(src.size)}
 
@@ -369,6 +370,7 @@ def main(argv: list[str] | None = None) -> int:
                 "art_px": [int(art.width), int(art.height)],
                 "trace_params": params,
                 "retyped": bool(args.retype_json),
+                "retype_boxes": int(report.get("retype_boxes", 0)),
                 "svg_paths": report["svg_paths"],
                 "svg_bytes": report["svg_bytes"],
                 "previews": previews,

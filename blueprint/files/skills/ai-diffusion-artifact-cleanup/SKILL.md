@@ -61,6 +61,7 @@ sky); cream/tan survives. Use the source's actual W×H for `--width-px/--height-
 square on a rectangular source).
 
 ```bash
+# 1024 below is a square example: set W/H from identify for a rectangular source.
 $PY -m tools.prep_print_art --input /tmp/art.png --output /tmp/art_cut.png \
   --width-px 1024 --height-px 1024 --dpi 300 --mode white --clean-rim \
   --min-component 60 --edge-clean-px 26 --edge-clean-lum 140 --margin-px 0 \
@@ -99,7 +100,7 @@ defects (Lab L passed to `equalize_adapthist`; PIL Image passed to `flatten_on_k
 repo and deployed. Verified smoke command:
 
 ```bash
-$PY -m tools.artcraft --input /tmp/art.png --canvas-width 1024 --canvas-height 1024 --dpi 300 \
+$PY -m tools.artcraft --input /tmp/art.png --canvas-width 1500 --canvas-height 1500 --dpi 300 \
   --print-width-in 3.413333 --output /tmp/art_ac.png --svg /tmp/art_ac.svg \
   --report-json /tmp/art_ac.json --preview-dir /tmp/prev_ac
 ```
@@ -153,7 +154,7 @@ raster) stated; source preserved.
 **Evidence:** before/after audit JSON, command output, previews, gate table; no page screenshots.
 
 **Stop/escalate:** no verified filter fixes the defect; melted geometry; full-bleed art that fails the
-chosen gate set; >2.5× upscale needed.
+chosen gate set; >2.5× upscale needed; route/print width/brand colours missing → ask.
 
 **Never:** claim `tools.artcraft` is production; use `white-flood` by default; raise `edge-clean-lum`
 until cream lettering disappears; call a non-crash failure a success.

@@ -69,7 +69,7 @@ size** (the file's ppi, else 72), not their pixel count. A 2000×1500 image at 3
 (−460, −210)**. Two safe options:
 - pre-resize to the final pixel box with `magick … -resize WxH^ -gravity center -extent WxH` (72 ppi),
   or
-- place with `rect: [x, y, w, h]` (fit inside, aspect kept) — schema-verified, not executed here.
+- place with `rect: [x, y, w, h]` (fit inside, aspect kept) — verified by execution (2026-11-05).
 
 ## Workflow / state machine
 
@@ -78,7 +78,8 @@ lossy WebP → thumbnail test → record sources`.
 
 1. Write the one-sentence message; two messages = two creatives.
 2. Safe margins ≥60 px each side; story keeps text out of the top/bottom ~250 px UI bands.
-3. Type ≥24 px at 1080; headline 64–96 px; one visual focus; CTA overlaid by the platform.
+3. Type ≥24 px at 1080; long headline 44–56 px (measure `bounds`), short headline ≤96 px; one
+   visual focus; CTA overlaid by the platform.
 4. Check contrast where text crosses art; add a scrim or move type rather than eyeball.
 5. Export PNG; convert to lossy WebP; inspect both bytes and dimensions.
 6. View at 100 % and at phone-thumbnail size; fix hierarchy if unreadable.
@@ -97,6 +98,7 @@ lossy WebP → thumbnail test → record sources`.
 - Logo legible at thumbnail; nothing stretched/recoloured.
 - File size within the platform cap (team default ≤500 KB for stills).
 - No unlicensed fonts/imagery; claims match owner-approved wording.
+- Missing offer/claims/canvas/brand kit → ask or route `brand-system`; never invent copy or claims.
 
 Contrast check (WCAG relative luminance) — save as `contrast.py` and run with sampled hex values:
 
@@ -125,8 +127,8 @@ print(ratio('#efe6cf','#101312'))
 
 ## Worked examples
 
-**1. 1080×1080 sale card.** Dark ground, art right-of-centre, headline 72 px, CTA 40 px, both inside
-80 px margins. Export `ad_feed.png`; convert lossy WebP `--quality 82`; verify 1080×1080 and
+**1. 1080×1080 sale card.** Dark ground, art right-of-centre, headline 52 px (bounds 888×52), CTA
+40 px, both inside 80 px margins. Export `ad_feed.png`; convert lossy WebP `--quality 82`; verify 1080×1080 and
 contrast of `#efe6cf` on `#101312`.
 
 **2. 1080×1920 story.** Same message, headline 88 px, subject middle band, CTA around y=1600; top and

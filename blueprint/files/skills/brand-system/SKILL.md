@@ -31,6 +31,7 @@ master files plus a short rules document, not a mood board.
 - Type: licensed fonts installed on the machine (`text.fontList`), or a deliberate open-family choice.
 - Usage contexts: storefront, social, print, embroidery, packaging.
 - Master storage: vault `30-reference/art-learning/assets/` + repo `blueprint/files/`; approver.
+- Ask if the palette source, mark rights or approver is missing; never invent brand values.
 
 ## Exact commands (verified 2026-11-05)
 
@@ -57,9 +58,9 @@ JSON
 $VC run --in /tmp/logo_cut.png --commands /tmp/logo-steps.json --export /tmp/logo.svg
 ```
 
-**2) Build a brand sheet and export web sizes + PDF.** A 1200×1200 pt document exported at ppi 72
+**2) Build a brand sheet and export web sizes + PDF.** A 1200×1200 px document (72 ppi ⇒ 1200 pt) exported at ppi 72
 gives 1200 px; ppi 144 gives 2400 px; ppi 216 gives 3600 px (pixels = points ÷ 72 × ppi). `file.place`
-brings the SVG in at its viewBox size; use `rect` if exact placement is required:
+SVG physical sizing is not verified; use `rect` for exact placement:
 
 ```bash
 cat > /tmp/sheet.json <<'JSON'

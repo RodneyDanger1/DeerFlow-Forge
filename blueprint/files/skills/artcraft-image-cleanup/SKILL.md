@@ -85,7 +85,7 @@ $PC batch --actions /tmp/cleanup.json --in /tmp/in --out /tmp/out --recursive --
 `batch` action steps are `{"command":id,"params":{…}}` / `[id, params]` / bare ids. With
 `--recursive` results flatten into `--out`, so same names overwrite; use `--naming`.
 
-Strict white cutout when the cleaned raster feeds print/trace:
+Strict white cutout only when the cleaned raster feeds print/trace (a photo that must keep white content skips it):
 
 ```bash
 $PY -m tools.prep_print_art --input /tmp/photo_clean.png --output /tmp/clean_cut.png \
@@ -111,6 +111,7 @@ Before touching pixels, compute and record:
   crop params are wrong for that file.
 - Output path differs from input; PhotoCraft refuses same-path `--out` unless `--in-place`.
 - Read `info` before/after: size, mode, depth, resolution.
+- Ask for destination print size/DPI, defect and rights when absent; never choose 300 DPI silently.
 
 ## Workflow / state machine
 

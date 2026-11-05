@@ -143,8 +143,10 @@ A failed step must stop the chain; never export a failed gate.
 - No `--dry-run` (`vectorcraft-cli` rejects it); run on a copy and export new paths.
 - No browser automation; a rendered PNG is the proof, a page screenshot is not.
 - Never claim print quality from a screen render; mockups prove placement only.
-- Below ~150 px per print inch → regenerate, do not upscale.
+- Below ~150 px per print inch → regenerate, do not upscale. Missing print width, text/font or rights
+→ ask; do not invent them.
 - A `--retype-json` with boxes from another design silently mislabels text; generate per design.
+- Text-bearing art without a retype overlay → stop; a trace is not proof that text was handled.
 
 ## Worked examples
 

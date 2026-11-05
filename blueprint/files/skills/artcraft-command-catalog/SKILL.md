@@ -47,7 +47,7 @@ List/count, filter, and read a parameter schema (python works; **jq is not insta
 $VC commands | python3 -c 'import json,sys,collections; c=json.load(sys.stdin); g=collections.Counter(x["id"].split(".")[0] for x in c); print(len(c), len(g))'
 $VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); print("\n".join(x["id"] for x in c if x["id"].startswith("imageTrace.")))'
 $VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); print(next(x["params"] for x in c if x["id"]=="document.export"))'
-$PC commands --filter sharpen          # 965 rows; --json adds param schemas
+$PC commands --filter sharpen          # filtered subset; registry total is 965; --json adds schemas
 $PC commands --json | python3 -c 'import json,sys; c=json.load(sys.stdin); print(next(x["params"] for x in c if x["id"]=="filter.sharpen.unsharpMask"))'
 ```
 
@@ -106,7 +106,8 @@ Exit 0 alone is not proof; a missing JSON result is a failure.
 
 **Stop / escalate**
 Unknown id; command disabled and no document route; missing exporter/plugin; missing font; batch
-limits exceeded (256 steps / 8 MiB / 16 MiB); permission/read-only errors. Name the missing piece.
+limits exceeded (256 steps / 8 MiB / 16 MiB); permission/read-only errors; a missing job/print/product
+detail — ask, do not invent. Name the missing piece.
 
 **Output contract**
 Return versions, ids confirmed, commands run, artifacts, gate values, UNVERIFIED list.
@@ -140,10 +141,13 @@ Invent an id/parameter; run on the source; assume exit 0 means output; edit inst
 - Result shapes differ: filter.* echoes params; image.adjustments.* returns null; imageTrace.make
   returns `{anchors, colors, id, paths}`; expand returns `{ids}`; text.fontList `{families}`.
 
-## Key groups
+## Key groups (top 16 of 64; these sum to 554 of the 918 total)
 
 `object 151 · addon 62 · select 55 · document 35 · text 35 · path 34 · edit 30 · file 28 · layer 26 ·
 swatch 23 · type 23 · paint 22 · artboard 13 · imageTrace 8 · effect 8 · image 1`
+
+Omitted here: perspective 25, symbol 23, view 19, graphicStyle 18, and 44 more groups. Query all 64
+with the counter above; never add the listed numbers and call the sum 918.
 
 Traps: `text` (content) vs `type` (conversion); `path` (pen/anchor maths) vs `object` (paths as
 objects); VectorCraft `image` has only `image.info` — use `file.place`, `object.cropImage`,
