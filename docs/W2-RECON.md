@@ -52,10 +52,15 @@ key → stored result, zero executor calls.
 
 ## Files I expect to touch (when authorized)
 
-- `blueprint/files/forge/__init__.py`, `gateway.py`, `schema.py`/repo seams.
+- `blueprint/files/forge_gateway.py` (top-level module; contract test imports `forge_gateway`).
 - `blueprint/files/sql/schema_forge.sql`.
 - `blueprint/files/tests/test_forge_gateway.py` and SQL assertion harness.
 - No `pod_pipeline/`, `src/`, console, or production file.
+
+## Implementation status (after recon)
+
+W2-A gateway/DDL/test files now exist locally and the pure suite is **33/33 on staging**; DDL apply,
+repository, queue/lease and service remain open. See `execution-wave/17-W2-SKELETON.md`.
 
 ## Stop condition
 

@@ -11,7 +11,7 @@
 | VectorCraft version | `vectorcraft-cli --version` | `0.21.1` |
 | PhotoCraft version | `photocraft-cli --version` | `0.20.2 (7c12f6471, 2026-11-05)` |
 | Direct VectorCraft trace | `run --in rb_tee_clean.png --cmd select.all --cmd imageTrace.make --params '<measured>' --cmd imageTrace.expand --export direct_trace.svg --export direct_trace.pdf` | exit 0; SVG **979,800 B**, PDF **1,572,959 B** (hash-pinned; earlier byte figures in this table were transposed from a different copy) |
-| CraftTrace pipeline | `python -m tools.craft_trace … --prep-mode alpha --canvas-width 1500 --canvas-height 1800` | exit 0; `ok:true`, `saved:true`, **9/9 applicable checks pass**; retype gate `not_requested` (`applicable:false`), not a decorative pass |
+| CraftTrace pipeline | `python -m tools.craft_trace … --prep-mode alpha --canvas-width 1500 --canvas-height 1800 --print-width-in 5.0` | exit 0; `ok:true`, `saved:true`, **9/9 applicable checks pass**; retype gate `not_requested` (`applicable:false`), not a decorative pass |
 | PhotoCraft retouch | `run retouch_input.png --cmd image.trim --params '{"basedOn":"transparent"}' --cmd image.imageSize --params '{"resolution":300,"resample":"lanczos"}' --out retouch_master.png` | exit 0; PNG **1438×148**, DPI 299.9994 |
 | Full staging tests | `pytest tests -q` | **54 passed, 4 skipped** |
 | Launcher syntax | `bash -n deploy/setup-pipeline.sh` | exit 0 |
@@ -35,14 +35,10 @@ CraftTrace checks: `white_residual_ratio`, `edge_specks`, `coverage`, `dpi`, `ca
 `retyped_text_present` is **not applicable** because no retype was requested. After the independent
 review found the old decorative pass, the gate was corrected and the real report regenerated.
 
-**Artifacts are now copied into `execution-wave/g0/`** with a generated `MANIFEST.json` covering all
-22 files (including the three previews); this closes the “absent from workspace” and partial-manifest
-gaps for artifact inspection. It does not make the execution independently reproducible without VPS access.
-
-**Correction (independent review D2):** the original report showed `retype_boxes:0` but
-`retyped_text_present: pass:true`. That was a decorative pass; the gate now reports
-`applicable:false` and `pass:null`, and the real report was regenerated. The run is **9/9 applicable
-gates**, not 10/10.
+**Provenance closed independently:** `16-G0-PROVENANCE.md` — explicit key connected; fresh staging-only run
+into `/tmp/verifier-g0-*` reproduced `trace_master.png`, `trace_master.svg`, retouch and all three previews
+byte-identically. Byte-identical PNG requires `--print-width-in 5.0` (the default 8.0 changes `art_px` to
+2400×2880 and the PNG hash to `d17ab03b…`; SVG stays identical). That flag is now in the command above.
 
 ## 3. What this proves
 

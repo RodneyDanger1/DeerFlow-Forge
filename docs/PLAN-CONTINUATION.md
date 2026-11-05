@@ -16,13 +16,15 @@
 | Independent W1-C/console review | **PASS** (`13-INDEPENDENT-REVIEW`) |
 | Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
 | G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
-| W2 Forge service/DDL/queue | **recon complete, not started — G0 provenance U** |
+| G0 provenance | **CLOSED independently** (`16-G0-PROVENANCE.md`): fresh staging-only run reproduced artifacts byte-identically |
+| W2 Forge service/DDL/queue | **W2-A partial**: gateway 33/33; DDL not applied; no service/queue |
 | W3–W6 | not started |
 
-## W2 recon
+## Decision
 
-See `docs/W2-RECON.md`. It names the DDL/gateway/queue contract, existing DB/worker call sites, the
-missing scratch-Postgres step, and the files that would be touched. No W2 source exists or was added.
+G0 is closed: artifact consistency PASS, independent provenance PASS. W2 may begin as **local source**
+(new `forge` gateway/schema/tests), but no production `forge` DB, service, or cutover until W2 gate G1.
+The `--print-width-in 5.0` recipe is now recorded; the old 8.0 default produces a different PNG by design.
 
 ## Decision
 

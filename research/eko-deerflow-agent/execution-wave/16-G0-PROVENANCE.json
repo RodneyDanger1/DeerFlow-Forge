@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "1.0.0",
+  "artifactId": "16-G0-PROVENANCE",
+  "taskId": "task-19",
+  "producer": "wave2-verifier",
+  "independent": true,
+  "date": "2026-11-05",
+  "writeScope": ["research/eko-deerflow-agent/execution-wave/16-G0-PROVENANCE.md", "research/eko-deerflow-agent/execution-wave/16-G0-PROVENANCE.json"],
+  "sourceOrTestEdits": false,
+  "productionChanges": false,
+  "verdict": {"ssh": "CONNECTED", "provenance": "CLOSED", "artifactReproduction": "PASS", "applicableChecks": "9/9 PASS"},
+  "access": {
+    "key": "$env:USERPROFILE\\.ssh\\id_ed25519_hostinger",
+    "options": "-o BatchMode=yes -o ConnectTimeout=10",
+    "result": "SSH_OK; hostname=srv2108523; user=root; utc=2026-11-05T19:20:44Z",
+    "exit": 0
+  },
+  "readOnlyChecks": [
+    {"id": "R1", "check": "host", "observed": "srv2108523 / root"},
+    {"id": "R2", "check": "VectorCraft version", "observed": "vectorcraft-cli 0.21.1"},
+    {"id": "R3", "check": "PhotoCraft version", "observed": "photocraft-cli 0.20.2 (7c12f6471, 2026-11-05)"},
+    {"id": "R4", "check": "VPS repo HEAD", "observed": "32fc71f1552bc623f4fc9636228c5cabd178be59 (/opt/deerflow-forge)"},
+    {"id": "R5", "check": "staging tree", "observed": "/opt/pod-pipeline-staging (separate from /opt/pod-pipeline)"},
+    {"id": "R6", "check": "staging g0 bundle", "observed": "22 files = 19 top-level + 3 previews_trace"},
+    {"id": "R7", "check": "staging g0 vs local MANIFEST", "observed": "22/22 SHA-256 + byte counts match"},
+    {"id": "R8", "check": "input asset", "observed": "data/ai-uploads/rb_tee_clean.png 4500x5400 RGBA"},
+    {"id": "R9", "check": "CraftTrace CLI", "observed": "python -m tools.craft_trace, staging venv Python 3.12.16"}
+  ],
+  "freshRun": {
+    "dir": "/tmp/verifier-g0-20261105T192305Z",
+    "cwd": "/opt/pod-pipeline-staging",
+    "trace": {"cmd": ".venv/bin/python -m tools.craft_trace --input data/ai-uploads/rb_tee_clean.png --output /tmp/.../trace_master.png --svg /tmp/.../trace_master.svg --prep-mode alpha --canvas-width 1500 --canvas-height 1800 --print-width-in 5.0 --report-json /tmp/.../trace_report.json --preview-dir /tmp/.../previews_trace", "exit": 0},
+    "retouch": {"cmd": "photocraft-cli run retouch_input.png --cmd image.trim --params {\"basedOn\":\"transparent\"} --cmd image.imageSize --params {\"resolution\":300,\"resample\":\"lanczos\"} --out /tmp/.../retouch_master.png", "exit": 0},
+    "writes": "only under /tmp/verifier-g0-*; no /opt/pod-pipeline, no production path",
+    "artifacts": [
+      {"path": "trace_master.png", "sha256": "ab64aad724c50ecdaf99c1a873f3497a9c618ad7e9eebfa96e5df2b3572657a1", "manifestMatch": true},
+      {"path": "trace_master.svg", "sha256": "ba64dbe3e6301a50291a8ed44458882e67950f7e817cb80d0c74aaf2f630ae95", "manifestMatch": true},
+      {"path": "trace_stdout.txt", "sha256": "1c28a35b43bda34e520f067c3affc6395857c8f2b974a7b2dc9d5f3dd79f143c", "manifestMatch": true},
+      {"path": "retouch_master.png", "sha256": "2995916558c82088b73d2edc5a3119bb98fceee4d5ff54f46231cb69381b3ace", "manifestMatch": true},
+      {"path": "retouch_stdout.txt", "sha256": "27f2af2d108cd53d2bb4b4cb62c1f290ec1735d1b90a6fc5fc1708c35c0e459a", "manifestMatch": true},
+      {"path": "previews_trace/trace_master_100pct.png", "sha256": "d90f28798f2044a291081c779a4d69753738a913f659d8126be346c4fac5df58", "manifestMatch": true},
+      {"path": "previews_trace/trace_master_black.jpg", "sha256": "5ac09038f9d13f9d8339c75a0b8c73f26338bcc88117e037c27cd7514887dd86", "manifestMatch": true},
+      {"path": "previews_trace/trace_master_white.jpg", "sha256": "0f4c90060cd7d81bec07e2621ab5dd6002481d5c02f95ed7023e210b2ae9842a", "manifestMatch": true},
+      {"path": "trace_report.json", "sha256": "19ba65466eefa4ae56670aea4719b5da3b4caace4298ecbf298a18530a207577", "manifestMatch": false, "note": "differs only because embedded output/svg/preview paths are /tmp/... instead of data/staging/g0/..."}
+    ],
+    "report": {
+      "ok": true, "saved": true, "canvas_px": [1500, 1800], "art_px": [1500, 1800], "dpi": 300,
+      "retyped": false, "retype_boxes": 0, "applicable_checks": 9,
+      "retyped_text_present": {"value": "not_requested", "pass": null, "applicable": false},
+      "applicable_pass": 9, "applicable_fail": 0,
+      "output_sha256": "ab64aad724c50ecdaf99c1a873f3497a9c618ad7e9eebfa96e5df2b3572657a1"
+    },
+    "dimensions": {"trace_master.png": {"ihdr": [1500, 1800], "phys_dpi": 299.9994}, "retouch_master.png": {"ihdr": [1438, 148], "phys_dpi": 299.9994}},
+    "retouch_stdout": ["{\"command\":\"image.trim\",\"result\":{\"height\":148,\"width\":1438,\"x\":37,\"y\":186}}", "{\"command\":\"image.imageSize\",\"result\":{\"height\":148,\"width\":1438}}"]
+  },
+  "reproducibility": {
+    "keyFinding": "Byte-identical reproduction requires --print-width-in 5.0, which 11-G0-EVIDENCE.md:14 omits.",
+    "defaultBehavior": "With default 8.0 the SVG stays identical (ba64dbe3...) but art_px=[2400,2880] and trace_master.png=d17ab03b... instead of ab64aad7...",
+    "clue": "report art_px [1500,1800] recovers the missing flag"
+  },
+  "earlierGaps": [
+    {"gap": "11-G0 direct-trace sizes 958860/1618404", "status": "RESOLVED in HEAD b2f39e1: now 979800/1572959 matching artifacts"},
+    {"gap": "10/10 included vacuous retype gate", "status": "RESOLVED in HEAD: retype applicable:false, applicable_checks:9; fresh run confirms 9/9"},
+    {"gap": "MANIFEST omitted previews", "status": "RESOLVED: current MANIFEST has 22 entries; staging 22/22 match"},
+    {"gap": "G0 execution provenance", "status": "CLOSED: host reachable; fresh run reproduces byte-identical artifacts"}
+  ],
+  "residualLimits": [
+    "The wall-clock 18:04 run cannot be replayed as history; only its outputs reproduce. They reproduce byte-identically on the same host with the same binaries; a different host/rsvg build may differ.",
+    "The --print-width-in 5.0 recipe is inferred from the artifact's art_px; the evidence file should record it.",
+    "MCP 33/26 counts and command_batch were verified from the bundle in task-18; the bundle is hash-identical to staging, but no live MCP re-handshake was run here.",
+    "Scratch outputs remain at /tmp/verifier-g0-20261105T192305Z on the VPS (non-production, safe to delete)."
+  ]
+}
