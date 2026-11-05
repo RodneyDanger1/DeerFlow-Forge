@@ -128,7 +128,7 @@ metadata:
 ```
 
 `name` and `description` are required everywhere; the other keys are the Hermes
-superset template; the 8 original skills keep minimal frontmatter and are installed with `--require-hermes` scoped to the selected skills only.
+superset template; the 8 original skills keep minimal frontmatter and are installed with `--require-hermes` scoped to the selected skills only. The generated index does not record `--require-hermes` mode; run `--check --require-hermes --skills <name>` for the strict verdict.
 
 ## Manifest and index
 

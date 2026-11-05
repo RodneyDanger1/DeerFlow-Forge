@@ -106,7 +106,7 @@ Every row runs via `run --cmd` or `batch --actions`. Retouch ids and schemas tha
 | `path.simplify` | absent | `object.path.simplify` |
 | `layer.rename` | absent | `layer.setProps {ids,name}` |
 | `layer.arrange.sendToBack` | absent (arrange is on objects) | `object.arrange.sendToBack {ids}`; `layer.move` |
-| `image.crop`, `image.adjust` | absent (`image` has only `image.info`) | `object.cropImage`, `object.rasterize`, `object.maskImage` |
+| `image.crop`, `image.adjust` | absent in **VectorCraft** (`image` has only `image.info`); PhotoCraft has its own `image.*` registry | `object.cropImage`, `object.rasterize`, `object.maskImage`; PhotoCraft via `photocraft-cli commands` |
 | `text.convertToOutlines` | wrong group | `type.createOutlines` |
 | `trace.*`, `document.cleanup` | absent | `imageTrace.*`; `object.path.cleanUp` + `addon.cleanup.*` |
 

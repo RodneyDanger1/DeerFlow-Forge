@@ -49,10 +49,10 @@ cat > /tmp/ad.json <<'JSON'
  {"command":"file.place","params":{"path":"/tmp/ad_art.png"}},
  {"command":"text.create","params":{"x":80,"y":560,"text":"MADE FOR THE LONG WAY ROUND","font":"FreeSans","style":"Bold","size":72,"color":"#efe6cf"}},
  {"command":"text.create","params":{"x":80,"y":700,"text":"SHOP THE DROP","font":"FreeSans","style":"Bold","size":40,"color":"#d9caa4"}},
- {"command":"document.export","params":{"path":"/tmp/ad_feed.png","format":"png","ppi":72}},
  {"command":"document.export","params":{"path":"/tmp/ad_feed.png","format":"png","ppi":72}}]
 JSON
 $VC run --commands /tmp/ad.json
+photocraft-cli convert /tmp/ad_feed.png /tmp/ad_feed.webp --quality 82
 identify -format '%f %wx%h %m %b\n' /tmp/ad_feed.png /tmp/ad_feed.webp
 ```
 
@@ -114,7 +114,6 @@ PNG and WebP; verify the dimensions and that nothing important sits in the UI ba
 - **Thumbnail test** — most feeds show the creative small; design for that size.
 - **WebP quality**: VectorCraft ignores `quality` for WebP (lossless only, verified); use PhotoCraft `convert --quality` for lossy delivery and re-check bytes after every change. Raised quality inflates size
   cap demands it.
-- **`file.place` keeps native pixels** — a 2000×1500 image on a 1080 canvas lands at
-  (-460,-210) and overflows (verified); resize/extent to the placement size first.
+- **`file.place` uses the file's physical size, not its pixel dimensions** — 2000×1500 at 300 ppi lands as 480×360 at (−460,−210) on a 1080 canvas; at 72 ppi it lands 2000×1500. Pre-resize/extent with `magick … -resize WxH^ -gravity center -extent WxH`.
 - **`backgroundContents` only accepts `transparent|white`** (verified) — coloured grounds are
   placed images, as in the example.

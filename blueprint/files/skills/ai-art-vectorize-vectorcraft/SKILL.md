@@ -102,7 +102,7 @@ check carries `pass`, and `identify -format '%f %wx%h %x %y\n'` must show 118.11
 |---|---:|---:|---:|---|
 | Flat Logo | 2,501,270 | 3,982 | 3 | overfits texture into specks; grain in mountains; text rough |
 | Auto Color | 758,967 | 762 | 32 | cleaner, but keeps the off-white paper (ignoreWhite removes only true white) |
-| **Custom limited** | **~460,000** | **281** | **6–7** | all ten gates pass |
+| **Custom limited** | **410,571** | **281** | **6–7** | all ten gates pass |
 
 Presets are leads, not production settings. Production band: colors 10–16, paths 60–90, corners
 40–60, noise 6–20 px, method abutting. `Flat Logo` is capped at 1024 px/side and has no enhanced variant.

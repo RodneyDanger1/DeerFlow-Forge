@@ -117,7 +117,6 @@ the hole keeps 0.25 in clearance from art.
 - **RGB neon** — vivid screen colours may be unreachable in CMYK; get a proof.
 - **Mockups lie about scale** — a test print is the only proof of size and colour.
 - **Vendor formats vary** — confirm PDF vs PNG and whether crop marks are required.
-- **`file.place` keeps native size** — a logo placed at 2× overflows the card; pre-size it
-  (`rsvg-convert -w` for SVG, `magick -resize` for PNG) before placing.
+- **`file.place` uses the file's physical size at its ppi** — pre-size the logo/QR with `magick -resize`/`-extent` so a 2× asset does not overflow the card.
 - **`backgroundContents` only accepts `transparent|white`** (verified) — the cream ground is a
   placed image, as in the example.

@@ -37,7 +37,7 @@ A mockup is a **placement and cut-off check**, not print proof. Compose the desi
 cd /opt/pod-pipeline; PY=.venv/bin/python; VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
 ```
 
-**Step 0 — pick the canvas and the centring math.** Proof canvas = `round(area_inches × dpi)` from `config/fourthwall-template-details.json`; review canvas = an exact downscale of the proof, never a re-layout. Centre with `x = (W - w) // 2`, `y = (H - h) // 2`; an odd remainder goes left/top, so record the actual margins rather than claiming perfect symmetry.
+**Step 0 — pick the canvas and the centring math.** Proof canvas = `round(area_inches × dpi)` from `config/fourthwall-template-details.json`; review canvas = an exact downscale of the proof, never a re-layout. Centre with `x = (W - w) // 2`, `y = (H - h) // 2`; an odd remainder goes right/bottom (floor division), so record the actual margins rather than claiming perfect symmetry.
 
 **Step 1 — PIL composite** (verified 2026-11-05; 1000×800 on 2000×2000 → offsets `[500, 600]`). Save as
 `/tmp/mockup_composite.py`; args: base, design, out-prefix, canvas width, canvas height, optional DPI.

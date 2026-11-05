@@ -40,7 +40,7 @@ Publishes one owner-approved design through the same path the live store uses: u
 | Product | Slug | Fourthwall id | Template | Region (in) | Colour / sizes | Retail | Images |
 |---|---|---|---|---|---|---|---|
 | Lost And Learning Tee | `lost-and-learning-tee-4` | `5d40b2c7-5687-46bb-a0a0-75c19d4b9a9e` | `pro_e4677535402b4eeb81` | `front_large` 15×18 | Black, S–5XL | $20.50–$28.50 | 10 |
-| Lost And Learning Hoodie | `lost-and-learning-hoodie-3` | `84305616-1446-490f-b022-adff79b9bdb4` | `pro_gUu4CvXsRm-BxogjB89KzA` | `front` 14×14 | Black, S–5XL | $33.20–$41.20 | 8 |
+| Lost And Learning Hoodie | `lost-and-learning-hoodie-3` | `84305616-1446-490f-b022-adff79b9bdb4` | `pro_gUu4CvXsRm-BxogjB89KzA` | `front` 14×14 | Black, S–5XL | $33.20–$41.20 | 4 |
 | Lost And Learning Beanie | `lost-and-learning-beanie-3` | `6e655114-1d1d-40fb-977c-d413f8ee54bf` | `pro_12abde5f29c34ffbb2` | `embroidery_front` 5×1.75 | Black, One size | $24.29 | 7 |
 | Abyssal Signal Neon Whale Tee | `abyssal-signal-neon-whale-tee-3` | `7bff0d73-51b6-494d-a38a-62ca57615f0b` | `pro_e4677535402b4eeb81` | `front_large` 15×18 | Black, S–5XL | $24.00–$32.00 | 10 |
 | GRU Hoodie | `gru-hoodie` | `9ebab6d3-0a07-4039-bea5-f9d9608b8b24` | existing product | — | White, S–3XL | $34.99–$38.99 | 4 |

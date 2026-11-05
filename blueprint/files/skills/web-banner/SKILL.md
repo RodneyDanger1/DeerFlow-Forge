@@ -47,11 +47,11 @@ cat > /tmp/banner.json <<'JSON'
 [{"command":"file.new","params":{"width":1920,"height":700,"units":"Pixels","colorMode":"rgb","backgroundContents":"transparent"}},
  {"command":"file.place","params":{"path":"/tmp/banner_bg.png"}},
  {"command":"file.place","params":{"path":"/tmp/banner_art_fit.png"}},
- {"command":"document.export","params":{"path":"/tmp/banner_desktop.png","format":"png"}},
  {"command":"document.export","params":{"path":"/tmp/banner_desktop.png","format":"png","ppi":72}}]
 JSON
 $VC run --commands /tmp/banner.json
-identify -format '%f %wx%h %m %b\n' /tmp/banner_desktop.webp /tmp/banner_desktop.png
+photocraft-cli convert /tmp/banner_desktop.png /tmp/banner_desktop.webp --quality 82
+identify -format '%f %wx%h %m %b\n' /tmp/banner_desktop.png /tmp/banner_desktop.webp
 ```
 
 If type must be baked in (no HTML layer), add before the exports:
@@ -72,7 +72,8 @@ cat > /tmp/banner_mobile.json <<'JSON'
  {"command":"document.export","params":{"path":"/tmp/banner_mobile.png","format":"png"}}]
 JSON
 $VC run --commands /tmp/banner_mobile.json
-identify -format '%f %wx%h %m %b\n' /tmp/banner_mobile.webp
+photocraft-cli convert /tmp/banner_mobile.png /tmp/banner_mobile.webp --quality 82
+identify -format '%f %wx%h %m %b\n' /tmp/banner_mobile.png /tmp/banner_mobile.webp
 ```
 
 Inspect a centre crop to sanity-check the mobile focal point:
@@ -130,5 +131,4 @@ centre to preview what a mid-width layout would show.
   ppi silently multiplies the canvas.
 - **Retina** — deliver at least 2× the CSS width when the layout uses high-DPI images.
 - **No stretched art** — scale proportionally and crop; distorted hero art is an instant reject.
-- **`file.place` keeps native pixels** — a 4000 px photo overflows a 1920 canvas; resize/extent
-  first. `backgroundContents` only accepts `transparent|white` (verified), so grounds are images.
+- **`file.place` uses the file's physical size at its ppi, not its pixel dimensions** — resize/extent first with `magick … -resize WxH^ -gravity center -extent WxH`; a 2000×1500 image at 300 ppi lands 480×360 at (−460,−210) on a 1080 canvas.
