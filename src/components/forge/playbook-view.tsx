@@ -81,6 +81,7 @@ const CRAFT_TRACE_TOOL = "tools/craft_trace.py";
 const VECTORCRAFT_CLI = "/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli";
 const ARTCRAFT_ATLAS = "/srv/vaults/storefront/30-reference/art-learning/07-ARTCRAFT-COMMAND-ATLAS.md";
 const ARTCRAFT_WORKFLOWS = "/srv/vaults/storefront/30-reference/art-learning/09-WORKFLOWS.md";
+const SKILLS_DIR = "blueprint/files/skills";
 const IMAGINEER_TEMPLATES = "/srv/vaults/storefront/30-reference/art-learning/10-IMAGINEER-PROMPT-TEMPLATES.md";
 
 /**
@@ -267,16 +268,21 @@ cd /opt/pod-pipeline
             <dt className="font-mono text-muted">workflows + Imagineer templates</dt>
             <dd className="font-mono break-all">{ARTCRAFT_WORKFLOWS} · {IMAGINEER_TEMPLATES}</dd>
           </div>
+          <div>
+            <dt className="font-mono text-muted">agent skills (8)</dt>
+            <dd className="font-mono break-all">{SKILLS_DIR}</dd>
+          </div>
         </dl>
         <p className="max-w-3xl text-xs text-pretty text-muted">
           Coordinate trap that cost a day: prep crops to the subject bbox and re-centres, and the traced SVG keeps the
           full canvas, so every box measured on the original art must be transformed through the prep report before
           erasing or retyping text. The 10 gates: white residual, specks, coverage, 300 DPI, canvas geometry, fill
           colour count, edge definition, hard alpha edges, transparent corners, retyped text present. A failed gate is
-          a failed run. Full command atlas, 881 unique tutorial leads (18 fetched and read), the seven core workflows
-          plus apparel/embroidery/vectorising/ads/shipping-insert workflows and trigger-driven Imagineer contracts
-          (CLOTHING_GRAPHIC, EMBROIDERY_ART, VECTORIZE_AI_IMAGE, IMAGE_CLEANUP, AD_CREATIVE, WEB_BANNER,
-          SHIPPING_CARD_TAG) live in the vault Art Learning folder; see 15-APPAREL-PRINT-MARKETING-WORKFLOWS.md.
+          a failed run. Full command atlas (918 commands in 64 groups), the execute-verified command/MCP playbook
+          (VectorCraft 33 + PhotoCraft 26 MCP tools), 1,016 canonical tutorial URLs (18 pages fetched and read),
+          the seven core workflows plus apparel/embroidery/vectorising/ads/shipping-insert workflows, and the 8
+          agent skills in WORKFLOW_SKILLS live in the vault Art Learning folder; see 15-APPAREL-PRINT-MARKETING-WORKFLOWS.md,
+          16-TUTORIAL-WAVE4.md, 17-CRAFT-COMMAND-PLAYBOOK.md and 18-KNOWLEDGE-MAP-AND-AUDIT.md.
         </p>
       </section>
       <div className="flex flex-wrap gap-2">
