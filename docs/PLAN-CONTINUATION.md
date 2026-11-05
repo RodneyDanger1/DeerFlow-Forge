@@ -20,8 +20,8 @@
 | W2 Forge service/DDL/queue | **W2 local gate PASS**: 97 pass/9 skip; 18/18 SQL; 9 ms SKIP LOCKED; real HTTP→repo→worker→reaper e2e. No production deploy |
 | UI/agent bug audit | **DONE for tested surfaces**: copy fallback, health 503, verifier malformed check, reaper abandoned; UI 15/15 checks, 112 pass/4 skip |
 | W3-A verifier | **DONE**: 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed checks refuse; staging 112 pass/4 skip |
-| W3-B critic | not started |
-| W4–W6 | not started |
+| W3-B critic | **DONE (contract)**: 14/14 blind-critic tests; gate authoritative; disagreement → needs_human; no model claim |
+| W4 learning/eval | not started |
 
 ## Decision
 
