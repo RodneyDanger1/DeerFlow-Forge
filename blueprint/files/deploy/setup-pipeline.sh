@@ -43,8 +43,11 @@ if ! docker compose version >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! getent group "$APP_GROUP" >/dev/null 2>&1; then
+  groupadd --system "$APP_GROUP"
+fi
 if ! id -u "$APP_USER" >/dev/null 2>&1; then
-  useradd --system --create-home --home-dir "$ROOT" --shell /usr/sbin/nologin "$APP_USER"
+  useradd --system --gid "$APP_GROUP" --create-home --home-dir "$ROOT" --shell /usr/sbin/nologin "$APP_USER"
 fi
 if getent group docker >/dev/null 2>&1; then
   usermod -aG docker "$APP_USER"
