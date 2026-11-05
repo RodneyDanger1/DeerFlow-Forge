@@ -10,7 +10,9 @@ from typing import Any, Iterable
 
 
 def wilson_lower_bound(successes: int, n: int, z: float = 1.96) -> float:
-    if not isinstance(successes, int) or not isinstance(n, int) or n <= 0 or not 0 <= successes <= n:
+    if (isinstance(successes, bool) or isinstance(n, bool)
+            or not isinstance(successes, int) or not isinstance(n, int)
+            or n <= 0 or not 0 <= successes <= n):
         raise ValueError("E_EVAL_INVALID: successes/n must be integers with 0 <= k <= n")
     p = successes / n
     denom = 1 + z * z / n
@@ -59,8 +61,12 @@ def propose_promotion(*, successes: int, n: int, baseline: float = 0.5,
         raise ValueError("E_EVAL_INVALID: baseline must be 0..1")
     if min_n < 3 or not 0 <= min_successes <= min_n:
         raise ValueError("E_EVAL_INVALID: invalid evaluation horizon")
-    if not isinstance(regressions, int) or regressions < 0:
+    if not isinstance(regressions, int) or isinstance(regressions, bool) or regressions < 0:
         raise ValueError("E_EVAL_INVALID: regressions must be a non-negative integer")
+    if not isinstance(human_approved, bool):
+        raise ValueError("E_EVAL_INVALID: human_approved must be a boolean")
+    if regressions > n:
+        raise ValueError("E_EVAL_INVALID: regressions cannot exceed n")
     lb = wilson_lower_bound(successes, n)
     common = {"n": n, "successes": successes, "wilson_lower": lb,
               "baseline": baseline, "active": False}

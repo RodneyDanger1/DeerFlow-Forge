@@ -1,4 +1,4 @@
-﻿"""W4-A evaluation/promotion tests (no model, no network)."""
+"""W4-A evaluation/promotion tests (no model, no network)."""
 from __future__ import annotations
 
 import unittest
@@ -74,6 +74,12 @@ class PromotionTests(unittest.TestCase):
             propose_promotion(successes=2, n=2, min_n=2)
         with self.assertRaises(ValueError):
             propose_promotion(successes=1, n=1, baseline=1.5)
+        with self.assertRaises(ValueError):
+            propose_promotion(successes=True, n=8)
+        with self.assertRaises(ValueError):
+            propose_promotion(successes=8, n=8, human_approved="yes")
+        with self.assertRaises(ValueError):
+            propose_promotion(successes=8, n=8, regressions=9, human_approved=True)
 
 
 if __name__ == "__main__":
