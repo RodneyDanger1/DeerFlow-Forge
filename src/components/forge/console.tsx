@@ -40,7 +40,7 @@ export function Console() {
         </div>
         <div className="hidden text-right sm:block">
           <p className="text-sm">pod_pipeline</p>
-          <p className="font-mono text-xs text-muted">Fourthwall Open API · DeepSeek V4.1-Flash</p>
+          <p className="font-mono text-xs text-muted">Static blueprint · no live services</p>
         </div>
       </header>
       <div className="md:flex">

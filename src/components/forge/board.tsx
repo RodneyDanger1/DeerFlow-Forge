@@ -84,6 +84,9 @@ export function Board({ family, onFamily, traceFails, onTraceFails, docker, onDo
           {runLabel}
         </button>
       </div>
+      <p className="-mt-2 text-xs text-muted">
+        Simulation of the documented route — no Craft process runs.
+      </p>
 
       <ol className="border border-fg/10" aria-live="polite">
         {plan.map((step, index) => {
