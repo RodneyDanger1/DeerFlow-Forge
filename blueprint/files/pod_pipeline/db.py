@@ -24,6 +24,7 @@ def _rec(row: asyncpg.Record | None) -> dict[str, Any] | None:
 # ------------------------------------------------------------------------ runs
 RUN_SELECT = """
 SELECT j.id AS job_id, j.run_id, j.account_id, j.asset_id, j.product_type, j.status AS job_status,
+       j.error_digest, j.exit_code,
        a.source_path, a.original_filename, a.sha256, a.trace_state,
        acc.auto_publish, acc.fourthwall_api_user
   FROM processing_jobs j

@@ -111,8 +111,10 @@ async def test_anti_aliased_knitwear_fails_validation_and_marks_the_asset_failed
     asset = await db.get_asset(pool, asset_id)
     assert asset["status"] == "failed"
     run = await db.get_run(pool, run_id)
-    assert run["status"] == "failed"
-    assert run["error_digest"]
+    # RUN_SELECT exposes the orchestrator row's status as job_status (it is a
+    # processing_jobs row, not a separate runs table) plus the failure digest.
+    assert run["job_status"] == "failed"
+    assert "distinct colors" in (run["error_digest"] or "")
 
 
 async def test_missing_fourthwall_credentials_refuse_without_faking_a_publish(
