@@ -1,0 +1,18 @@
+flowchart TD
+  G["Goal: reliable, evidence-gated Craft production agent"] --> I1["I1 Craft launcher + argv: absolute binaries, measured commands, no stubs"]
+  G --> I2["I2 Craft MCP bridge: VC/PC stdio + roots, await every call"]
+  I1 --> I3["I3 Forge Conductor: service 8092, queue, ledger"]
+  I2 --> I3
+  I3 --> I4["I4 Verifier + blind critic: artifact, gates, render, tiles"]
+  I4 --> I5["I5 Approval + publish: hash-bound, no auto-publish"]
+  I3 --> I6["I6 Learning + evaluation: episodes to retrieval to skills"]
+  I4 --> I6
+  I6 --> I3
+  I1 --> I4
+  I5 --> OUT["Print-ready, human-approved storefront product"]
+  classDef p0 fill:#fde2e2,stroke:#b42318,color:#111
+  classDef p1 fill:#fff3cd,stroke:#8a6d3b,color:#111
+  classDef p2 fill:#d1f2e0,stroke:#146c43,color:#111
+  class I1,I2 p0
+  class I3,I4,I5 p1
+  class I6 p2

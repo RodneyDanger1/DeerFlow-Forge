@@ -1,7 +1,7 @@
 # START HERE — Ridgeboundia Agent Harness Research
 
-**Date:** 2026-11-05 · **Status:** research + execution plans complete/in progress; no production deploy.
-**Owner:** Riley · **Canonical repo path:** `research/eko-deerflow-agent/`.
+**Date:** 2026-11-05 · **Status:** research + execution evidence + integration plan complete; **no
+production deploy**. **Owner:** Riley · **Canonical repo path:** `research/eko-deerflow-agent/`.
 
 ## What this corpus is for
 
@@ -16,18 +16,25 @@ human approval and calibrated L1/L2 learning.
 
 | Order | File | Why |
 |---|---|---|
-| 1 | `GOALS.md` | durable goals, non-goals, scope, success metrics |
-| 2 | `execution-wave/09-GOAL-GAP-PLAN.md` | goal→research→code→product gap matrix and decision-complete plan |
-| 3 | `execution-wave/RECON-LEDGER.md` | entry points, call chain, tests, unknowns |
-| 4 | `execution-wave/01-EXECUTION-REPAIR.md` | measured CLI contracts and Phase 0 repair plan |
-| 5 | `wave2/01`–`03` | VPS, harnesses, Craft surface evidence |
-| 6 | `wave2/04` | full Forge Conductor design |
-| 7 | `wave2/05`–`07` | code mechanisms, learning, examples |
-| 8 | `wave2/08-200-QUESTIONS.md` + `REPORT.md` | 400 answered questions |
-| 9 | `execution-wave/04-PROMOTION-SIM.md` | simulation that corrected the 3/3 promotion rule |
-| 10 | `execution-wave/05-SECURITY.md` | key validation, MCP auth, dependency/security |
-| 11 | `diagrams/` | eight validated flow/architecture/state diagrams |
-| 12 | `ERRATA.md` | corrections, including the promotion rule and README claim |
+| 1 | `README.md` | master map: outcome, 6 integrations, 8 Python + 8 agent changes |
+| 2 | `GOALS.md` | durable goals, non-goals, scope, success metrics |
+| 3 | `ARCHITECTURE.md` | as-is/target system, contracts, failure modes, rollback |
+| 4 | `GOAL-EVALUATION.md` | goal-by-goal outcome + R1–R10 research plan |
+| 5 | `execution-wave/09-GOAL-GAP-PLAN.md` | decision-complete goal→code plan |
+| 6 | `PLAIN-ENGLISH.md` | full human explanation |
+| 7 | `execution-wave/RECON-LEDGER.md` | entry points, call chain, tests, unknowns |
+| 8 | `execution-wave/01-EXECUTION-REPAIR.md` | measured CLI contracts and Phase 0 plan |
+| 9 | `execution-wave/10-CLAIM-REGISTER.md` | what is proven / contradicted / missing |
+| 10 | `wave2/01`–`03` | VPS, harnesses, Craft surface evidence |
+| 11 | `wave2/04`–`06` | full design, code mechanisms, learning |
+| 12 | `wave2/07` + `examples/` | six worked examples |
+| 13 | `wave2/08-200-QUESTIONS.md` + `REPORT.md` | 400 answered questions |
+| 14 | `execution-wave/04-PROMOTION-SIM.md` | simulation that corrected the 3/3 rule |
+| 15 | `execution-wave/05-SECURITY.md` | key validation, MCP auth, dependency/security |
+| 16 | `execution-wave/08-VERIFICATION-INDEPENDENT.md` | fresh-seat verification |
+| 17 | `diagrams/` + `INTEGRATIONS.mmd` | 8 system diagrams + 1 integration map, validated |
+| 18 | `PDF-CATALOGUE.md` + `docs/pdf/` | 29-page indexed binder and text audit |
+| 19 | `ERRATA.md` | corrections and historical claims |
 
 ## The product outcome
 

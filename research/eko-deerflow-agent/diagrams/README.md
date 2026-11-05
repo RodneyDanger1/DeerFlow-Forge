@@ -5,6 +5,9 @@ sequence diagram (`03`) initially failed on a semicolon in message text and was 
 The three highest-risk diagrams were visually inspected for clipping/crowding:
 `01-goal-gap.png`, `04-forge-architecture.png`, `06-evidence-ladder.png`.
 
+A ninth diagram, [`../INTEGRATIONS.mmd`](../INTEGRATIONS.mmd) (+ SVG/PNG), maps the six integrations
+and their dependencies; it was validated through Kroki and visually inspected.
+
 | # | Source | SVG | PNG | Purpose |
 |---|---|---|---|---|
 | 1 | `01-goal-gap.mmd` | `01-goal-gap.svg` | `.png` | goals → code gaps → phases |

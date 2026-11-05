@@ -1,0 +1,29 @@
+{
+  "built": "2026-11-05",
+  "font": "Arial",
+  "pdfs": [
+    {
+      "name": "Forge-Conductor-Dossier.pdf",
+      "title": "Forge Conductor - Dossier",
+      "sources": [
+        "README.md",
+        "ARCHITECTURE.md",
+        "GOAL-EVALUATION.md",
+        "PLAIN-ENGLISH.md"
+      ],
+      "bytes": 116812,
+      "sha256": "11ad5f1cbbeb08a4a301a2e21b37ea7070eaa8c4cddd126107c9dabfd316b660"
+    },
+    {
+      "name": "Forge-Conductor-Plan.pdf",
+      "title": "Forge Conductor - Goals, Integrations and Decision Plan",
+      "sources": [
+        "GOALS.md",
+        "INTEGRATIONS.mmd",
+        "execution-wave/09-GOAL-GAP-PLAN.md"
+      ],
+      "bytes": 97021,
+      "sha256": "5acd1ec69d048bd20d3994b7fe584839b3f8c6117e4f19f7a99572c4139a3bd4"
+    }
+  ]
+}
