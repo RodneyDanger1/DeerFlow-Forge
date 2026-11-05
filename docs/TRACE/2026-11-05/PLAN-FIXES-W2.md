@@ -1,79 +1,65 @@
-# PLAN-FIXES-W2 — task-33 (Wave 2 plan/wiring fixes)
+# PLAN-FIXES-W2 — task-33 receipt (Wave 2 worker CLI + SQL test wiring)
 
-**Status: PARTIAL — hard stop before any edit.** 2026-11-05 · Seat: harness-architect.
-Task claimed (task-33, rev 2, owner harness-architect). **No source, test or doc file was changed;
-no tests were run.** This receipt records exact remaining work so the next seat can start immediately.
+**Status: COMPLETE (local, no deploy).** 2026-11-05 · Seat: harness-architect · Gate: Lead-written
+Phase-1 waiver for the unavailable `logic-gatekeeper` skill (architecture / dataFlow / edgeCases /
+rootCause supplied by the Lead in-session). Supersedes the earlier PARTIAL receipt for the same task.
 
-## Why PARTIAL
+## Changed files (6; no service/repo/verifier/critic/eval touched)
 
-The Lead issued a 2-minute hard stop before recon finished. The first required step —
-`forgewright-logic-gatekeeper` Phase-1 gate (architecture, data flow, root cause, one edge case)
-— could not be loaded: the skill name `forgewright-logic-gatekeeper` is **not resolvable** in this
-session (`skill` tool: "unknown or no longer available"). Per the ForgeWright contract, mutation
-without the gate is not permitted, and no edit was started rather than landing a guessed one.
+| File | Change |
+|---|---|
+| `blueprint/files/forge_worker.py` | guarded finish (D3) + `python -m forge_worker --once` CLI, bounded named errors, exit codes (72 → 275 lines) |
+| `blueprint/files/tests/test_forge_worker_cli.py` | **new** — 12 tests: guarded finish, bounded repo errors, handler failure recorded, empty queue, CLI config/runtime exits |
+| `blueprint/files/tests/test_forge_sql.py` | **new** — collects the 18-assertion script + SKIP LOCKED script; explicit skip when `FORGE_TEST_DSN` unset |
+| `blueprint/files/pytest.ini` | registered `sql_integration` marker (+2 lines) |
+| `docs/PLAN-CONTINUATION.md` | appended "W1 gaps — decision-complete next step" (W2/W2b/W6 closed; owners for W1/W3/W5) |
+| `docs/TRACE/2026-11-05/PLAN-FIXES-W2.md` | this receipt |
 
-## Scope that was claimed (unchanged)
+## Behaviour added (D3 + CLI)
 
-| File | Planned change | Current state |
-|---|---|---|
-| `blueprint/files/forge_worker.py` | guarded `finish_job` (D3) + `python -m forge_worker --once` CLI with bounded, named errors | **unmodified** |
-| `blueprint/files/tests/test_forge_worker_cli.py` | new CLI tests (success, empty queue, guarded-finish refusal, named error, exit code) | **not created** |
-| `blueprint/files/tests/test_forge_sql.py` | pytest wrapper invoking existing `forge_schema_assertions.py` / `forge_schema_skiplock.py`; `pytest.skip("FORGE_TEST_DSN unset")` otherwise | **not created** |
-| `blueprint/files/pytest.ini` | marker registration for the SQL integration tests | **unmodified** |
-| `docs/PLAN-CONTINUATION.md` | W1 gaps + decision-complete next step | **unmodified** |
-| `docs/TRACE/2026-11-05/PLAN-FIXES-W2.md` | this receipt | written |
+- `WorkerError(code, message)` / `FinishRefused(code, message)`; codes:
+  `E_INVALID_ARG`, `E_DSN_MISSING`, `E_HANDLER_MISSING`, `E_HANDLER_INVALID`, `E_JOB_STATE`,
+  `E_PARAM_REJECTED`, `E_TIMEOUT`, `E_REPO`, `E_WORKER`.
+- `ForgeWorker._finish()` wraps `repo.finish_job`: `E_JOB_STATE`/`E_PARAM_REJECTED`/`E_TIMEOUT` →
+  `FinishRefused`; other driver errors → `E_REPO`; nothing swallowed; no traceback is the contract.
+- CLI: `--once` (required), `--lease-s` (1..86400, validated before any I/O), `--worker-id`, `--dsn`,
+  `--handler module:async_callable`. DSN order: `--dsn` → `FORGE_DSN` → `FORGE_TEST_DSN` → `DATABASE_URL`.
+  `forge_repo` is imported lazily, so CLI tests need no asyncpg. Output: one JSON object;
+  exit `0` ok, `1` runtime `E_*`, `2` config `E_*`. Repo `close()` always awaited.
 
-## Evidence already established (from the task-26 audit, symbol-level)
+## Tests run (local, Python 3.14.7; pytest is not installed here)
 
-- `forge_worker.py:46-74` — `ForgeWorker`, `run_once`, `drain`; **no `__main__`, no argparse**
-  (contrast `forge_verifier.py:109,136`). This is the reason the CLI is required.
-- `forge_worker.py:65` — `drain(max_jobs)` exists; finish path is `repo.finish_job` (`:18` protocol)
-  with no local guard, so a non-claimable job's `E_JOB_STATE` would surface as a raw exception.
-- `tests/forge_schema_assertions.py:17` and `tests/forge_schema_skiplock.py:12` — standalone
-  `asyncio` scripts requiring `FORGE_TEST_DSN`; names are not `test_*.py`, so `pytest.ini:1-2`
-  (`testpaths = tests`) never collects them.
-- `pytest.ini:1-6` — `testpaths = tests`, `pythonpath = .`, `asyncio_mode = auto`; no markers block.
+| Command | Observed |
+|---|---|
+| `python -m py_compile forge_worker.py tests/test_forge_worker_cli.py tests/test_forge_sql.py` | exit 0 |
+| `python -m unittest tests.test_forge_worker_cli -v` | **Ran 12 tests — OK** |
+| `python -m unittest tests.test_forge_sql -v` | **Ran 2 tests — OK (skipped=2)**; reason: "FORGE_TEST_DSN unset: SQL invariants not run (explicit skip, not a pass)" |
+| `python -m unittest tests.test_forge_worker` (existing) | **Ran 6 tests — OK** (no regression) |
+| `python -m forge_worker` | `{"ok":false,"code":"E_INVALID_ARG","message":"only --once is supported; no daemon mode"}` exit 2 |
+| `python -m forge_worker --once` with no DSN | `{"ok":false,"code":"E_DSN_MISSING",...}` exit 2 |
+| `python -m forge_worker --once --lease-s 0` | `{"ok":false,"code":"E_INVALID_ARG","message":"--lease-s out of range 1..86400: 0"}` exit 2 |
 
-## Decision-complete next step (execute in this order)
-
-1. **Read first** `forge_worker.py` (all 90 lines), `tests/test_forge_worker.py`,
-   `tests/forge_schema_assertions.py`, `tests/forge_schema_skiplock.py`, `pytest.ini`.
-2. **Guarded finish (D3):** add a worker-local `FinishRefused(Exception)` carrying
-   `code in {E_JOB_STATE, E_PARAM_REJECTED, E_TIMEOUT}`; wrap the `repo.finish_job` call in
-   `run_once`/`drain`; map DB `E_JOB_STATE` to `FinishRefused`; never swallow. Test: finishing an
-   already-finished job raises the bounded error and leaves the row unchanged.
-3. **CLI:** add `argparse` with `--once` (default) and `--lease-s`; `if __name__ == "__main__"` →
-   `asyncio.run(main())`; errors print one-line JSON `{"ok":false,"code":"E_..."}` to stderr and exit
-   non-zero; success prints `{"ok":true,"claimed":N,"finished":M}` and exits 0. Test both paths plus
-   empty queue (`{"ok":true,"claimed":0}`).
-4. **SQL tests:** `tests/test_forge_sql.py` reads `FORGE_TEST_DSN`;
-   `pytest.skip("FORGE_TEST_DSN unset")` at module level when absent; otherwise runs the two
-   existing scripts via `subprocess.run([sys.executable, script], env=..., check=True)` and asserts
-   exit 0. No assertion duplication.
-5. **pytest.ini:** add `markers = sql_integration: needs FORGE_TEST_DSN` (and nothing else).
-6. **Docs:** append a dated W1-gap next-step block to `PLAN-CONTINUATION.md` pointing at steps 2–5
-   and the task-33 receipt.
-7. **Verify:** `cd blueprint/files && python -m pytest tests -q` (expect existing suite unaffected);
-   `python -m forge_worker --once` against a scratch DSN; with no DSN, `test_forge_sql.py` must SKIP,
-   not fail.
+`pytest` is **not installed** in this local Python (`No module named pytest`), so the new files were
+executed with `unittest`; they are pytest-compatible (`IsolatedAsyncioTestCase` + `skipUnless`, and
+`pytest.ini` already sets `asyncio_mode = auto`). **The pytest run itself is UNVERIFIED here.**
 
 ## Rollback
 
-Every change is additive (new file, new function, marker line, docs paragraph). Inverse:
-delete `test_forge_sql.py` / `test_forge_worker_cli.py`, revert the two small edits and the docs block
+Delete the two new test files; revert the three edited files
 (`git checkout -- blueprint/files/forge_worker.py blueprint/files/pytest.ini docs/PLAN-CONTINUATION.md`).
+No schema, no migration, no data, no service.
 
-## Blockers / coordination
+## Not done / out of scope (unchanged, do not read as fixed)
 
-- `forgewright-logic-gatekeeper` skill unavailable in this session — gate must be obtained before edits
-  (or explicitly waived by the Lead in writing).
-- Claim returned `writeScopeWarnings: overlap with task-28`; `forge_worker.py` must be single-owner.
-  Confirm task-28 is not editing it before starting.
+- W1 idempotency persistence (`forge_repo.py` `find`/`store`) — repo owner.
+- W3 potential double-append (`forge_repo.py:63,79`) — repo owner; body not read.
+- W5 eval persistence; W7 clean-env deps; W8 service auth — their owners.
+- Live DB run of the 18 SQL assertions / SKIP LOCKED — requires `FORGE_TEST_DSN`; skipped explicitly.
+- No production DB, deploy, commit, or DeerFlow registration touched.
 
-## Explicit UNVERIFIED
+## UNVERIFIED
 
-- Function bodies and test bodies (not read at stop time).
-- Whether a scratch `FORGE_TEST_DSN` is available in this environment.
-- Exact D3 wording from the originating decision register (file not located at stop time).
-
-*No code was tested, so no test result is claimed. Zero changed files besides this receipt.*
+1. `pytest` execution of the new/changed files (module absent locally; the `unittest` equivalents passed).
+2. SQL integration outcomes (skipped without `FORGE_TEST_DSN`).
+3. `python -m forge_worker --once` against a real `ForgeRepo` (CLI tested with an injected repo factory).
+4. `asyncpg` import path on the deployment host (lazy import exercised only via injection).

@@ -6,7 +6,7 @@ import os
 import unittest
 import uuid
 
-from forge_repo import ForgeRepo
+from forge_repo import ForgeRepo, RepoShapeError
 
 DSN = os.environ.get("FORGE_TEST_DSN")
 
@@ -59,6 +59,21 @@ class RepoTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_unknown_episode_is_none(self):
         self.assertIsNone(await self.repo.get_episode(str(uuid.uuid4())))
+
+
+class RowShapeUnitTests(unittest.TestCase):
+    """D6: _row must fail loudly on a shape problem; no database needed."""
+
+    def test_row_without_id_raises_shape_error(self):
+        with self.assertRaises(RepoShapeError):
+            ForgeRepo._row({"state": "intake"})
+
+    def test_row_with_unparseable_json_column_raises_shape_error(self):
+        with self.assertRaises(RepoShapeError):
+            ForgeRepo._row({"id": "x", "payload": "{not json"})
+
+    def test_none_row_stays_none(self):
+        self.assertIsNone(ForgeRepo._row(None))
 
 
 if __name__ == "__main__":

@@ -50,3 +50,31 @@ superseded and retained only in history.
 
 **Verify:** `validate_skills.py` → 39/39; `check_skill_commands.py` → 0 unknown; install both runtimes;
 then run a fresh verifier on local tests and G0 evidence (VPS access is a known verifier limitation).
+
+---
+
+## W1 gaps — decision-complete next step (2026-11-05, task-33)
+
+Source: `docs/TRACE/2026-11-05/PLAN-WIRING-AUDIT.md` §3 (W1–W8) and
+`docs/TRACE/2026-11-05/PLAN-FIXES-W2.md`. This wave closes W2/W6; it does **not** fix W1/W3/W5.
+
+Closed in this wave:
+- **W2 worker entry point:** `blueprint/files/forge_worker.py` now has `python -m forge_worker --once`
+  (`--lease-s`, `--worker-id`, `--dsn`, `--handler module:async_callable`) with bounded one-line JSON
+  errors and exit codes 0 (ok) / 1 (runtime `E_*`) / 2 (config `E_*`).
+- **W2b guarded finish (D3):** `ForgeWorker._finish` raises `FinishRefused` for
+  `E_JOB_STATE`/`E_PARAM_REJECTED`/`E_TIMEOUT`; other driver errors become `E_REPO`. No swallowed finish.
+- **W6 SQL invariants:** `tests/test_forge_sql.py` makes the existing
+  `forge_schema_assertions.py` + `forge_schema_skiplock.py` collectable; it **skips explicitly** when
+  `FORGE_TEST_DSN` is unset (`pytest.ini` marker `sql_integration`). A green run never silently claims them.
+
+Next step (owners, in order):
+1. **W1 idempotency persistence** — `forge_repo.py` has no `find`/`store` for `forge_tool_call`; add a
+   `PgRepo` adapter + real-DB duplicate-call test. Owner: repo task, not worker.
+2. **W3 double-append** — read `forge_repo.py:63-79`; make exactly one owner of `episode.transition`
+   event append; add an event-count assertion.
+3. **W5 eval persistence** — `forge_eval.py` is a pure decision function; no eval row is written.
+4. **W7 clean-env deps** — confirm `asyncpg`/`Pillow` in `requirements.txt`.
+5. **W8 service auth** — owned by the `05-SECURITY` plan.
+
+Do not claim W1/W3/W5 closed until the owning task lands with a test; worker tests prove only W2/W2b.

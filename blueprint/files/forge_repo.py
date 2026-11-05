@@ -12,6 +12,12 @@ from typing import Any
 import asyncpg
 
 
+class RepoShapeError(RuntimeError):
+    """A row came back that cannot be mapped to the service contract."""
+
+    code = "E_REPO_SHAPE"
+
+
 class ForgeRepo:
     def __init__(self, pool: asyncpg.Pool) -> None:
         self.pool = pool
@@ -22,10 +28,14 @@ class ForgeRepo:
             return None
         data = dict(row)
         if data.get("id") is None:
-            return None
+            raise RepoShapeError(f"row is missing id; keys={sorted(data)}")
         for key in ("payload", "result", "budget", "params"):
             if isinstance(data.get(key), str):
-                data[key] = json.loads(data[key])
+                try:
+                    data[key] = json.loads(data[key])
+                except json.JSONDecodeError as exc:
+                    raise RepoShapeError(
+                        f"column {key} is not valid JSON: {exc.msg}") from exc
         return data
 
     @classmethod
@@ -58,6 +68,14 @@ class ForgeRepo:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             row = await conn.fetchrow("SELECT * FROM forge_episode WHERE id=$1", episode_id)
+            return self._row(row)
+
+    async def get_episode_by_idempotency_key(self, key: str) -> dict[str, Any] | None:
+        """Return the episode created for an idempotency key, if any (D2 replay path)."""
+        async with self.pool.acquire() as conn:
+            await conn.execute("SET search_path = forge, public")
+            row = await conn.fetchrow(
+                "SELECT * FROM forge_episode WHERE idempotency_key=$1", key)
             return self._row(row)
 
     async def transition(self, episode_id: str, target: str, *, verdict: str | None = None,
