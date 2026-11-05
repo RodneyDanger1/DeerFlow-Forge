@@ -45,6 +45,8 @@ size and DPI. Flat art that should become vector belongs to `artcraft-vector-tra
 cd /opt/pod-pipeline
 PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
 PY=/opt/pod-pipeline/.venv/bin/python
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh
+# Stop if SSH/key is unavailable: /opt/pod-pipeline and the CLIs do not exist on Windows.
 ```
 
 Inspect first — PhotoCraft takes the file positionally:
@@ -112,6 +114,9 @@ Before touching pixels, compute and record:
 - Output path differs from input; PhotoCraft refuses same-path `--out` unless `--in-place`.
 - Read `info` before/after: size, mode, depth, resolution.
 - Ask for destination print size/DPI, defect and rights when absent; never choose 300 DPI silently.
+- If the source has no white background (dark/full-bleed photo), `--mode white` refuses
+  `E_SUBJECT_FULL_FRAME`; use `--mode none` deliberately, or `--mode alpha` only when the file has a real
+  alpha channel.
 
 ## Workflow / state machine
 

@@ -37,6 +37,8 @@ mockup and not a provider print master (continue with `apparel-print-master` for
 cd /opt/pod-pipeline
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
 PY=/opt/pod-pipeline/.venv/bin/python
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh
+# Stop if SSH/key is unavailable: /opt/pod-pipeline and the CLIs do not exist on Windows.
 ```
 
 **Step 1 — strict white cutout.** Every neutral white transparent (owner rule); cream/tan stays.
@@ -44,7 +46,9 @@ PY=/opt/pod-pipeline/.venv/bin/python
 `subject_bbox`, scales the subject to `usable`, and centres it on `width_px × height_px`. The command
 below assumes a **1024 px square** source; for a different source use its actual W×H and set
 `--print-width-in` to `W/300` (or your intended print width). If the input is already a clean alpha
-cutout, use `--mode alpha` instead of removing white again:
+cutout, use `--mode alpha` instead of removing white again. `--mode alpha` on an opaque file refuses
+`E_SUBJECT_FULL_FRAME`; `--mode white` refuses when there is no white background — use `--mode none`
+deliberately for full-bleed art:
 
 ```bash
 $PY -m tools.prep_print_art --input /tmp/art.png --output /tmp/art_cut.png \

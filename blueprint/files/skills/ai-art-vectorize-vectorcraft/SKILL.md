@@ -40,6 +40,7 @@ retyped, custom limited-palette `imageTrace.make`, Expand, SVG export, print-pix
 cd /opt/pod-pipeline
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
 PY=/opt/pod-pipeline/.venv/bin/python
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh; stop if unavailable (the /opt CLIs do not exist on Windows).
 ```
 
 Production wrapper (cutout → erase AI text bands → trace → expand → rsvg → retype → gates):
@@ -102,7 +103,9 @@ Retype JSON shape (boxes measured on the original image, `text` empty string era
 Stop on any failed gate; never upload an `ok:false` report.
 
 1. Inspect; require ≥150 px per print inch. Regenerate below that.
-2. Pre-cutout every white (`--mode white --clean-rim`); cream/tan survives.
+2. Pre-cutout every white (`--mode white --clean-rim`); cream/tan survives. If there is no white
+   background, the cutout refuses `E_SUBJECT_FULL_FRAME`: use `--mode none` deliberately, or
+   `--mode alpha` only when the file has a real alpha channel.
 3. Erase AI text bands; trace with custom params; expand and export SVG.
 4. Render at `print_width_in × dpi`; retype at mapped boxes; run ten gates and previews.
 5. Keep the SVG, PNG master and report JSON together.

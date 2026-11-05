@@ -40,6 +40,8 @@ cd /opt/pod-pipeline
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
 PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
 PY=/opt/pod-pipeline/.venv/bin/python
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh
+# Stop if SSH/key is unavailable: /opt/pod-pipeline and the CLIs do not exist on Windows.
 ```
 
 **1) Vectorise a flat mark** (full workflow in `artcraft-vector-trace`):
@@ -111,7 +113,8 @@ def ratio(a,b):
 
 1. Audit what exists: raster marks, old hex values, fonts actually installed (`text.fontList`).
 2. Fix the palette first: name every colour, record hex, agree print equivalents with the vendor.
-3. Produce four lockups: primary, inverse (dark grounds), monochrome, icon/square.
+3. Produce four lockups: primary, inverse (dark ground image + primary lockup; backgroundContents is
+   only transparent|white), monochrome, icon/square.
 4. Set clear space (fixed fraction of the mark) and minimum sizes in px and inches; measure them.
 5. Choose type: one display + one text family; record licence and fallbacks.
 6. Write application rules: garment print width, white-transparent rule, vector rule, embroidery limits.

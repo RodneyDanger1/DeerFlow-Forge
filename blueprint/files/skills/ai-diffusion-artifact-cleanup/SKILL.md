@@ -37,6 +37,8 @@ Source with rights (never overwrite), route (trace vs raster master), print widt
 ```bash
 cd /opt/pod-pipeline; PY=.venv/bin/python
 PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh
+# Stop if SSH/key is unavailable: /opt/pod-pipeline and the CLIs do not exist on Windows.
 ```
 
 **Step 0 — audit before touching pixels.** Save as `/tmp/artefact_audit.py`:
@@ -62,6 +64,8 @@ square on a rectangular source).
 
 ```bash
 # 1024 below is a square example: set W/H from identify for a rectangular source.
+# Mode routing: --mode alpha needs a real alpha channel (opaque JPEG refuses E_SUBJECT_FULL_FRAME);
+# --mode white needs a white background; use --mode none deliberately for full-bleed art.
 $PY -m tools.prep_print_art --input /tmp/art.png --output /tmp/art_cut.png \
   --width-px 1024 --height-px 1024 --dpi 300 --mode white --clean-rim \
   --min-component 60 --edge-clean-px 26 --edge-clean-lum 140 --margin-px 0 \
@@ -128,8 +132,9 @@ Gate sets differ by tool — quote the right one:
   transparent corners, retyped text present).
 - `artcraft`: 10 checks, coverage 0.03–0.92; full-bleed art legitimately fails coverage.
 
-Additional gates: `white_residual_ratio` ≤0.002; `specks_under_150_px` = 0; traced input
-`hard_alpha_share` ≥0.85; raster master 300 DPI, `upscale_factor` ≤2.5, no unexpected warnings;
+Additional gates (measure alpha/white on the **cutout**, not the opaque source — a JPEG's alpha is
+255 everywhere, so `hard_alpha_share` 1.0 means nothing): `white_residual_ratio` ≤0.002;
+`specks_under_150_px` = 0; `hard_alpha_share` ≥0.85; raster master 300 DPI, `upscale_factor` ≤2.5;
 edge sharpness after unsharp ≥1.0× the same-size pre-sharpen value (verified 1.06× prep, 2.34×
 PhotoCraft chain). Visual: no grey halo, dark rim, speckle, lost thin stroke.
 
@@ -186,8 +191,8 @@ until cream lettering disappears; call a non-crash failure a success.
 
 - **VERIFIED (2026-11-05):** audit numbers from a synthetic diffusion-like test; `prep_print_art`
   report (`upscale_factor 5.568`, warnings, exit 0); PhotoCraft chain
-  reduceNoise→levels→unsharpMask; `artcraft` fixed and smoke-run (report written; coverage failure
-  on full-bleed synthetic); PhotoCraft `convert --quality` measurement.
+  reduceNoise→levels→unsharpMask; `artcraft` fixed and smoke-run (1500 canvas: coverage 0.1165 pass, colour-histogram 0.345 fails
+  0.65 on two-tone synthetic); PhotoCraft `convert --quality` measurement.
 - **SCHEMA/SOURCE:** PhotoCraft 0.20.2 registry; `tools/prep_print_art.py`;
   `tools/artcraft.py`; `tools/craft_trace.py` gate list.
 - **DOCS:** vault 02/15; scikit-image `exposure.equalize_adapthist`

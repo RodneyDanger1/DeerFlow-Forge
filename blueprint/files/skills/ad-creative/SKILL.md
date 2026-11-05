@@ -39,6 +39,8 @@ the owner's responsibility.
 cd /opt/pod-pipeline
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
 PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh
+# Stop if SSH/key is unavailable: /opt/pod-pipeline and the CLIs do not exist on Windows.
 ```
 
 Square feed — exact pixels; `ppi:72` means 1 px per point, so a 1080 pt document exports 1080 px:
@@ -63,7 +65,7 @@ convert /tmp/ad_feed.png -format 'corner=%[pixel:p{5,5}] center=%[pixel:p{540,54
 Portrait/story: same steps with `{"width":1080,"height":1350}` or `{"width":1080,"height":1920}`;
 keep the message inside the central safe band.
 
-**Placement math (important):** `file.place` brings raster images in at **100 % of their physical
+The example omits the approved logo for brevity; production adds `file.place` for the logo inside the\nsafe zone. **Placement math (important):** `file.place` brings raster images in at **100 % of their physical
 size** (the file's ppi, else 72), not their pixel count. A 2000×1500 image at 300 ppi lands as
 **480×360 pt centred at (300, 360)** on a 1080 canvas; at 72 ppi it lands **2000×1500 centred at
 (−460, −210)**. Two safe options:
@@ -131,7 +133,8 @@ print(ratio('#efe6cf','#101312'))
 40 px, both inside 80 px margins. Export `ad_feed.png`; convert lossy WebP `--quality 82`; verify 1080×1080 and
 contrast of `#efe6cf` on `#101312`.
 
-**2. 1080×1920 story.** Same message, headline 88 px, subject middle band, CTA around y=1600; top and
+**2. 1080×1920 story.** Same message, headline 52 px (bounds 888×52; 88 px was 1,503 px wide and
+overflowed), subject middle band, CTA around y=1600; top and
 bottom 250 px free of text. Export PNG + WebP; check UI bands and thumbnail legibility.
 
 ## Integration handoffs

@@ -38,7 +38,7 @@ SKILL.md against these catalogues.
 ```bash
 VC=/opt/craft/vectorcraft/vectorcraft-0.21.1-linux-x86_64/bin/vectorcraft-cli
 PC=/opt/craft/photocraft/photocraft-0.20.2-linux-x86_64/bin/photocraft-cli
-CAT=/opt/craft/catalogues/vectorcraft-commands.json
+# Linux VPS only. From Windows: ssh -i ~/.ssh/id_ed25519_hostinger root@179.197.88.181 'cd /opt/pod-pipeline && bash -s' < script.sh; stop if unavailable (the /opt CLIs do not exist on Windows).
 ```
 
 List/count, filter, and read a parameter schema (python works; **jq is not installed**):
