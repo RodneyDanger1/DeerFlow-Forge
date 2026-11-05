@@ -6,6 +6,7 @@
 | T2 | Board and Routes | Apparel distress step read `{work}/apparel/trimmed.png`, but the new trim step writes `{work}/trimmed.png` | `routes.py` effectcraft step + model template still used the old output directory | FIXED |
 | T3 | Sources | New `deploy/craft-launchers/*` and DeerFlow MCP example were absent from the source registry | `src/lib/blueprint/sources.ts` imported only the old `craft-bin` stubs | FIXED |
 | T4 | Playbook | Image-trace example still showed the old `--commands` JSON format; skill count said 22 | Static `playbook-view.tsx` content not updated after Phase 0 | FIXED |
+| T5 | Sources | Copy button stayed "Copy" when both clipboard paths were denied; the user got no failure signal | `copy-button.tsx` only reacted to success and returned early on failure | FIXED |
 
 ## Trace ladder
 
