@@ -66,7 +66,15 @@ install -d -o "$APP_USER" -g "$APP_GROUP" -m 0750 \
 if [[ ! -x "$ROOT/.venv/bin/python" ]]; then
   if command -v uv >/dev/null 2>&1; then
     # Ubuntu 26.04 ships Python 3.14; asyncpg/Pillow wheels lag it. uv pins 3.12.
+    # uv installs managed Pythons under /root by default (mode 0700), which the
+    # unprivileged service user cannot traverse: pod-mcp then dies with
+    # "Failed to execute .venv/bin/python: Permission denied". Keep them in a
+    # world-readable prefix instead.
+    export UV_PYTHON_INSTALL_DIR="${UV_PYTHON_INSTALL_DIR:-/opt/uv-python}"
+    install -d -m 0755 "$UV_PYTHON_INSTALL_DIR"
+    uv python install 3.12
     uv venv --python 3.12 "$ROOT/.venv"
+    chmod -R a+rX "$UV_PYTHON_INSTALL_DIR"
   else
     python3 -m venv "$ROOT/.venv"
   fi
