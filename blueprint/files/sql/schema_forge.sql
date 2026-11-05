@@ -312,6 +312,10 @@ BEGIN
           LIMIT 1
      )
      RETURNING * INTO v;
+    -- A null composite is not SQL NULL in every client; make empty explicit.
+    IF v.id IS NULL THEN
+        RETURN NULL;
+    END IF;
     RETURN v;   -- NULL when nothing is ready; never an error
 END;
 $$;
@@ -477,6 +481,10 @@ BEGIN
           LIMIT 1
      )
      RETURNING * INTO v;
+    -- A null composite is not SQL NULL in every client; make empty explicit.
+    IF v.id IS NULL THEN
+        RETURN NULL;
+    END IF;
     RETURN v;   -- NULL when the queue is empty; never an error
 END;
 $$;

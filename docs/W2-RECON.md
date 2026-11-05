@@ -59,8 +59,9 @@ key → stored result, zero executor calls.
 
 ## Implementation status (after recon)
 
-W2-A gateway/DDL/test files now exist locally and the pure suite is **33/33 on staging**; DDL apply,
-repository, queue/lease and service remain open. See `execution-wave/17-W2-SKELETON.md`.
+W2-A gateway/DDL/test files now exist locally and the pure suite is **33/33 on staging**; the DDL
+applies twice on scratch PG, **18/18 SQL assertions** pass and two-worker `SKIP LOCKED` completes in
+9 ms. The repository/service/worker/lease-reaper remain open. See `execution-wave/17-W2-SKELETON.md`.
 
 ## Stop condition
 
