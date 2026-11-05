@@ -14,8 +14,7 @@ metadata:
 # PhotoCraft adjustments and filters
 
 Correct in an order: exposure/tone → colour balance → saturation → denoise → sharpen last. Prefer
-adjustment layers for a master; destructive filters belong on a copy. Full maps:
-`artcraft-command-atlas/references/pc-image-adjust.md`, `pc-filter-effect.md`.
+adjustment layers for a master; destructive filters belong on a copy. Load **artcraft-command-atlas**, then read `references/pc-image-adjust.md` and `pc-filter-effect.md`.
 
 ## When to use / not use
 
@@ -124,6 +123,8 @@ images; masks are not represented.
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** copy; inspect mode/depth; define output/proof; choose layer vs destructive; read params.
 
 **Execution loop:** one correction step; inspect histogram/100 %; then next; preserve original.
@@ -141,6 +142,6 @@ mask-preserving export.
 
 - **VERIFIED:** all ids above exist in the 965-row registry; adjustment/filter params read from
   `commands --json`; PhotoCraft positional run/out; LUT constraints from official CLI book.
-- **ATLAS:** `artcraft-command-atlas/references/pc-image-adjust.md`, `pc-filter-effect.md`,
+- **ATLAS:** `references/pc-image-adjust.md`, `pc-filter-effect.md`,
   `recipes-photocraft.md`.
 - **DOCS:** local ArtCraft docs; official README/CLI book; Adobe levels/curves/actions concepts.

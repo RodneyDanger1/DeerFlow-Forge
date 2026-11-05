@@ -1,5 +1,14 @@
 # VectorCraft recipes
 
+## Verification status
+
+- **VERIFIED end-to-end here:** `imageTrace.make`/`expand` + SVG export, `object.path.simplify`,
+  `document.export` at ppi, `file.place` with `rect`, `file.new`/text create.
+- **SCHEMA-VERIFIED only:** ids and params exist in the catalogue, but these exact sequences were not
+  executed: boolean recipes, recolor, artboards, variables, stroke/effect combinations. Probe one step
+  first; do not quote an output that was not run.
+- All ids are checked by `check_skill_commands.py`/`check_atlas.py`; that is not behavioural proof.
+
 Each recipe is a runnable sequence on the Linux VPS. Read the full params text for every id before
 running; ids are verified against the 918-command snapshot. Always work on a copy and export to a new
 path.

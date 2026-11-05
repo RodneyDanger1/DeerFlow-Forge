@@ -14,8 +14,7 @@ metadata:
 # PhotoCraft selections and masks
 
 A selection is a temporary region; a mask is persistent; an alpha channel is stored data. Keep the
-layered master and inspect masks on black and white. Full map:
-`artcraft-command-atlas/references/pc-selection-channel.md`.
+layered master and inspect masks on black and white. Load **artcraft-command-atlas**, then read `references/pc-selection-channel.md`.
 
 ## When to use / not use
 
@@ -122,6 +121,8 @@ seams/texture; if poor, retry with a tighter region or regenerate.
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** copy; inspect; define region/mask persistence; read params.
 
 **Execution loop:** rough select → refine → mask/alpha → composite check; one change at a time.
@@ -139,5 +140,5 @@ use content-aware fill as a structural repair guarantee.
 
 - **VERIFIED:** all ids above exist in the 965-row registry; select/mask/channel params read from
   `commands --json`; PhotoCraft positional run/out behavior.
-- **ATLAS:** `artcraft-command-atlas/references/pc-selection-channel.md`, `recipes-photocraft.md`.
+- **ATLAS:** `references/pc-selection-channel.md`, `recipes-photocraft.md`.
 - **DOCS:** local ArtCraft docs; official README; Adobe selection/refine-edge concepts.

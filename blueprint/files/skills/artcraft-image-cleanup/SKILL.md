@@ -201,7 +201,7 @@ defect; CMYK/proof needed; batch name collision without `--naming`.
 **Never:** overwrite the source; sharpen before final resize; trust a lossy export byte-size blindly;
 claim CMYK proof from an RGB screen.
 
-Deeper PhotoCraft command map: **artcraft-command-atlas** (`pc-image-adjust.md`, `pc-filter-effect.md`); cutouts: **artcraft-selections-masks**.
+Deeper PhotoCraft command map: **artcraft-command-atlas** (`pc-image-adjust.md`, `pc-filter-effect.md`); cutouts: **artcraft-selections-masks**. Use atlas `command_lookup.py` before guessing an id.
 
 ## Sources & verification
 

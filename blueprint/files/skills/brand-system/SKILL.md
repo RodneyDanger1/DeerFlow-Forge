@@ -201,7 +201,7 @@ below 150 px per print inch; unlicensed asset; tool unavailable.
 Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
 parameter; call a screen render print proof.
 
-Implementation commands: **artcraft-command-atlas**, **artcraft-typography-outlines**, **artcraft-color-swatches-styles**.
+Implementation commands: **artcraft-command-atlas**, **artcraft-typography-outlines**, **artcraft-color-swatches-styles**. Use `command_lookup.py` for exact ids/params.
 
 ## Sources & verification
 

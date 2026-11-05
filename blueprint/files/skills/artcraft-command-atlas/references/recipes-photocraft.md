@@ -1,5 +1,13 @@
 # PhotoCraft recipes
 
+## Verification status
+
+- **VERIFIED end-to-end here:** the crop → dust/levels/hue/unsharp → imageSize chain (4032×3024 →
+  2400×3000, 118.11 px/cm, exit 0); `convert` lossy/lossless byte comparison.
+- **SCHEMA-VERIFIED only:** subject/sky selection + masks, adjustment layers, batch, layer/artboard
+  export, LUT, droplets. The ids/params exist; these exact sequences were not run here. Treat them as
+  starting points and probe one input first.
+
 PhotoCraft takes the input file positionally, chain order matters, and `--out` must differ from the
 input unless `--in-place`. Always keep the source and inspect every step's JSON result.
 

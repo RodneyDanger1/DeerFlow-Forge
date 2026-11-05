@@ -8,7 +8,7 @@ platforms: [windows, linux, macos]
 metadata:
   hermes:
     tags: [artcraft, vectorcraft, photocraft, commands, mapping, reference, cli, mcp]
-    related_skills: [artcraft-command-catalog, artcraft-path-geometry, artcraft-typography-outlines, artcraft-document-export-formats, artcraft-photocraft-adjustments-filters]
+    related_skills: [artcraft-command-catalog, artcraft-path-geometry, artcraft-typography-outlines, artcraft-document-export-formats, artcraft-photocraft-layers, artcraft-photocraft-adjustments-filters]
 ---
 
 # ArtCraft command atlas
@@ -25,6 +25,10 @@ This SKILL.md is the router. The full indexes live in `references/` (installed a
 | Reference | Contents |
 |---|---|
 | `references/00-intent-map.md` | designer intent → exact id(s), both apps |
+| `references/group-index.md` | group prefix → family file + command count |
+| `references/command_lookup.py` | **fast CLI lookup**: query/id/group/stats, no big-context load |
+| `references/check_atlas.py` | validates coverage + app-scoped intent ids + group index |
+| `references/catalogues/` | machine catalogue snapshot used by the lookup tool |
 | `references/command-tips.md` | params/units, state/selection, export/batch, failure map |
 | `references/vc-object-path.md` | objects, paths, shapes, pathfinder, live paint |
 | `references/vc-text-type.md` | text content/style, type conversion, fonts |
@@ -42,7 +46,25 @@ This SKILL.md is the router. The full indexes live in `references/` (installed a
 | `references/recipes-vectorcraft.md`, `recipes-photocraft.md` | runnable multi-step recipes |
 | `references/sources.md` | official docs/URLs, local docs, claim labels |
 
-Read `references/README.md` first if unsure which file to open. Each family index lists every id,
+Read `references/README.md` first if unsure which file to open.
+
+## Fast path for an agent (use this first)
+
+Do **not** paste the whole reference tree into context: it is >1.5 MB including the machine catalogues.
+Run these from this skill's base directory (installed: `~/.dsh/skills/artcraft-command-atlas` or
+`~/.hermes/skills/artcraft-command-atlas`). The efficient loop is:
+
+1. `python references/command_lookup.py "outline text"` (add `--app vc|pc`, `--limit`).
+2. `python references/command_lookup.py --id type.createOutlines --full-params` for the exact schema.
+3. `python references/command_lookup.py --group object.pathfinder --app vc` for one family.
+4. Open **one** family file from the table only when you need the full list/notes.
+5. `python references/check_atlas.py` before trusting an edited atlas (coverage + intent app check).
+
+`command_lookup.py` has a small alias map for common jobs (trace, outline text, reduce noise, etc.),
+then falls back to id/label/menu/params search. It prints catalogue state and truncates very long params
+by default; use `--id … --full-params` when the command is the one you will run.
+
+ Each family index lists every id,
 label, menu path, abbreviated params and a practical note; the catalogue's full params text is still
 the authority.
 
@@ -73,6 +95,8 @@ $PC commands --json | python3 -c 'import json,sys; c=json.load(sys.stdin); print
 $VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); print(next(x["params"] for x in c if x["id"]=="object.path.simplify"))'
 $PC commands --json | python3 -c 'import json,sys; c=json.load(sys.stdin); print(next(x["params"] for x in c if x["id"]=="image.crop"))'
 $VC commands | python3 -c 'import json,sys; c=json.load(sys.stdin); [print(x["id"], "—", x["label"]) for x in c if "simplify" in (x["id"]+x["label"]).lower()]'
+python references/command_lookup.py "outline text"
+python references/command_lookup.py --group object.pathfinder --app vc
 ```
 
 ## Mapping procedure

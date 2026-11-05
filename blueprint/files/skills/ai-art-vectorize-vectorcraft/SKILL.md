@@ -208,7 +208,7 @@ font/rights — ask, do not invent.
 **Never**
 Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
 parameter; call a screen render print proof.
-Command alternatives and parameter tips: **artcraft-command-atlas** (`vc-trace-addon.md`); SVG delivery: **artcraft-svg-production**.
+Command alternatives and parameter tips: **artcraft-command-atlas** (`vc-trace-addon.md`); SVG delivery: **artcraft-svg-production**. Use `command_lookup.py` for exact params.
 ## Sources & verification
 
 - **VERIFIED:** `craft_trace` gate names/thresholds and `ok` semantics; nested `params.params`;

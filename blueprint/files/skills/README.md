@@ -23,7 +23,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 `metadata.hermes`); the original skills keep minimal frontmatter and are still installable. Skills may ship a
 `references/` folder (command atlases, recipes, tips); the installer mirrors it to both runtimes.
 
-## Catalogue (32 skills)
+## Catalogue (33 skills)
 
 | Skill | Family | Use it for |
 |---|---|---|
@@ -54,6 +54,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 | `artcraft-document-export-formats` | Engine | save/place/export SVG/PDF/PNG, artboards, presets |
 | `artcraft-svg-production` | Engine | production SVG options, text policy, XML/render checks |
 | `artcraft-selections-masks` | PhotoCraft | subject/sky selection, refine edge, masks, channels |
+| `artcraft-photocraft-layers` | PhotoCraft | layers, groups, masks/clipping, styles, smart objects, comps, export |
 | `artcraft-photocraft-adjustments-filters` | PhotoCraft | levels/curves/colour, denoise/sharpen, LUT |
 | `artcraft-batch-automation` | PhotoCraft | actions, batch folders, naming, droplets, verification |
 | `craft-mcp-drive` | Engine | drive VectorCraft/PhotoCraft over MCP (33+26 tools) |
@@ -92,7 +93,7 @@ Hermes-superset frontmatter (name, description, version, author, license, platfo
 
 ## Quality evidence
 
-- `_meta/validate_skills.py`: **32 checked / 32 passed**, DSH 32 current, Hermes 32 current.
+- `_meta/validate_skills.py`: **33 checked / 33 passed**, DSH 33 current, Hermes 33 current.
 `_meta/build_command_guide.py` regenerates the atlas indexes and asserts 918/965 coverage.
 - `_meta/manifest.json` + `_meta/SKILLS-INDEX.md` are generated from the live scan.
 - Independent audit: vault `30-reference/art-learning/19-SKILLS-QUALITY-AUDIT.md` (snapshot at

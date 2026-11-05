@@ -14,8 +14,7 @@ metadata:
 # ArtCraft document and export formats
 
 Delivery is a separate operation from design: choose the right document scope, format, ppi and
-colour model, then verify the artifact. Full family map:
-`artcraft-command-atlas/references/vc-file-document-export.md`.
+colour model, then verify the artifact. Load **artcraft-command-atlas**, then read `references/vc-file-document-export.md`.
 
 ## When to use / not use
 
@@ -120,6 +119,8 @@ working master; record the package contents.
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** inspect document/formats/artboards/fonts; copy; define scope/format/ppi/colour; read
 params.
 
@@ -138,5 +139,5 @@ proof required but unavailable; output would overwrite a master.
 - **VERIFIED:** export ids and schema (`document.export` nested `svg`/PDF, `ppi` vs `scale`); 1200-unit
   document exported 1200/2400/3600 px at 72/144/216 ppi; PDF 4,311 B test; `file.place` physical size;
   `document.formats`/`inspect` patterns.
-- **ATLAS:** `artcraft-command-atlas/references/vc-file-document-export.md`, `00-intent-map.md`.
+- **ATLAS:** `references/vc-file-document-export.md`, `00-intent-map.md`.
 - **DOCS:** local ArtCraft docs; official README; Adobe export/PDF concepts.

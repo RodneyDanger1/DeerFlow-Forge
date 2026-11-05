@@ -14,8 +14,7 @@ metadata:
 # Layers, artboards and symbols
 
 Structure decides output: which artboard exports, what a clipping mask clips, which layer receives
-new art, and which symbol instances update. Full family map:
-`artcraft-command-atlas/references/vc-layer-artboard.md`.
+new art, and which symbol instances update. Load **artcraft-command-atlas**, then read `references/vc-layer-artboard.md`.
 
 ## When to use / not use
 
@@ -125,6 +124,8 @@ Keep a layered master; export artboards as delivery derivatives.
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** inspect structure/artboards; copy; define target layer/artboard/symbol scope; read params.
 
 **Execution loop:** one structural change; inspect object/layer counts; verify render; then next.
@@ -142,5 +143,5 @@ instances; claim output from the editor view.
 
 - **VERIFIED:** all ids above exist in the 918-row catalogue; params text read for layer/artboard/
   symbol groups; `document.inspect`/`document.json` patterns probed.
-- **ATLAS:** `artcraft-command-atlas/references/vc-layer-artboard.md`, `00-intent-map.md`.
+- **ATLAS:** `references/vc-layer-artboard.md`, `00-intent-map.md`.
 - **DOCS:** local ArtCraft docs; official VectorCraft README; Adobe artboard/symbol concepts.

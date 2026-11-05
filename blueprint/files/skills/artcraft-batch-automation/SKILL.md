@@ -14,8 +14,7 @@ metadata:
 # PhotoCraft batch automation
 
 Batch work is production code: inputs, a repeatable action list, collision-safe outputs, a stop
-condition, and per-file verification. Full command map:
-`artcraft-command-atlas/references/pc-batch-automation.md`.
+condition, and per-file verification. Load **artcraft-command-atlas**, then read `references/pc-batch-automation.md`.
 
 ## When to use / not use
 
@@ -123,6 +122,8 @@ names it; fix/skip deliberately.
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** inventory/backup; action-file validation; distinct output dir; naming/stop policy;
 sample plan.
 
@@ -145,5 +146,5 @@ files correct from exit 0; run untrusted action files outside an isolated accoun
   from help; action-list forms from help; `file.export.*` ids from the 965-row registry.
 - **NOT EXECUTED:** full production batch runs; this skill's batch commands are schema/help verified,
   not run on a real folder here.
-- **ATLAS:** `artcraft-command-atlas/references/pc-batch-automation.md`, `command-tips.md`;
+- **ATLAS:** `references/pc-batch-automation.md`, `command-tips.md`;
   official CLI book (see `sources.md`).

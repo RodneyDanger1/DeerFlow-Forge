@@ -15,7 +15,7 @@ metadata:
 
 Colour is a controlled asset, not a picker result. This skill applies named colours, gradients,
 brand recolouring, graphic styles, live effects and opacity masks with a record of what changed.
-Full map: `artcraft-command-atlas/references/vc-color-style.md`.
+Load **artcraft-command-atlas**, then read `references/vc-color-style.md`.
 
 ## When to use / not use
 
@@ -122,6 +122,8 @@ backgrounds; release/link as needed; export a flattened copy for consumers that 
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** approved palette, target objects, colour space, output/proof; copy; read params.
 
 **Execution loop:** one colour/style operation; inspect appearance/colour values; render; then next.
@@ -140,5 +142,5 @@ as booleans; ignore a spot/global side effect.
 - **VERIFIED:** all ids above exist in the 918-row catalogue; swatch/paint/gradient/effect params read;
   `text.fontList` unrelated; colour tools return null for adjustments-style commands but paint/style
   commands return structured results.
-- **ATLAS:** `artcraft-command-atlas/references/vc-color-style.md`, `00-intent-map.md`.
+- **ATLAS:** `references/vc-color-style.md`, `00-intent-map.md`.
 - **DOCS:** local ArtCraft docs; official README; Adobe swatch/gradient/effects concepts.

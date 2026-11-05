@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import collections
 import json
-import textwrap
+import shutil
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -334,6 +334,39 @@ def main() -> int:
         "vectorcraft": {"total": len(VC), "covered": len(vc_covered), "groups": len({r['id'].split('.')[0] for r in VC})},
         "photocraft": {"total": len(PC), "covered": len(pc_covered), "groups": len({r['id'].split('.')[0] for r in PC})},
     }, indent=2) + "\n", encoding="utf-8")
+
+    # Ship the machine catalogues with the atlas so command_lookup.py works from
+    # either runtime (references/ is mirrored by the installer).
+    machine = OUT / "catalogues"
+    machine.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(CAT / "vectorcraft-commands.json", machine / "vectorcraft-commands.json")
+    shutil.copy2(CAT / "photocraft-commands.json", machine / "photocraft-commands.json")
+    (machine / "README.md").write_text(
+        "# Catalogue snapshot\n\n"
+        "Copied from the installed CLIs on 2026-11-05. Used by `../command_lookup.py`; "
+        "the skill indexes are generated from the same files. Re-run `_meta/build_command_guide.py` "
+        "after upgrading the apps.\n",
+        encoding="utf-8",
+    )
+
+    vc_files = {}
+    for group in sorted({r["id"].split(".")[0] for r in VC}):
+        vc_files[group] = VC_FAMILIES.get(group, "vc-other-groups.md")
+    pc_files = {}
+    for group in sorted({r["id"].split(".")[0] for r in PC}):
+        pc_files[group] = PC_FAMILIES.get(group, "pc-other-groups.md")
+    groups = ["# Group → family index", "",
+              "Use this to jump from a command prefix to the file that lists it. Do not load every family file; "
+              "open only the one you need (or use `command_lookup.py`).", "",
+              "## VectorCraft (64 groups)", "", "| Group | Commands | File |", "|---|---:|---|"]
+    vc_counts = collections.Counter(r["id"].split(".")[0] for r in VC)
+    for group in sorted(vc_counts):
+        groups.append(f"| `{group}` | {vc_counts[group]} | `{vc_files[group]}` |")
+    groups += ["", "## PhotoCraft (38 groups)", "", "| Group | Commands | File |", "|---|---:|---|"]
+    pc_counts = collections.Counter(r["id"].split(".")[0] for r in PC)
+    for group in sorted(pc_counts):
+        groups.append(f"| `{group}` | {pc_counts[group]} | `{pc_files[group]}` |")
+    (OUT / "group-index.md").write_text("\n".join(groups) + "\n", encoding="utf-8")
     print(f"atlas coverage OK: VC {len(vc_covered)}/{len(VC)}, PC {len(pc_covered)}/{len(PC)}")
     return 0
 

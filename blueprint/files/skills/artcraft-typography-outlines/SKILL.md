@@ -14,8 +14,7 @@ metadata:
 # ArtCraft typography and outlines
 
 Type is content + a licensed font + layout rules; outlines are a delivery format, not the master.
-Every id below is from the installed catalogue; the full map is
-`artcraft-command-atlas/references/vc-text-type.md`.
+Every id below is from the installed catalogue; load **artcraft-command-atlas**, then read `references/vc-text-type.md` (or use its `command_lookup.py`).
 
 ## When to use / not use
 
@@ -137,5 +136,5 @@ raster lettering.
 
 - **VERIFIED:** ids exist in the 918-row catalogue; `text.fontList` returns 45 families on this
   install; `text.create`/`type.createOutlines` JSON shapes; `type.createOutlines` is irreversible.
-- **ATLAS:** `artcraft-command-atlas/references/vc-text-type.md`, `00-intent-map.md`.
+- **ATLAS:** `references/vc-text-type.md`, `00-intent-map.md`.
 - **DOCS:** local `typography-lettering.md`; official README; Adobe Illustrator type/outline concepts.

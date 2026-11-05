@@ -15,7 +15,7 @@ metadata:
 
 Changes vector geometry without changing the art direction: booleans, path cleanup, offset, outline
 stroke, compound paths, structure, alignment and transforms. Every id is from the installed
-catalogue; the full family index is `artcraft-command-atlas/references/vc-object-path.md`.
+catalogue; load **artcraft-command-atlas**, then read `references/vc-object-path.md` (or use its `command_lookup.py`).
 
 ## When to use / not use
 
@@ -141,6 +141,6 @@ screen render.
 
 - **VERIFIED:** all ids above exist in the 918-row catalogue; params text read for the boolean/path
   commands; pathfinder/subtract behaviour and palette flattening recorded from local docs/vault.
-- **ATLAS:** `artcraft-command-atlas/references/vc-object-path.md` and `00-intent-map.md`.
+- **ATLAS:** `references/vc-object-path.md` and `00-intent-map.md`.
 - **DOCS:** `/opt/craft/artcraft-docs/*`; official VectorCraft README; Adobe Illustrator Pathfinder
   concepts (see atlas `sources.md`). Commands are ArtCraft's, not Adobe's.

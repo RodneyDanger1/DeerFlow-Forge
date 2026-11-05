@@ -179,7 +179,7 @@ below 150 px per print inch; unlicensed asset; tool unavailable.
 Trace AI text; reuse another design's retype boxes; overwrite a master; ship `ok:false`; invent a
 parameter; call a screen render print proof.
 
-Palette/type/command mapping: **artcraft-command-atlas**, **brand-system**, **artcraft-typography-outlines**.
+Palette/type/command mapping: **artcraft-command-atlas**, **brand-system**, **artcraft-typography-outlines**. Use atlas `command_lookup.py` before choosing ids.
 
 ## Sources & verification
 

@@ -14,8 +14,7 @@ metadata:
 # Production SVG from ArtCraft
 
 An SVG is production-ready when it renders correctly, has the intended geometry/text, has no
-unexpected raster or private data, and is verified as XML/rendered output. Full map:
-`artcraft-command-atlas/references/vc-file-document-export.md`.
+unexpected raster or private data, and is verified as XML/rendered output. Load **artcraft-command-atlas**, then read `references/vc-file-document-export.md`.
 
 ## When to use / not use
 
@@ -107,6 +106,8 @@ print.
 
 ## Agent operating protocol
 
+**Lookup:** load **artcraft-command-atlas** and use `references/command_lookup.py` for exact ids/params.
+
 **Preflight:** copy; inspect/viewBox; decide text policy/options; read `document.export` params.
 
 **Execution loop:** geometry cleanup → export probe → XML/render verify → final export; stop on
@@ -124,6 +125,6 @@ consumer constraint unknown; source would be overwritten.
 
 - **VERIFIED:** `document.export` accepts nested `svg` options; output SVG parse/render checks;
   `document.formats`; `imageTrace`/path ids.
-- **ATLAS:** `artcraft-command-atlas/references/vc-file-document-export.md`,
+- **ATLAS:** `references/vc-file-document-export.md`,
   `recipes-vectorcraft.md`, `command-tips.md`.
 - **DOCS:** local ArtCraft docs; SVG/Adobe export concepts; no browser test claimed.

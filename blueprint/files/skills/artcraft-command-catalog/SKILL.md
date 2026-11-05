@@ -206,7 +206,7 @@ objects); VectorCraft `image` has only `image.info` — use `file.place`, `objec
 Path simplification: query returns `object.path.simplify` with `tolerance`, `level` 0–100, `auto`,
 `cornerAngle`, `straightLines`, `wholePaths`. Verified run (vault 17 §1.8):
 `{"after":10,"before":12,"ids":[2,3,4],"level":58.0}`. Then export and inspect.
-Deeper command map: **artcraft-command-atlas** (`references/00-intent-map.md`, family indexes, `command-tips.md`, recipes).
+Deeper command map: **artcraft-command-atlas** (`references/00-intent-map.md`, family indexes, `command-tips.md`, recipes). Use its `references/command_lookup.py` for an exact id/params lookup.
 ## Sources & verification
 
 - **VERIFIED (2026-11-05, srv2108523):** 918/64; 965 rows; `commands --json/--filter`; all quoted

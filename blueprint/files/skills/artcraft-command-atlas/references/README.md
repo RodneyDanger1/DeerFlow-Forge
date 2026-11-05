@@ -33,6 +33,9 @@ It is installed alongside the skill by `install_skills.py` (references/ is mirro
 | `pc-other-groups.md` | remaining PhotoCraft groups |
 | `recipes-vectorcraft.md` | runnable multi-step VectorCraft recipes |
 | `recipes-photocraft.md` | runnable multi-step PhotoCraft recipes |
+| `group-index.md` | group prefix → family file + command count |
+| `command_lookup.py` | fast id/intent/group lookup over `catalogues/` |
+| `check_atlas.py` | coverage + app-scoped intent + group-index validation |
 | `sources.md` | official docs, local docs, claim labels, what is not claimed |
 
 ## Rebuild
@@ -41,7 +44,8 @@ It is installed alongside the skill by `install_skills.py` (references/ is mirro
 python blueprint/files/skills/_meta/build_command_guide.py
 ```
 
-The builder asserts full coverage and rewrites the family files. Curated files (`00-intent-map.md`,
+The builder asserts full coverage, rewrites the family files, copies the machine catalogues and
+regenerates `group-index.md`. Run `python check_atlas.py` after edits. Curated files (`00-intent-map.md`,
 `command-tips.md`, recipes, sources, this map) are maintained by hand.
 
 ## Reading rules
