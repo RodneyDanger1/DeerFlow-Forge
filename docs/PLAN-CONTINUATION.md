@@ -1,8 +1,10 @@
 # Plan continuation — DeerFlow Forge (2026-11-05)
 
 **Status:** wave-2 closeout complete for runtime, worker, verifier/critic/eval guards, service
-entry point, console browser gates, and authoritative docs. **No production deployment.** Next
-implementation is W1, blocked on an API decision documented below.
+entry point, console browser gates, and authoritative docs. The console is **deployed and live on the
+VPS at `09b20e5`**; 22/22 live console checks, CUA native checks, a real PostgreSQL service pass, and
+a real worker pass are recorded in `docs/TRACE/2026-11-05/LIVE-VPS-VERIFICATION.md`. **No production
+Forge DB/service or Craft execution.** Next implementation is W1, blocked on the API decision below.
 
 Verified by command (not prose): console **65/65**; Forge local **116 passed / 9 skipped**; staging
 **170 passed / 4 skipped** on scratch PostgreSQL 16 + G0; gateway **33/33**; SQL **18/18**; browser

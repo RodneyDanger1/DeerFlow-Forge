@@ -33,9 +33,14 @@ These are commands that were run in this checkout/staging, not architectural int
 | Forge gateway | 33/33; role/root/allowlist/replay/verdict tests |
 | Forge SQL | 18/18 assertions + `SKIP LOCKED`; real Postgres |
 | G0 provenance | independently reproduced byte-identically; 22/22 hashes; 9/9 applicable gates |
+| **Live VPS console** | `09b20e5` built/deployed at `/opt/deerflow-forge`; unit active on `127.0.0.1:8091`; **22/22** live black-box checks (tabs, five routes, fault path, deep-links, 34 sources, copy/download, keyboard, reload×3, mobile) |
+| **Live CUA** | Chrome driven natively via CUA 0.28.2: window launch, Sandbox, Run route→`Run again`, Sources+Copy verified on the system clipboard |
+| **Live Forge HTTP** | VPS service on scratch PostgreSQL: health 13 tables; create `201`; replay `200 replayed:true`; bad input `400`; unknown `404` |
+| **Live worker** | VPS worker claimed/finished a real job, handler received payload; empty second run `claimed:0` |
 
-Evidence: [`docs/TRACE/2026-11-05/GATE-FINAL-W2.md`](docs/TRACE/2026-11-05/GATE-FINAL-W2.md) and
-[`docs/CAPABILITY-MATRIX.md`](docs/CAPABILITY-MATRIX.md).
+Evidence: [`docs/TRACE/2026-11-05/GATE-FINAL-W2.md`](docs/TRACE/2026-11-05/GATE-FINAL-W2.md),
+[`docs/TRACE/2026-11-05/LIVE-VPS-VERIFICATION.md`](docs/TRACE/2026-11-05/LIVE-VPS-VERIFICATION.md)
+and [`docs/CAPABILITY-MATRIX.md`](docs/CAPABILITY-MATRIX.md).
 
 ---
 

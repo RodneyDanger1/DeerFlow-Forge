@@ -8,9 +8,10 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 
 | Capability | Status | Evidence | Limit |
 |---|---|---|---|
-| Console navigation/controls | **CAN** | 5 tabs, **18/18** Playwright control checks, **8/8** keyboard/a11y checks, desktop + 390×844 | static viewer; “Run route” is an animation, not Craft execution |
+| Console navigation/controls | **CAN** | 5 tabs, **18/18** Playwright control checks, **8/8** keyboard/a11y checks, desktop + 390×844 | static viewer; “Run route” is a simulation, not Craft execution |
 | Console copy/download | **CAN** | Copy → `Copied`; Download event fires | real browser permission prompt unverified |
-| Console build | **CAN** | `vite build` with `node-server`; smoke `ok:true` | no production/VPS deploy |
+| Console build | **CAN** | `vite build` with `node-server`; smoke `ok:true` | console only; no production Forge DB/service |
+| Live VPS console | **CAN** | HEAD `09b20e5` at `/opt/deerflow-forge`, unit active on 8091, 22/22 live black-box checks; CUA native launch/nav/run/copy | no production Forge service |
 | Forge gateway policy | **CAN** | 33/33 tests: allowlist, roots, replay, refusals, verdict ladder | pure logic; executor is injected |
 | Forge DDL | **CAN** | 13 tables/36 edges; apply-twice on scratch PostgreSQL 16 | scratch only; no migration/rollback drill |
 | SQL invariants | **CAN** | 18/18 assertions; `SKIP LOCKED` 9 ms | 4 DB-dependent tests remain skipped without DSN |
@@ -23,6 +24,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | G0 real trace/retouch | **CAN** | independent staging reproduction; 22/22 hashes; 9/9 applicable | no production publish |
 | Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
 | Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes **6 skills** (`agent-learning-loop`, `craft-agent-operator`, `forge-harness-architect`, `harness-code-adapter`, `research-corpus-navigator`, `visual-verification-critic`) |
+| Live Forge HTTP/worker | **CAN** | VPS service against scratch PostgreSQL: health 13 tables, `201`, `200 replayed:true`, `400`, `404`; live worker claimed/finished one job, empty queue `claimed:0` | temporary scratch DB/process, not production |
 | Local Forge e2e | **CAN** | full staging suite **170 pass/4 skip** with scratch PG + G0 (16.03 s); local Forge-only **116 pass/9 skip** | not production |
 
 ## 2. What it cannot do (do not claim)
@@ -61,8 +63,8 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | 131-file package | **179 source / 189 desktop package** | filesystem count |
 | Live VPS effect/publish E2E | **HISTORICAL, not reproducible** | EffectCraft absent; no production deploy/publish |
 | DeerFlow loads Forge tools | **UNVERIFIED/HISTORICAL** | registration not applied |
-| “Do not start W2” | **superseded** | G0 provenance closed; W2 local gate PASS |
-| “No critic integration” | **local contract only** | verifier 8/8, critic 14/14; no model |
+| “Do not start W2” | **superseded** | G0 provenance closed; W2 local gate PASS |
+| “No critic integration” | **local contract only** | verifier 8/8, critic 14/14; no model |
 | 8 diagrams | **8 system diagrams + 1 integration map** | corpus |
 | 3/3 promotion rule | **rejected; Wilson LB 0.4385**; n=8 suggestion is simulation only | promotion evidence |
 
@@ -73,7 +75,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 - G0 trace report: **9/9 applicable**, retype `applicable:false`, actual trace hash
   `ab64aad7”¦`, output 1500×1800 at 299.9994 DPI.
 - Forge SQL: **13 tables / 36 transitions**, 18 assertions, no vacuous counts.
-- Test counts are environment-qualified: “4 skipped” is **not** four passes.
+- Test counts are environment-qualified: “4 skipped” is **not** four passes.
 - UI Copy: the first probe was a **stateful-locator false negative**; stable locator shows `Copied`.
 
 ## 6. Authoritative docs updated
