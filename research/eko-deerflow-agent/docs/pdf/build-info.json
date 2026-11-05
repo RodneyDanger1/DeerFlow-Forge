@@ -11,8 +11,8 @@
         "GOAL-EVALUATION.md",
         "PLAIN-ENGLISH.md"
       ],
-      "bytes": 116812,
-      "sha256": "11ad5f1cbbeb08a4a301a2e21b37ea7070eaa8c4cddd126107c9dabfd316b660"
+      "bytes": 116888,
+      "sha256": "849dffb010cc0fc204611689069465cea7a1690ed0b27c11c40d7f6976ba3d2b"
     },
     {
       "name": "Forge-Conductor-Plan.pdf",
@@ -23,7 +23,7 @@
         "execution-wave/09-GOAL-GAP-PLAN.md"
       ],
       "bytes": 97021,
-      "sha256": "5acd1ec69d048bd20d3994b7fe584839b3f8c6117e4f19f7a99572c4139a3bd4"
+      "sha256": "eb24d25466382e34ba32c05bc309874e431b82758b7a34bdacf7e8ba5385ffae"
     }
   ]
 }

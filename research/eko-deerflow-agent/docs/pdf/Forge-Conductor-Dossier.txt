@@ -187,7 +187,9 @@ harness or vendor a whole donor repo.
 | Goals/non-goals | [`GOALS.md`](GOALS.md) |
 | Architecture | [`ARCHITECTURE.md`](ARCHITECTURE.md) |
 | Integration map | [`INTEGRATIONS.mmd`](INTEGRATIONS.mmd) + SVG/PNG |
-| Eight validated diagrams | [`diagrams/`](diagrams/index.html) |
+| Eight system diagrams | [`diagrams/`](diagrams/index.html) |
+| Integration map (ninth) | [`INTEGRATIONS.mmd`](INTEGRATIONS.mmd) + SVG/PNG |
+| PDF reading copies | [`PDF-CATALOGUE.md`](PDF-CATALOGUE.md) - 29-page binder in `docs/pdf/` |
 | Goal->code gap + decision plan |
 [`execution-wave/09-GOAL-GAP-PLAN.md`](execution-wave/09-GOAL-GAP-PLAN.md) |
 | Recon ledger | [`execution-wave/RECON-LEDGER.md`](execution-wave/RECON-LEDGER.md) |

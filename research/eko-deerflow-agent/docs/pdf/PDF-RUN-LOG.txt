@@ -2,7 +2,7 @@
 pypdf=6.21.1
 
 ## text_extract dossier
-pages=19 chars=39674 written=C:\Users\Riley\Desktop\DeerFlow Forge\research\eko-deerflow-agent\docs\pdf\Forge-Conductor-Dossier.txt
+pages=19 chars=39846 written=C:\Users\Riley\Desktop\DeerFlow Forge\research\eko-deerflow-agent\docs\pdf\Forge-Conductor-Dossier.txt
 exit=0
 
 ## text_extract plan
@@ -10,8 +10,8 @@ pages=10 chars=21109 written=C:\Users\Riley\Desktop\DeerFlow Forge\research\eko-
 exit=0
 
 ## compare original vs byte copy
-A=Forge-Conductor-Dossier.pdf pages=19 sha256=11ad5f1cbbeb08a4
-B=Forge-Conductor-Dossier-copy.pdf pages=19 sha256=11ad5f1cbbeb08a4
+A=Forge-Conductor-Dossier.pdf pages=19 sha256=849dffb010cc0fc2
+B=Forge-Conductor-Dossier-copy.pdf pages=19 sha256=849dffb010cc0fc2
 text_similarity_ratio=1.0000
 diff_lines=0 report=C:\Users\Riley\Desktop\DeerFlow Forge\research\eko-deerflow-agent\docs\pdf\compare-report.txt
 VERDICT: identical text layer and page count.
