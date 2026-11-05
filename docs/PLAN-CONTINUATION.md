@@ -17,7 +17,7 @@
 | Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
 | G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
 | G0 provenance | **CLOSED independently** (`16-G0-PROVENANCE.md`): fresh staging-only run reproduced artifacts byte-identically |
-| W2 Forge service/DDL/queue | **W2-A/B contracts: gateway 33/33; DDL twice; 18/18 SQL; SKIP LOCKED 9 ms; no service/repo** |
+| W2 Forge service/DDL/queue | **W2-A/B contracts proven; W2-C repo/worker/service local; 95 pass/7 skip; G1 not passed** |
 | W3–W6 | not started |
 
 ## Decision
