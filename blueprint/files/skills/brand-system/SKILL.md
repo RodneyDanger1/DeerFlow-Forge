@@ -116,6 +116,8 @@ def ratio(a,b):
 3. Produce four lockups: primary, inverse (dark ground image + primary lockup; backgroundContents is
    only transparent|white), monochrome, icon/square.
 4. Set clear space (fixed fraction of the mark) and minimum sizes in px and inches; measure them.
+5. Kit document must include: palette (name/hex/print equivalent), type (family/weights/licence/
+   fallback), lockup files, clear space, minimum sizes, application rules, contrast results.
 5. Choose type: one display + one text family; record licence and fallbacks.
 6. Write application rules: garment print width, white-transparent rule, vector rule, embroidery limits.
 7. Export masters: SVG (working), PNG 1×/2×/3×, PDF for print.

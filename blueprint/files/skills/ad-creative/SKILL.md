@@ -65,7 +65,7 @@ convert /tmp/ad_feed.png -format 'corner=%[pixel:p{5,5}] center=%[pixel:p{540,54
 Portrait/story: same steps with `{"width":1080,"height":1350}` or `{"width":1080,"height":1920}`;
 keep the message inside the central safe band.
 
-The example omits the approved logo for brevity; production adds `file.place` for the logo inside the\nsafe zone. **Placement math (important):** `file.place` brings raster images in at **100 % of their physical
+The example omits the approved logo for brevity; production adds `file.place` for the logo inside the safe zone. **Placement math (important):** `file.place` brings raster images in at **100 % of their physical
 size** (the file's ppi, else 72), not their pixel count. A 2000×1500 image at 300 ppi lands as
 **480×360 pt centred at (300, 360)** on a 1080 canvas; at 72 ppi it lands **2000×1500 centred at
 (−460, −210)**. Two safe options:
@@ -90,8 +90,8 @@ lossy WebP → thumbnail test → record sources`.
 ## Acceptance gates
 
 - Exact canvas 1080×1080 / 1080×1350 / 1080×1920 (`identify`).
-- **Text bounds fit:** `text.create` returns `bounds`; require `x + width ≤ canvas − 60` and
-  `y + height ≤ canvas − 60`. The original 72 px headline measured **1,229 pt wide**, overflowing a
+- **Text bounds fit:** `text.create` returns `bounds`; require `x ≥ 60`, `y ≥ 60`, `x + width ≤ canvas − 60`
+  and `y + height ≤ canvas − 60`. The original 72 px headline measured **1,229 pt wide**, overflowing a
   1080 canvas — that is why the example uses 52 px (888 pt). Wrap or shrink before exporting.
 - Background is opaque at the sampled corners (`convert … -format 'corner=…'`), not transparent/white.
 - All text inside safe margins; nothing critical within 60 px of an edge.
@@ -114,6 +114,7 @@ def ratio(a,b):
     return (la+0.05)/(lb+0.05)
 print(ratio('#efe6cf','#101312'))
 ```
+The script takes design tokens; confirm the background sample against the exported PNG (`convert … -format '%[pixel:p{x,y}]'`).
 
 ## Refusals / failure modes
 

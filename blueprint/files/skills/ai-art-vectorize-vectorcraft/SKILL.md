@@ -55,8 +55,8 @@ $PY -m tools.craft_trace --input /tmp/art.png \
 ```
 
 Explicit canvas instead of provider geometry (canvas is the full master canvas; art is rendered at
-`print_width_in × dpi` and centred). Leave margins on **both axes** if you need coverage in 0.05–0.95;
-a canvas whose width equals the art width has no side margin, so prefer the provider canvas:
+`print_width_in × dpi` and centred). `coverage` is the **art-frame** alpha fill, not canvas occupancy,
+so canvas margins do not change it; use the provider canvas for the final output:
 
 ```bash
 $PY -m tools.craft_trace --input /tmp/art.png \
@@ -126,7 +126,7 @@ Stop on any failed gate; never upload an `ok:false` report.
 |---|---|
 | `white_residual_ratio` | re-cutout; raise `--edge-clean-lum`/`--min-component`; inspect step 1 report |
 | `edge_specks` | raise `--noise` (e.g. 12→20), raise `--filter-speckle`, raise cleanup component |
-| `coverage` | use provider canvas with margins; do not crop to art bounds |
+| `coverage` | art is nearly full-frame: add a transparent margin/background or accept it is unsuitable for this gate (canvas margins do NOT change the metric) |
 | `vector_fill_colours` | lower `--colors` (e.g. 12→8) and/or simplify source |
 | `edge_definition` | raise `--paths` (65→90), lower `--noise`; check 100 % render |
 | `alpha_hard_edges` | binarise alpha (craft_trace does; don't feed a feathered cutout) |

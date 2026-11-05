@@ -103,10 +103,9 @@ $PY -m tools.vectorize_art --input /tmp/art.png --svg /tmp/art_vec.svg --output 
   --binary-alpha --report-json /tmp/art_vec.json
 ```
 
-**Coverage note:** `craft_trace` requires `coverage` 0.05–0.95. A provider canvas (tee 4500×5400)
-leaves margins and passes; a canvas exactly equal to the art width can still pass only if the other
-axis has margins, and a design that fills the frame is refused by design. Inspect the report rather
-than guessing.
+**Coverage note:** `craft_trace` requires `coverage` 0.05–0.95, measured as **alpha fill of the art
+frame** (`alpha.sum()/alpha.size`), not canvas occupancy. Provider-canvas margins do not change it; a
+design that fills its own bounding box is refused. Inspect the report rather than guessing.
 
 ## Decision table
 

@@ -73,7 +73,9 @@ $PY -m tools.prep_print_art --input /tmp/art.png --output /tmp/art_cut.png \
 ```
 
 **Step 2 — binarise alpha only when the next stage traces.** The 0.5 px feather becomes a key-colour
-rim; `vectorize_art`/`craft_trace` re-binarise at 128:
+rim; `vectorize_art`/`craft_trace` re-binarise at 128. **Route now:** trace → feed `/tmp/art_hard.png`
+to `artcraft-vector-trace`; raster → skip this step and use `/tmp/art_clean.png` from Step 4. Do not
+silently mix `/tmp/art.png`, `/tmp/art_cut.png` and `/tmp/art_hard.png` between steps:
 
 ```bash
 $PY -c "from PIL import Image; im=Image.open('/tmp/art_cut.png').convert('RGBA'); im.putalpha(im.getchannel('A').point(lambda v:255 if v>=128 else 0)); im.save('/tmp/art_hard.png')"
@@ -127,7 +129,7 @@ verdict, not a crash. Inspect the gate table; it is an experimental path, not a 
 Gate sets differ by tool — quote the right one:
 - `prep_print_art`: coverage 0.005–0.62, `E_SUBJECT_EMPTY`, `E_SUBJECT_FULL_FRAME`, upscale warning
   above 2.5× (report `ok` stays true; the warning is the gate).
-- `craft_trace`: 10 gates, `ok:true` only when all pass (white residual, specks 0, coverage
+- `craft_trace`: 10 gates, `ok:true` only when all pass (white residual, specks 0, art-frame coverage
   0.05–0.95, DPI ≥300, canvas ≥1500², 2–40 fill colours, edge density ≥0.01, hard alpha ≥0.85,
   transparent corners, retyped text present).
 - `artcraft`: 10 checks, coverage 0.03–0.92; full-bleed art legitimately fails coverage.

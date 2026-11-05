@@ -107,8 +107,9 @@ identify -format '%f %wx%h %x %y %[colorspace]\n' /tmp/photo_clean.png
 Before touching pixels, compute and record:
 
 - `target_px = print_inches × dpi` (or the screen box).
-- `upscale = target_px / source_px`. **Refuse if > 2.5×** and send to `ai-image-upscale-print` or
-  regenerate; name the ratio in the report.
+- `upscale = target_px / baseline_px`, where `baseline_px` is the **crop that feeds the resize**, not
+the original frame (a 2400×3000 crop of a 4032×3024 source resized to 2400×3000 is 1.0×, not 0.6×).
+  **Refuse if > 2.5×**; send to `ai-image-upscale-print` or regenerate; name the ratio in the report.
 - Crop bounds: `x ≥ 0`, `y ≥ 0`, `x+width ≤ source_width`, `y+height ≤ source_height`; otherwise the
   crop params are wrong for that file.
 - Output path differs from input; PhotoCraft refuses same-path `--out` unless `--in-place`.
@@ -207,6 +208,7 @@ claim CMYK proof from an RGB screen.
   same-path output); 965-row registry; `image.crop`, `image.imageSize`, `image.canvasSize`,
   `filter.noise.*`, `filter.sharpen.*`, `image.adjustments.*` schemas via `commands --json`;
   `convert --quality` output 2,718 B vs lossless 1,372 B on a flat 1080² test; `text.fontList`
-  returned 45 families.
+  returned 45 families. **Chain executed end-to-end 2026-11-05:** 4032×3024 JPEG → crop 2400×3000 →
+  filters → 2400×3000 sRGB at 118.11 px/cm, exit 0.
 - **SCHEMA:** `/opt/craft/catalogues/photocraft-commands.json`; vault 17.
 - **DOCS:** vault 02/15; Pillow UnsharpMask https://pillow.readthedocs.io/en/stable/reference/ImageFilter.html
