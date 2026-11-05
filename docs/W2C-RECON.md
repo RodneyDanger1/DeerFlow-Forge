@@ -39,6 +39,7 @@ unknown episode -> named 404/E_EPISODE_NOT_FOUND.
 
 ## Implementation status (after recon)
 
-W2-C repository/worker/service files now exist locally. Worker+service: **8/8** fake-repo tests;
-repository: **3/3** scratch-Postgres tests; full staging: **95 passed, 7 skipped**. Service→real
-repository wiring, periodic reaper and deployment remain unverified. See `18-W2C-SEAM.md`.
+W2-C repository/worker/service files now exist locally. Worker+service: **10/10** fake-repo tests;
+repository: **3/3** scratch-Postgres tests; W2-D real HTTP→repo→worker→reaper e2e: **2/2**; full
+staging: **97 passed, 9 skipped**. Service→real repository wiring is now proven on scratch; deployment
+and a supervised reaper remain unverified. See `18-W2C-SEAM.md` and `19-W2D-E2E.md`.

@@ -7,10 +7,13 @@ from __future__ import annotations
 
 import asyncio
 import json
+import logging
 import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Protocol
 from urllib.parse import urlparse
+
+log = logging.getLogger("forge.service")
 
 
 class ServiceRepo(Protocol):
@@ -31,7 +34,7 @@ class _Loop:
 
 
 def _json(handler: BaseHTTPRequestHandler, status: int, body: dict[str, Any]) -> None:
-    data = json.dumps(body, separators=(",", ":")).encode()
+    data = json.dumps(body, separators=(",", ":"), default=str).encode()
     handler.send_response(status)
     handler.send_header("Content-Type", "application/json")
     handler.send_header("Content-Length", str(len(data)))
@@ -53,7 +56,11 @@ def make_handler(repo: ServiceRepo, loop: _Loop):
                 episode_id = path[len(prefix):]
                 if not episode_id or "/" in episode_id:
                     return _json(self, 404, {"error": {"code": "E_EPISODE_NOT_FOUND"}})
-                row = loop.run(repo.get_episode(episode_id))
+                try:
+                    row = loop.run(repo.get_episode(episode_id))
+                except Exception:
+                    log.exception("episode read failed")
+                    return _json(self, 503, {"error": {"code": "E_SERVICE_UNAVAILABLE"}})
                 if row is None:
                     return _json(self, 404, {"error": {"code": "E_EPISODE_NOT_FOUND"}})
                 return _json(self, 200, {"episode": row})
@@ -75,30 +82,38 @@ def make_handler(repo: ServiceRepo, loop: _Loop):
                     raise ValueError("idempotency_key/account_id")
             except (ValueError, KeyError, json.JSONDecodeError) as exc:
                 return _json(self, 400, {"error": {"code": "E_REQUEST_INVALID", "detail": str(exc)}})
-            row = loop.run(repo.create_episode(
-                idempotency_key=key, account_id=account, brief=str(brief),
-                task_family=str(family), budget=body.get("budget")))
+            try:
+                row = loop.run(repo.create_episode(
+                    idempotency_key=key, account_id=account, brief=str(brief),
+                    task_family=str(family), budget=body.get("budget")))
+            except Exception as exc:
+                if getattr(exc, "sqlstate", None) == "23505":
+                    return _json(self, 409, {"error": {"code": "E_EPISODE_EXISTS"}})
+                log.exception("episode create failed")
+                return _json(self, 503, {"error": {"code": "E_SERVICE_UNAVAILABLE"}})
             return _json(self, 201, {"episode": row})
 
     return Handler
 
 
-def asyncio_run(awaitable):
-    import asyncio
-    return asyncio.run(awaitable)
-
-
-def make_server(repo: ServiceRepo, *, host: str = "127.0.0.1", port: int = 8092) -> ThreadingHTTPServer:
+def make_server(repo: ServiceRepo | None = None, *, repo_factory=None,
+                host: str = "127.0.0.1", port: int = 8092) -> ThreadingHTTPServer:
     if host not in ("127.0.0.1", "::1", "localhost"):
         raise ValueError("Forge service must bind loopback")
+    if (repo is None) == (repo_factory is None):
+        raise ValueError("pass exactly one of repo or repo_factory")
     loop = _Loop()
+    if repo_factory is not None:
+        repo = loop.run(repo_factory())
     server = ThreadingHTTPServer((host, port), make_handler(repo, loop))
     server.forge_loop = loop  # type: ignore[attr-defined]
+    server.forge_repo = repo  # type: ignore[attr-defined]
     return server
 
 
-def serve(repo: ServiceRepo, *, host: str = "127.0.0.1", port: int = 8092) -> None:
-    server = make_server(repo, host=host, port=port)
+def serve(repo: ServiceRepo | None = None, *, repo_factory=None,
+          host: str = "127.0.0.1", port: int = 8092) -> ThreadingHTTPServer:
+    server = make_server(repo, repo_factory=repo_factory, host=host, port=port)
     thread = threading.Thread(target=server.serve_forever, daemon=True)
     thread.start()
     return server

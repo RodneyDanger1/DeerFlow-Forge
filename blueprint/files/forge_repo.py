@@ -16,6 +16,18 @@ class ForgeRepo:
     def __init__(self, pool: asyncpg.Pool) -> None:
         self.pool = pool
 
+    @staticmethod
+    def _row(row) -> dict[str, Any] | None:
+        if row is None:
+            return None
+        data = dict(row)
+        if data.get("id") is None:
+            return None
+        for key in ("payload", "result", "budget", "params"):
+            if isinstance(data.get(key), str):
+                data[key] = json.loads(data[key])
+        return data
+
     @classmethod
     async def connect(cls, dsn: str, *, min_size: int = 1, max_size: int = 4) -> "ForgeRepo":
         return cls(await asyncpg.create_pool(dsn, min_size=min_size, max_size=max_size))
@@ -40,13 +52,13 @@ class ForgeRepo:
                    VALUES ($1, $2, $3, $4, $5::jsonb) RETURNING *""",
                 idempotency_key, account_id, brief, task_family, json.dumps(budget or {}),
             )
-            return dict(row)
+            return self._row(row)
 
     async def get_episode(self, episode_id: str) -> dict[str, Any] | None:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             row = await conn.fetchrow("SELECT * FROM forge_episode WHERE id=$1", episode_id)
-            return dict(row) if row else None
+            return self._row(row)
 
     async def transition(self, episode_id: str, target: str, *, verdict: str | None = None,
                          reasons: list[str] | None = None) -> dict[str, Any]:
@@ -56,14 +68,14 @@ class ForgeRepo:
                 "SELECT forge_transition_episode($1, $2, $3, $4)", episode_id, target,
                 verdict, reasons or [],
             )
-            return dict(row)
+            return self._row(row)
 
     async def append_event(self, episode_id: str, kind: str, payload: dict[str, Any]) -> dict[str, Any]:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             row = await conn.fetchrow("SELECT forge_append_event($1, $2, $3::jsonb)",
                                       episode_id, kind, json.dumps(payload))
-            return dict(row)
+            return self._row(row)
 
     async def create_job(self, *, kind: str, payload: dict[str, Any] | None = None,
                          dedupe_key: str | None = None, run_after: datetime | None = None) -> int:
@@ -79,13 +91,13 @@ class ForgeRepo:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             row = await conn.fetchrow("SELECT * FROM forge_claim_job($1, $2)", worker, lease_s)
-            return dict(row) if row and row["id"] is not None else None
+            return self._row(row)
 
     async def finish_job(self, job_id: int, *, ok: bool, error: str | None = None) -> dict[str, Any]:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             row = await conn.fetchrow("SELECT * FROM forge_finish_job($1, $2, $3)", job_id, ok, error)
-            return dict(row)
+            return self._row(row)
 
     async def reap_expired_jobs(self) -> int:
         """Return expired claimed/running jobs to queued exactly once."""
