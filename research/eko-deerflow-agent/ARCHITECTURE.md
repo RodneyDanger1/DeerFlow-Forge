@@ -4,6 +4,11 @@
 and verifier/critic contracts exist locally and are tested on scratch PostgreSQL; **no production
 Forge service, DB, or deploy exists**. Date: 2026-11-05.
 
+> **Runtime correction (2026-11-05):** the “as-is” block below records the VPS state observed during
+> earlier recon. DeerFlow MCP registration for Forge is **not applied** in the current tree, and the
+> local console/Forge checks in this wave ran under DeepSeek Harness, not through DeerFlow. Treat the
+> DeerFlow rows as READ/HISTORICAL until a registration probe is run.
+
 This document answers: where the agent lives, what it calls, what it owns, what it must never
 own, how evidence flows, and how a run is recovered. For the short version see [`README.md`](README.md).
 

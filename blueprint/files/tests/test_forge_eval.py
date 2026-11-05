@@ -66,8 +66,21 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(result["reason"], "E_EVAL_BELOW_BASELINE")
 
     def test_regression_refuses(self):
-        result = propose_promotion(successes=8, n=8, regressions=1, human_approved=True)
+        # OLD: 8/8 successes + 1 regression was internally impossible (9 outcomes for n=8).
+        # NEW: evidence-consistent 7 passes + 1 regression.
+        result = propose_promotion(successes=7, n=8, regressions=1, human_approved=True)
         self.assertEqual(result["reason"], "E_EVAL_REGRESSION")
+
+    def test_duplicate_golden_id_refused(self):
+        with self.assertRaises(ValueError) as ctx:
+            evaluate_goldens([{"id": "g", "passed": True}, {"id": "g", "passed": True}])
+        self.assertIn("E_EVAL_DUPLICATE_ID", str(ctx.exception))
+
+    def test_successes_and_regressions_cannot_exceed_n(self):
+        with self.assertRaises(ValueError):
+            propose_promotion(successes=8, n=8, regressions=9, human_approved=True)
+        with self.assertRaises(ValueError):
+            propose_promotion(successes=2, n=8, regressions=7, human_approved=True)
 
     def test_invalid_horizon(self):
         with self.assertRaises(ValueError):

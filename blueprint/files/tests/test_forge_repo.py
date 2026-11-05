@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import os
 import unittest
 import uuid
@@ -60,6 +61,24 @@ class RepoTests(unittest.IsolatedAsyncioTestCase):
     async def test_unknown_episode_is_none(self):
         self.assertIsNone(await self.repo.get_episode(str(uuid.uuid4())))
 
+    async def test_transition_appends_exactly_one_event(self):
+        """W3: the SQL transition function owns the event append; repo must not double-write."""
+        episode = await self.repo.create_episode(
+            idempotency_key=f"tx-{self.run_id}", account_id=1, brief="tx",
+            task_family="ai_badge_trace")
+        moved = await self.repo.transition(episode["id"], "briefed")
+        self.assertEqual(moved["status"], "briefed")
+        count = await self.repo.pool.fetchval(
+            "SELECT count(*) FROM forge.forge_event WHERE episode_id=$1 "
+            "AND kind='episode.transition'", episode["id"])
+        self.assertEqual(count, 1)
+        payload = await self.repo.pool.fetchval(
+            "SELECT payload::text FROM forge.forge_event WHERE episode_id=$1 "
+            "ORDER BY seq DESC LIMIT 1", episode["id"])
+        payload = json.loads(payload)
+        self.assertEqual(payload["from"], "intake")
+        self.assertEqual(payload["to"], "briefed")
+
 
 class RowShapeUnitTests(unittest.TestCase):
     """D6: _row must fail loudly on a shape problem; no database needed."""
@@ -67,6 +86,9 @@ class RowShapeUnitTests(unittest.TestCase):
     def test_row_without_id_raises_shape_error(self):
         with self.assertRaises(RepoShapeError):
             ForgeRepo._row({"state": "intake"})
+
+    def test_all_null_composite_is_none(self):
+        self.assertIsNone(ForgeRepo._row({"id": None, "state": None, "kind": None}))
 
     def test_row_with_unparseable_json_column_raises_shape_error(self):
         with self.assertRaises(RepoShapeError):

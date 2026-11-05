@@ -1,4 +1,4 @@
-# Capability Matrix and Truth Audit — 2026-11-05
+﻿# Capability Matrix and Truth Audit — 2026-11-05
 
 **Scope:** DeerFlow Forge local workspace + staging evidence. **No production deploy is claimed.**
 Evidence labels: VERIFIED (executed here), READ (source/docs), HISTORICAL (dated, not current),
@@ -8,22 +8,22 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 
 | Capability | Status | Evidence | Limit |
 |---|---|---|---|
-| Console navigation/controls | **CAN** | 5 tabs, 15/15 Playwright checks, desktop + 390×844 | static viewer; “Run route” is an animation, not Craft execution |
-| Console copy/download | **CAN** | Copy → `Copied`; download 4,456 bytes | real browser permission prompt unverified |
+| Console navigation/controls | **CAN** | 5 tabs, **18/18** Playwright control checks, **8/8** keyboard/a11y checks, desktop + 390×844 | static viewer; “Run route” is an animation, not Craft execution |
+| Console copy/download | **CAN** | Copy → `Copied`; Download event fires | real browser permission prompt unverified |
 | Console build | **CAN** | `vite build` with `node-server`; smoke `ok:true` | no production/VPS deploy |
 | Forge gateway policy | **CAN** | 33/33 tests: allowlist, roots, replay, refusals, verdict ladder | pure logic; executor is injected |
 | Forge DDL | **CAN** | 13 tables/36 edges; apply-twice on scratch PostgreSQL 16 | scratch only; no migration/rollback drill |
 | SQL invariants | **CAN** | 18/18 assertions; `SKIP LOCKED` 9 ms | 4 DB-dependent tests remain skipped without DSN |
 | Repository | **CAN** | 4/4 scratch-Postgres tests; expired lease requeues or abandons | no production DB/role |
 | Worker/lease reaper | **CAN** | 10/10 local worker/service tests; abandoned-at-max test | no supervised daemon |
-| Loopback service | **CAN** | 5/5 tests; real HTTP→repo→worker→reaper 2/2; health 200/503 | no TLS/auth; loopback only |
-| Artifact verifier | **CAN** | 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed refuse | no independent render/tile metrics |
-| Blind-critic contract | **CAN** | 14/14 tests; gate authoritative; disagreement→needs_human | **no vision model or accuracy measurement** |
+| Loopback service | **CAN** | 5/5 tests; real HTTP→repo→worker→reaper 2/2; health 200/503; cancellable timeout → `504 E_SERVICE_TIMEOUT`; idempotent replay `200 replayed:true`; strict POST validation | no TLS/auth; loopback only |
+| Artifact verifier | **CAN** | 8/8 tests; real G0 pair passes; PNG-format and both-DPI checks; tamper/vacuous/failed/malformed refuse | no independent render/tile metrics |
+| Blind-critic contract | **CAN** | 14/14 tests; gate authoritative; invalid `human`/non-bool `gate_ok` refuse; disagreement→needs_human | **no vision model or accuracy measurement** |
 | Evaluation/promotion contract | **CAN** | 13/13 tests; Wilson LB; 3/3 refused; 8/8 candidate only with human; regressions refuse | proposal only; **no activation/learning claim** |
 | G0 real trace/retouch | **CAN** | independent staging reproduction; 22/22 hashes; 9/9 applicable | no production publish |
 | Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
 | Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes **6 skills** (`agent-learning-loop`, `craft-agent-operator`, `forge-harness-architect`, `harness-code-adapter`, `research-corpus-navigator`, `visual-verification-critic`) |
-| Local Forge e2e | **CAN** | full staging suite **139 pass/4 skip** with scratch PG + G0 | not production |
+| Local Forge e2e | **CAN** | full staging suite **165 pass/4 skip** with scratch PG + G0 (14.55 s); local Forge-only **111 pass/9 skip** | not production |
 
 ## 2. What it cannot do (do not claim)
 
@@ -57,12 +57,12 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Old claim | Current truth | Evidence |
 |---|---|---|
 | 207 JS tests (205/2) | **65/65** | `npm.cmd test` |
-| 31 pipeline tests | **139 pass/4 skip** current staging suite | scratch PG + G0 + `pytest` |
+| 31 pipeline tests | **165 pass/4 skip** current staging suite; **111 pass/9 skip** local Forge-only | scratch PG + G0 + `pytest`; see `GATE-FINAL-W2.md` |
 | 131-file package | **179 source / 189 desktop package** | filesystem count |
 | Live VPS effect/publish E2E | **HISTORICAL, not reproducible** | EffectCraft absent; no production deploy/publish |
 | DeerFlow loads Forge tools | **UNVERIFIED/HISTORICAL** | registration not applied |
-| “Do not start W2” | **superseded** | G0 provenance closed; W2 local gate PASS |
-| “No critic integration” | **local contract only** | verifier 8/8, critic 14/14; no model |
+| “Do not start W2” | **superseded** | G0 provenance closed; W2 local gate PASS |
+| “No critic integration” | **local contract only** | verifier 8/8, critic 14/14; no model |
 | 8 diagrams | **8 system diagrams + 1 integration map** | corpus |
 | 3/3 promotion rule | **rejected; Wilson LB 0.4385**; n=8 suggestion is simulation only | promotion evidence |
 
@@ -71,9 +71,9 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 - Promotion: 3/3 Wilson 95% lower bound = **0.4385**; no k passes threshold at n=3–5. The n=8/k≥7
   variant is a **simulation suggestion**, not an adopted policy.
 - G0 trace report: **9/9 applicable**, retype `applicable:false`, actual trace hash
-  `ab64aad7…`, output 1500×1800 at 299.9994 DPI.
+  `ab64aad7”¦`, output 1500×1800 at 299.9994 DPI.
 - Forge SQL: **13 tables / 36 transitions**, 18 assertions, no vacuous counts.
-- Test counts are environment-qualified: “4 skipped” is **not** four passes.
+- Test counts are environment-qualified: “4 skipped” is **not** four passes.
 - UI Copy: the first probe was a **stateful-locator false negative**; stable locator shows `Copied`.
 
 ## 6. Authoritative docs updated

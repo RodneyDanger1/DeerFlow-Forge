@@ -27,6 +27,8 @@ class ForgeRepo:
         if row is None:
             return None
         data = dict(row)
+        if data and all(value is None for value in data.values()):
+            return None  # PL/pgSQL composite NULL reaches asyncpg as all-NULL row
         if data.get("id") is None:
             raise RepoShapeError(f"row is missing id; keys={sorted(data)}")
         for key in ("payload", "result", "budget", "params"):
@@ -83,7 +85,7 @@ class ForgeRepo:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
             row = await conn.fetchrow(
-                "SELECT forge_transition_episode($1, $2, $3, $4)", episode_id, target,
+                "SELECT * FROM forge_transition_episode($1, $2, $3, $4)", episode_id, target,
                 verdict, reasons or [],
             )
             return self._row(row)
@@ -91,7 +93,7 @@ class ForgeRepo:
     async def append_event(self, episode_id: str, kind: str, payload: dict[str, Any]) -> dict[str, Any]:
         async with self.pool.acquire() as conn:
             await conn.execute("SET search_path = forge, public")
-            row = await conn.fetchrow("SELECT forge_append_event($1, $2, $3::jsonb)",
+            row = await conn.fetchrow("SELECT * FROM forge_append_event($1, $2, $3::jsonb)",
                                       episode_id, kind, json.dumps(payload))
             return self._row(row)
 

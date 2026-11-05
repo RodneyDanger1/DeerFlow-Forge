@@ -1,16 +1,17 @@
-# DeerFlow Forge
+﻿# DeerFlow Forge
 
 An architecture console and deployable reference package for a **print-on-demand
 asset pipeline**: ingest → vector trace → raster/composite → grid + typography →
-effects → motion, orchestrated by **DeerFlow 2.2** (DeepSeek V4.1-Flash) and
-synced to a **Fourthwall** storefront.
+effects → motion. It is designed to be orchestrated by **DeerFlow 2.2** and synced to a
+**Fourthwall** storefront; the local checkout and this session run the console/Forge code
+under **DeepSeek Harness**, and **DeerFlow registration is not applied**.
 
 The repository has two halves:
 
 | Path | What it is |
 |---|---|
 | `src/`, `public/`, `scripts/`, `server/` | The **console** — a TanStack Start + Vite + React 19 app that renders the blueprint: board, routes, sandbox, playbook, and source browser. |
-| `blueprint/files/` | The **deployable package** — Python `pod_pipeline`, Postgres schema, Docker Compose, systemd units, MCP bridge, craft CLI shims, and stub tests. |
+| `blueprint/files/` | The **deployable package** — Python `pod_pipeline`, Postgres schema, Docker Compose, systemd units, MCP bridge, craft CLI shims, and the real test suite (some integration tests require their named services). |
 | `attachments/` | The original provided pipeline modules the blueprint was fitted to (`config.py`, `db.py`, `fourthwall.py`, `orchestrator.py`, `routes.py`, `runner.py`, `worker.py`, `validators.py`, `logfilter.py`, `ingest.py`, `craft_stub.py`, `conftest.py`). |
 | `migrations/` | SQL migrations applied by `npm run build` when `DATABASE_URL` is set. |
 | `.grok/references/` | Workspace contract captured from the original sandbox — kept for traceability. |
@@ -200,13 +201,20 @@ the client's framing (newline-delimited or Content-Length).
 
 **Current verified state (2026-11-05, this checkout):**
 
-- Console: `npm test` **65/65**, `tsc --noEmit` clean, rebuilt with the `node-server` preset; Chrome
-  visual smoke passes all five sections at desktop and phone widths with **0 console errors, 0 failed
-  requests, 0 horizontal overflow**. A separate Playwright control audit passes 15/15 checks.
-- Pipeline/Forge local suite: **139 passed, 4 skipped** on a throwaway PostgreSQL 16 container with
-  the G0 bundle mounted. The 4 skips are DB-dependent tests outside the Forge scratch DSN.
+- Console: `npm test` **65/65**, `tsc --noEmit` clean, lint **0 errors / 5 warnings**, rebuilt with the
+  `node-server` preset; Chrome visual smoke passes all five sections at desktop and phone widths with
+  **0 console errors, 0 failed requests, 0 horizontal overflow**. A Playwright control probe passes
+  **18/18** checks (tabs, model radios, run completion, sandbox open, Copy→`Copied`, Download event,
+  mobile select) and a keyboard/a11y probe passes **8/8** (one h1, named controls, landmarks,
+  12/12 visible Tab stops, no overflow, ≥40 px tap targets, zero runtime errors).
+- Pipeline/Forge staging suite: **165 passed, 4 skipped** on a throwaway PostgreSQL 16 container with
+  the G0 bundle mounted (14.55 s). The 4 skips are DB-dependent tests outside the Forge scratch DSN.
+  Local Forge-only discovery: **111 passed, 9 skipped**.
 - Forge local: gateway **33/33**; SQL **18/18** plus `SKIP LOCKED`; repository **4/4**; service **5/5**;
   verifier **8/8**; blind-critic contract **14/14**; real HTTP→repo→worker→reaper **2/2**.
+  Wave-2 fixes add cancellable service timeout (`504 E_SERVICE_TIMEOUT`), idempotent replay
+  (`200 replayed:true`), `E_REPO_SHAPE` instead of silent 404, strict POST validation, guarded
+  `finish_job`, and `python -m forge_worker --once`. Evidence: `docs/TRACE/2026-11-05/GATE-FINAL-W2.md`.
 - G0: independent verifier reproduced trace/retouch artifacts byte-identically; **9/9 applicable**
   gates on the regenerated trace report.
 - DeerFlow MCP registration: **not applied**. No production `forge` DB, service, or storefront

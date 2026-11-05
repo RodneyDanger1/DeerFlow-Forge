@@ -9,9 +9,10 @@ staging gate passed for one real trace/retouch; **no production deploy**. **Owne
 Answer one question with evidence: **what must we build so an AI agent can reliably operate the Craft
 apps, learn from its runs, and ship print-ready work on the existing VPS?**
 
-The answer is not “a new superagent.” It is a **Forge Conductor** control plane on the existing
+The answer is not “a new superagent.” It is a **Forge Conductor** control plane designed for the
 DeerFlow 2.2 + DeepSeek runtime, with a typed Craft gateway, evidence ledger, blind visual critic,
-human approval and calibrated L1/L2 learning.
+human approval and calibrated L1/L2 learning. **This is a target architecture:** DeerFlow MCP
+registration is not applied, and the current local/browser checks run the Forge console directly.
 
 ## Read in this order
 
@@ -46,8 +47,8 @@ claim to beat a human designer.
 
 ## Current truth (read this before promising anything)
 
-- DeerFlow 2.2 is running with `deepseek-flash` (“DeepSeek V4.1 Flash”, 1,048,576 ctx, 8,192 output);
-  key validity is **unverified**.
+- DeerFlow 2.2 is the **target host** for `deepseek-flash` (“DeepSeek V4.1 Flash”, 1,048,576 ctx,
+  8,192 output); registration is not applied, and key validity is **unverified**.
 - VectorCraft 0.21.1 + PhotoCraft 0.20.2 are installed; Film/Design/Effect are **not**.
 - Production `/opt/pod-pipeline/bin/*-cli` may still be stubs; `deploy/craft-launchers` are pinned;
   `routes.py` argv was corrected and staging-proven. Production deploy not applied.

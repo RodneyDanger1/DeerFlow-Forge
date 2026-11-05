@@ -52,9 +52,10 @@ class EndToEndTests(unittest.IsolatedAsyncioTestCase):
             status, fetched = await asyncio.to_thread(self._request, server.server_address[1], "GET", f"/v1/episodes/{episode_id}")
             self.assertEqual(status, 200)
             self.assertEqual(fetched["episode"]["id"], episode_id)
-            status, conflict = await asyncio.to_thread(self._request, server.server_address[1], "POST", "/v1/episodes", body)
-            self.assertEqual(status, 409)
-            self.assertEqual(conflict["error"]["code"], "E_EPISODE_EXISTS")
+            status, replay = await asyncio.to_thread(self._request, server.server_address[1], "POST", "/v1/episodes", body)
+            self.assertEqual(status, 200)
+            self.assertTrue(replay["replayed"])
+            self.assertEqual(replay["episode"]["id"], episode_id)
         finally:
             server.shutdown()
             server.server_close()

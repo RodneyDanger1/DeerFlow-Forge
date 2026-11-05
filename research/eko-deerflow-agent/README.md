@@ -18,7 +18,7 @@ goal evaluation, and how to read the evidence without drowning in it.
 
 ## 1. The outcome we are building
 
-A hosted **Forge Conductor** on the existing DeerFlow 2.2 + DeepSeek V4.1 Flash runtime that can:
+A hosted **Forge Conductor** designed for the DeerFlow 2.2 + DeepSeek V4.1 Flash runtime that can:
 
 1. take a print/vector brief;
 2. choose exact Craft command ids from a pinned catalogue;
@@ -36,7 +36,7 @@ not a new generic superagent, and not a claim of “better than human.”
 
 | Area | Finding |
 |---|---|
-| VPS | 2 vCPU / 7.9 GB / 36 GB free, no GPU/display; DeerFlow 2.2 already running |
+| VPS | 2 vCPU / 7.9 GB / 36 GB free, no GPU/display; DeerFlow 2.2 is the designed host, but Forge MCP registration is **not applied** and current runtime ownership is unverified |
 | Model | `deepseek-flash` (“DeepSeek V4.1 Flash”), 1,048,576 ctx, 8,192 output; key validity unverified |
 | Craft apps | VectorCraft 0.21.1 + PhotoCraft 0.20.2 installed; Film/Design/Effect **absent** |
 | Execution | Production `/opt/pod-pipeline/bin/*-cli` may still be stubs; `deploy/craft-launchers` are pinned; `routes.py` argv was corrected and staging-proven. Production deploy not applied |
