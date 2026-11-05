@@ -82,11 +82,12 @@ const ART_TOOL = "tools/prep_print_art.py";
  * refuses empty/full-frame masks instead of trusting them blind.
  */
 const ART_STEPS = [
-  "Pick the mask mode from the art: glow (colourful subject on dark), lineart --invert (ink on light) or none (deliberate full bleed).",
+  "Pick the mask mode from the art: glow (colourful subject on dark), lineart --invert (ink on light), white (white ground, keep enclosed whites) or alpha (input already cut out).",
   "Take geometry from the provider: areas come from config/fourthwall-template-details.json (areaGeometry has inches, pixels and DPI per region).",
   "Run tools/prep_print_art.py: measured mask, crop, optional bloom, centre on a 300 DPI canvas, previews on black and white, JSON report.",
   "Check the gates in the report: coverage 0.005–0.62, non-empty bbox, upscale warning above 2.5x, canvas matches the provider area.",
-  "Upload through the storefront's own Fourthwall client, create hidden, publish with a separate state change, then run the catalogue sync.",
+  "Check the provider's artwork rules for the method: PNG/JPG only, DTG solid shapes, embroidery minimums (see traps).",
+  "Upload through the storefront's own Fourthwall client, create hidden, publish with a separate state change, then run the catalogue sync. Order a sample before calling it print-verified.",
 ];
 
 export function PlaybookView({ onOpen }: { onOpen: (path: string) => void }) {
@@ -197,9 +198,14 @@ set -a; . config/pipeline.env; set +a
           </div>
         </dl>
         <p className="max-w-3xl text-xs text-pretty text-muted">
-          Traps encoded in the SOP: provider mockups are decorative and never prove print scale; potrace flattens glow into a
-          silhouette so PNG at 300 DPI is the print artifact; transparent padding shrinks the design; licensed wordmarks must not
-          be sold.
+          Verified against Fourthwall&apos;s artwork docs (2026-11-05): uploads must be PNG or JPG — SVG, AI, PDF, PSD and TIFF
+          are rejected; DTG wants solid shapes with strong outlines, not glow or semi-transparent effects; embroidery allows at
+          most 6 thread colours with capitals at least 0.3 in, lowercase 0.25 in and strokes at least 0.05 in; apparel needs at
+          least 150 DPI at print size (300 for posters, stickers and mugs). White removal: remove every neutral white pixel, not
+          just the border, unless the owner says otherwise. Vectorise flat art (tools/vectorize_art.py) and render at print size;
+          automated tracing of textured or painterly art degrades (banding, key-colour edge specks) — regenerate that art at a
+          higher resolution instead. The mockup is a cut-off check, not a print-size proof — order a sample before launch.
+          Licensed wordmarks must not be sold.
         </p>
       </section>
       <div className="flex flex-wrap gap-2">

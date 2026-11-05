@@ -33,7 +33,7 @@ from typing import Any
 
 from PIL import Image, ImageEnhance, ImageFilter
 
-MODES = ("glow", "lineart", "none")
+MODES = ("glow", "lineart", "white", "white-flood", "alpha", "none")
 DEFAULT_GATES = {"min_coverage": 0.005, "max_coverage": 0.62, "max_upscale": 2.5}
 
 
@@ -53,35 +53,159 @@ def clamp01(value: float) -> float:
 
 def image_stats(src: Image.Image) -> dict[str, float]:
     """Measured colour/luminance statistics used to justify threshold choice."""
-    small = src.resize((min(400, src.width), max(1, round(min(400, src.width) * src.height / src.width))))
-    pixels = list(small.convert("RGB").getdata())
+    rgb = src.convert("RGB")
+    width = rgb.width
+    small = rgb.resize((min(400, width), max(1, round(min(400, width) * rgb.height / width))))
+    pixels = list(small.getdata())
     lums = [0.2126 * r + 0.7152 * g + 0.0722 * b for r, g, b in pixels]
     lums.sort()
     bright = [(r, g, b) for (r, g, b) in pixels if (0.2126 * r + 0.7152 * g + 0.0722 * b) > lums[int(len(lums) * 0.9)]]
     cyan = sum(1 for r, g, b in bright if b > r * 1.15 and g > r * 1.05) / max(1, len(bright))
     chroma = statistics.fmean([max(p) - min(p) for p in bright]) if bright else 0.0
+    border: list[tuple[int, int, int]] = []
+    step = max(1, small.width // 24)
+    for x in range(0, small.width, step):
+        border.append(pixels[x])
+        border.append(pixels[(small.height - 1) * small.width + x])
+    for y in range(0, small.height, step):
+        border.append(pixels[y * small.width])
+        border.append(pixels[y * small.width + small.width - 1])
+    near_white = sum(1 for (r, g, b) in border if min(r, g, b) >= 255 - 26) / max(1, len(border))
     return {
         "luminance_median": round(statistics.median(lums), 1),
         "luminance_p90": round(lums[int(len(lums) * 0.9)], 1),
         "luminance_p99": round(lums[min(len(lums) - 1, int(len(lums) * 0.99))], 1),
         "bright_pixel_cyan_fraction": round(cyan, 3),
         "bright_pixel_mean_chroma": round(chroma, 1),
+        "border_near_white_fraction": round(near_white, 3),
     }
 
 
 def choose_mode(stats: dict[str, float]) -> str:
-    """Glow art = colourful bright subject on dark ground; otherwise lineart."""
+    """White-locked background → white key; colourful subject on dark → glow."""
+    if stats["border_near_white_fraction"] >= 0.9:
+        return "white"
     if stats["bright_pixel_cyan_fraction"] >= 0.45 and stats["bright_pixel_mean_chroma"] >= 60:
         return "glow"
     return "lineart"
 
 
-def build_alpha(src: Image.Image, args: argparse.Namespace) -> Image.Image:
-    width, height = src.size
-    pixels = src.load()
+def drop_small_components(mask: Image.Image, min_area: int) -> Image.Image:
+    """Zero out isolated specks (paper texture highlights) that survive the key."""
+    width, height = mask.size
+    alpha = mask.load()
+    seen = bytearray(width * height)
+    stack: list[tuple[int, int]] = []
+    for y in range(height):
+        for x in range(width):
+            index = y * width + x
+            if seen[index] or alpha[x, y] < 16:
+                continue
+            component: list[tuple[int, int]] = []
+            stack.append((x, y))
+            seen[index] = 1
+            while stack:
+                cx, cy = stack.pop()
+                component.append((cx, cy))
+                for nx, ny in ((cx + 1, cy), (cx - 1, cy), (cx, cy + 1), (cx, cy - 1)):
+                    if nx < 0 or ny < 0 or nx >= width or ny >= height:
+                        continue
+                    neighbour = ny * width + nx
+                    if seen[neighbour] or alpha[nx, ny] < 16:
+                        continue
+                    seen[neighbour] = 1
+                    stack.append((nx, ny))
+            if len(component) < min_area:
+                for cx, cy in component:
+                    alpha[cx, cy] = 0
+    return mask
+
+
+def white_key_alpha(src: Image.Image, args: argparse.Namespace) -> Image.Image:
+    """Remove EVERY neutral-white pixel, not just the border-connected ones.
+
+    This is the owner's rule for the Ridgeboundia badge: white is the only colour
+    that becomes transparent, everywhere (background, torn-paper edge, snow, sky),
+    while saturated colours and cream/tan lettering are kept. A flood fill is
+    available as `white-flood` when enclosed whites must survive instead.
+    """
+    rgb = src.convert("RGB")
+    width, height = rgb.size
+    pixels = rgb.load()
     mask = Image.new("L", (width, height))
     out = mask.load()
+    for y in range(height):
+        for x in range(width):
+            r, g, b = pixels[x, y]
+            maximum = max(r, g, b)
+            minimum = min(r, g, b)
+            lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+            saturation = 0.0 if maximum == 0 else (maximum - minimum) / maximum
+            neutral = clamp01((args.white_saturation - saturation) / 0.06)
+            bright = clamp01((lum - args.white_lum_floor) / 100)
+            whiteness = neutral * bright
+            alpha = 1.0 - whiteness
+            out[x, y] = 0 if alpha < args.alpha_floor else int(round(alpha * 255))
+    if args.min_component > 0:
+        mask = drop_small_components(mask, args.min_component)
+    if args.clean_rim:
+        # Torn-paper shadows and antialiased white edges survive as semi-transparent
+        # grey rims. Threshold hard, erode one pixel, then re-soften the edge.
+        mask = mask.point(lambda v: 0 if v < 128 else 255)
+        mask = mask.filter(ImageFilter.MinFilter(3))
+    return mask.filter(ImageFilter.GaussianBlur(args.feather))
+
+
+def white_flood_alpha(src: Image.Image, tolerance: float) -> Image.Image:
+    """Remove the border-connected near-white background, keep enclosed whites.
+
+    Flood fill from the frame edges only. White *inside* the subject (a snow cap,
+    a white letter enclosed by ink) is not reachable from the border, so it stays
+    opaque — the difference between "background removed" and "all white erased".
+    """
+    rgb = src.convert("RGB")
+    width, height = rgb.size
+    pixels = rgb.load()
+    alpha = Image.new("L", (width, height), 255)
+    visited = bytearray(width * height)
+    stack: list[tuple[int, int]] = []
+    for x in range(width):
+        stack.append((x, 0))
+        stack.append((x, height - 1))
+    for y in range(height):
+        stack.append((0, y))
+        stack.append((width - 1, y))
+    limit = tolerance * 3
+    while stack:
+        x, y = stack.pop()
+        if x < 0 or y < 0 or x >= width or y >= height:
+            continue
+        index = y * width + x
+        if visited[index]:
+            continue
+        r, g, b = pixels[x, y]
+        if (255 - r) + (255 - g) + (255 - b) > limit:
+            continue
+        visited[index] = 1
+        alpha.putpixel((x, y), 0)
+        stack.extend(((x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)))
+    return alpha
+
+
+def build_alpha(src: Image.Image, args: argparse.Namespace) -> Image.Image:
+    width, height = src.size
     mode = args.mode
+    if mode == "alpha":
+        if src.mode != "RGBA":
+            raise PrepError("E_ALPHA_MISSING", "The input has no alpha channel.", "Use --mode glow/lineart/white for opaque inputs.")
+        return src.getchannel("A").copy()
+    if mode == "white":
+        return white_key_alpha(src, args)
+    if mode == "white-flood":
+        return white_flood_alpha(src, args.white_tolerance).filter(ImageFilter.GaussianBlur(args.feather))
+    pixels = src.convert("RGB").load()
+    mask = Image.new("L", (width, height))
+    out = mask.load()
     for y in range(height):
         for x in range(width):
             r, g, b = pixels[x, y]
@@ -149,7 +273,7 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
     source = Path(args.input)
     if not source.is_file():
         raise PrepError("E_INPUT_MISSING", f"Input image {source} does not exist.", "Check the path.")
-    src = Image.open(source).convert("RGB")
+    src = Image.open(source).convert("RGBA")
     stats = image_stats(src)
     if args.mode == "auto":
         args.mode = choose_mode(stats)
@@ -183,6 +307,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
 
     margin = args.margin_px
     usable = max(1, width_px - 2 * margin)
+    if args.print_width_in:
+        usable = max(1, min(usable, round(args.print_width_in * args.dpi)))
     upscale = usable / art.width
     scaled = art.resize((usable, max(1, round(art.height * usable / art.width))), Image.LANCZOS)
     master = Image.new("RGBA", (width_px, height_px), (0, 0, 0, 0))
@@ -219,6 +345,8 @@ def run(args: argparse.Namespace) -> dict[str, Any]:
         "subject_px": [bbox[2] - bbox[0], bbox[3] - bbox[1]],
         "coverage": round(coverage, 4),
         "upscale_factor": round(upscale, 3),
+        "print_width_in": args.print_width_in,
+        "usable_width_px": usable,
         "source_stats": stats,
         "thresholds": {
             "lum_floor": args.lum_floor, "lum_div": args.lum_div,
@@ -238,7 +366,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Prepare a raster artwork as a Fourthwall print master.")
     parser.add_argument("--input", required=True)
     parser.add_argument("--output", required=True)
-    parser.add_argument("--mode", choices=("auto", "glow", "lineart", "none"), default="auto")
+    parser.add_argument("--mode", choices=("auto", "glow", "lineart", "white", "white-flood", "alpha", "none"), default="auto")
     parser.add_argument("--template", help="Fourthwall productTemplateId (geometry lookup)")
     parser.add_argument("--area", default="front_large")
     parser.add_argument("--details", help="Path to fourthwall-template-details.json")
@@ -246,6 +374,13 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument("--height-px", type=int)
     parser.add_argument("--dpi", type=int, default=300)
     parser.add_argument("--margin-px", type=int, default=100)
+    parser.add_argument("--white-tolerance", type=float, default=26.0, help="white-flood mode: per-channel distance from 255 treated as background")
+    parser.add_argument("--white-saturation", type=float, default=0.135, help="white mode: max saturation still treated as white")
+    parser.add_argument("--white-lum-floor", type=float, default=140.0, help="white mode: luminance below this is always kept")
+    parser.add_argument("--clean-rim", action="store_true", default=True, help="white mode: drop semi-transparent white rim pixels")
+    parser.add_argument("--no-clean-rim", dest="clean_rim", action="store_false")
+    parser.add_argument("--min-component", type=int, default=24, help="white mode: drop isolated specks smaller than this many pixels")
+    parser.add_argument("--print-width-in", type=float, help="Physical print width in inches (defaults to the full provider area)")
     parser.add_argument("--lum-floor", type=float, default=95.0)
     parser.add_argument("--lum-div", type=float, default=80.0)
     parser.add_argument("--cyan-floor", type=float, default=30.0)
