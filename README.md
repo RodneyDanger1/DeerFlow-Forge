@@ -106,6 +106,7 @@ See `docs/CAPABILITY-MATRIX.md` for the current can/cannot/unverified matrix and
 | `forge_service.py` | loopback HTTP `/healthz`, create/get episode; repository health is required |
 | `forge_verifier.py` | artifact SHA/IHDR/DPI + gate-report parser; fail-closed verdicts |
 | `forge_critic.py` | blind-critic schema + gate/critic/human resolver (gate authoritative) |
+| `forge_eval.py` | Wilson lower bound + golden eval + promotion **proposal** (never activates) |
 
 None of these are installed as services; there is no production `forge` database, systemd unit, TLS,
 auth, or learning loop. The Run route in the console is a blueprint visualization, not execution.
@@ -202,7 +203,7 @@ the client's framing (newline-delimited or Content-Length).
 - Console: `npm test` **65/65**, `tsc --noEmit` clean, rebuilt with the `node-server` preset; Chrome
   visual smoke passes all five sections at desktop and phone widths with **0 console errors, 0 failed
   requests, 0 horizontal overflow**. A separate Playwright control audit passes 15/15 checks.
-- Pipeline/Forge local suite: **126 passed, 4 skipped** on a throwaway PostgreSQL 16 container with
+- Pipeline/Forge local suite: **139 passed, 4 skipped** on a throwaway PostgreSQL 16 container with
   the G0 bundle mounted. The 4 skips are DB-dependent tests outside the Forge scratch DSN.
 - Forge local: gateway **33/33**; SQL **18/18** plus `SKIP LOCKED`; repository **4/4**; service **5/5**;
   verifier **8/8**; blind-critic contract **14/14**; real HTTP→repo→worker→reaper **2/2**.

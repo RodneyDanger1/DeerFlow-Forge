@@ -46,7 +46,7 @@ not a new generic superagent, and not a claim of “better than human.”
 | Learning | DeerMem facts + skill-evolution host exist; **no full learner or quality evaluation**; current level **L0** |
 | Publish | `fourthwall_template_id` unset for all five products; no approval queue |
 | Evidence | README’s live-E2E claim is historical/unreproducible in the current state |
-| Assets | 39 skills, 400 answers, 6 examples, 8 validated system diagrams + integration map, **178-file source corpus**, **188-file desktop package** |
+| Assets | 39 skills, 400 answers, 6 examples, 8 validated system diagrams + integration map, **179-file source corpus**, **189-file desktop package** |
 
 The key sentence: **the model/harness is present; the Craft execution path and learning evidence are
 not.** Phase 0 starts there.
@@ -105,13 +105,14 @@ not.** Phase 0 starts there.
   publish; product state read back.
 - **Gate:** approval reused → blocked; missing template → named refusal; no store mutation in tests.
 
-### I6 — Learning + evaluation (P2/P3)
+### I6 — Learning + evaluation (P2/P3, contract only)
 
-- **Files:** `forge/memory.py`, `forge/promotion.py`, `forge/eval.py`, DeerFlow memory/skill config.
+- **Files:** `forge_eval.py`, `forge_critic.py`, `forge_verifier.py`; no learner/activation.
 - **Rule:** L1/L2 only (retrieval/skills), no fine-tune/RL. Promotion requires a declared horizon,
   Wilson lower bound above baseline, golden regression and human approval. **3/3 is not enough**
   (Wilson LB 0.4385; the old rule was rejected by simulation).
-- **Gate:** A/B on held-out goldens; null result disables memory; rollback pointer.
+- **Current gate:** eval contract **13/13**; 3/3 refused, 8/8 only a candidate with human approval,
+  regressions refuse. No real corpus/A-B/activation; current level remains **L0**.
 
 ## 4. Eight small Python enhancements
 

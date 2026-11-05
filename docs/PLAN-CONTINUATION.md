@@ -17,11 +17,12 @@
 | Independent G0 artifact review | **PASS (artifact consistency)**; execution provenance **U** (`14-G0-ARTIFACT-REVIEW`) |
 | G0 artifact bundle | copied to `execution-wave/g0/` + 22-entry MANIFEST; D2 vacuous retype gate fixed; report regenerated as 9/9 applicable |
 | G0 provenance | **CLOSED independently** (`16-G0-PROVENANCE.md`): fresh staging-only run reproduced artifacts byte-identically |
-| W2 Forge service/DDL/queue | **W2 local gate PASS** (at close: 97 pass/9 skip); current full suite **126 pass/4 skip**; 18/18 SQL; 9 ms SKIP LOCKED; real HTTP→repo→worker→reaper e2e. No production deploy |
-| UI/agent bug audit | **DONE for tested surfaces**: copy fallback, health 503, verifier malformed check, reaper abandoned; UI 15/15 checks, 126 pass/4 skip |
-| W3-A verifier | **DONE**: 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed checks refuse; staging 126 pass/4 skip |
+| W2 Forge service/DDL/queue | **W2 local gate PASS** (at close: 97 pass/9 skip); current full suite **139 pass/4 skip**; 18/18 SQL; 9 ms SKIP LOCKED; real HTTP→repo→worker→reaper e2e. No production deploy |
+| UI/agent bug audit | **DONE for tested surfaces**: copy fallback, health 503, verifier malformed check, reaper abandoned; UI 15/15 checks, 139 pass/4 skip |
+| W3-A verifier | **DONE**: 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed checks refuse; staging 139 pass/4 skip |
 | W3-B critic | **DONE (contract)**: 14/14 blind-critic tests; gate authoritative; disagreement → needs_human; no model claim |
-| W4 learning/eval | not started |
+| W4-A eval/promotion | **DONE (contract)**: 13/13 tests; 3/3 refused, 8/8 candidate only with human, regressions refuse; no activation/learning claim |
+| W4-B learning loop | not started |
 
 ## Decision
 

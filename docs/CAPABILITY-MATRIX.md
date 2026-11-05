@@ -19,10 +19,11 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Loopback service | **CAN** | 5/5 tests; real HTTP→repo→worker→reaper 2/2; health 200/503 | no TLS/auth; loopback only |
 | Artifact verifier | **CAN** | 8/8 tests; real G0 pair passes; tamper/vacuous/failed/malformed refuse | no independent render/tile metrics |
 | Blind-critic contract | **CAN** | 14/14 tests; gate authoritative; disagreement→needs_human | **no vision model or accuracy measurement** |
+| Evaluation/promotion contract | **CAN** | 13/13 tests; Wilson LB; 3/3 refused; 8/8 candidate only with human; regressions refuse | proposal only; **no activation/learning claim** |
 | G0 real trace/retouch | **CAN** | independent staging reproduction; 22/22 hashes; 9/9 applicable | no production publish |
 | Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
-| Research corpus | **CAN** | 178 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 188-file desktop package includes 10 skills |
-| Local Forge e2e | **CAN** | full staging suite **126 pass/4 skip** with scratch PG + G0 | not production |
+| Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes 10 skills |
+| Local Forge e2e | **CAN** | full staging suite **139 pass/4 skip** with scratch PG + G0 | not production |
 
 ## 2. What it cannot do (do not claim)
 
@@ -34,7 +35,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | DesignCraft/EffectCraft/FilmCraft | **CANNOT** | apps absent; named refusals only |
 | Publish to Fourthwall | **CANNOT** | approval/template/credentials not configured; no publish path |
 | Vision critic accuracy | **CANNOT CLAIM** | model never run; ≥50 labelled defect set not executed |
-| Learning L1/L2 | **CANNOT CLAIM** | verifier/critic contracts exist, but no episode retrieval/promotion loop or A/B |
+| Learning L1/L2 | **CANNOT CLAIM** | verifier/critic/eval contracts exist, but no episode retrieval/promotion loop, live corpus, or A/B |
 | Learning L3/L4 | **CANNOT** | no corpus/GPU/RL fleet |
 | Native GUI/CUA | **CANNOT CLAIM** | no working desktop GUI bridge; headless browser only |
 | All 918 Craft commands | **CANNOT** | only measured VC/PC contracts and 33/26 MCP tools proven |
@@ -56,8 +57,8 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Old claim | Current truth | Evidence |
 |---|---|---|
 | 207 JS tests (205/2) | **65/65** | `npm.cmd test` |
-| 31 pipeline tests | **126 pass/4 skip** current staging suite | scratch PG + G0 + `pytest` |
-| 131-file package | **178 source / 188 desktop package** | filesystem count |
+| 31 pipeline tests | **139 pass/4 skip** current staging suite | scratch PG + G0 + `pytest` |
+| 131-file package | **179 source / 189 desktop package** | filesystem count |
 | Live VPS effect/publish E2E | **HISTORICAL, not reproducible** | EffectCraft absent; no production deploy/publish |
 | DeerFlow loads Forge tools | **UNVERIFIED/HISTORICAL** | registration not applied |
 | “Do not start W2” | **superseded** | G0 provenance closed; W2 local gate PASS |
