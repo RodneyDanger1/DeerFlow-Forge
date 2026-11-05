@@ -3,7 +3,7 @@
 **Source:** local `09b20e5` (UI truth fix on top of `3b3b65b`) pushed to
 `https://github.com/RodneyDanger1/DeerFlow-Forge` before deployment.
 **VPS:** `srv2108523` / `179.197.88.181`, `/opt/deerflow-forge`, user `forge`.
-**Deployed HEAD:** `09b20e5` · **console unit:** `deerflow-forge-console.service` **active**
+**Built runtime source:** `09b20e5` · **VPS checkout after evidence sync:** `b747939` (docs/evidence only; no app-code change) · **console unit:** `deerflow-forge-console.service` **active**
 · **bind:** `127.0.0.1:8091` · **served HTML:** 14,253 bytes.
 **Built output mtime on VPS:** `2026-11-05 23:48:00 UTC`.
 **Access:** local SSH tunnel `127.0.0.1:18091 -> 127.0.0.1:8091`; CUA + Playwright both target
