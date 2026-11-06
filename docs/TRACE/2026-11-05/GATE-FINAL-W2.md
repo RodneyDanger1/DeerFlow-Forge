@@ -117,9 +117,11 @@ This report predates these increments. Current state:
 - Process executor + Craft registry: registered VectorCraft 0.21.1 and PhotoCraft 0.20.2; VPS version
   probe passes; a real VectorCraft trace through gateway → PostgreSQL produced 2 artifacts and replayed
   without re-execution (opt-in live test).
-- Consumer first half is implemented: `ToolCallConsumer` validates worker payloads and maps gateway
-  success/refused/failed to worker truth; the live Craft trace now passes through it. 7/7 consumer tests.
-- Current suites: **201 passed / 5 skipped** staging; **148 passed / 16 skipped** local; the 5th skip is
+- Consumer + worker job are implemented: `ToolCallConsumer` validates worker payloads and maps gateway
+  success/refused/failed to worker truth; `forge_tool_job:handle` builds repo/registry/gateway; the worker
+  enforces `--kind`. A real CLI job completed with 1 tool row + 2 artifacts; wrong kind failed `E_JOB_KIND`
+  with 0 rows. 7/7 consumer + 4 job-config tests.
+- Current suites: **207 passed / 5 skipped** staging; **154 passed / 16 skipped** local; the 5th skip is
   the opt-in live Craft test.
 - Historical entries above are retained; current truth is `docs/PLAN-CONTINUATION.md` and
   `docs/CAPABILITY-MATRIX.md`.

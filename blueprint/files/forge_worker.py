@@ -84,9 +84,10 @@ class LeaseReaper:
 
 class ForgeWorker:
     def __init__(self, repo: WorkerRepo, handler: Handler, *, worker_id: str = "worker-1",
-                 lease_s: int = 300) -> None:
+                 lease_s: int = 300, kind: str | None = None) -> None:
         self.repo, self.handler = repo, handler
         self.worker_id, self.lease_s = worker_id, lease_s
+        self.kind = kind
 
     async def _finish(self, job_id: int, *, ok: bool, error: str | None = None) -> dict[str, Any]:
         """Guarded finish (D3): a refused finish is a named, bounded failure."""
@@ -100,6 +101,10 @@ class ForgeWorker:
         job = await self.repo.claim_job(self.worker_id, lease_s=self.lease_s)
         if job is None:
             return None
+        if self.kind is not None and job.get("kind") != self.kind:
+            detail = f"E_JOB_KIND: expected {self.kind!r}, got {job.get('kind')!r}"
+            await self._finish(job["id"], ok=False, error=detail)
+            return {**job, "ok": False, "error": detail}
         try:
             await self.handler(dict(job.get("payload") or {}))
         except Exception as exc:  # boundary: record the failure, then re-raise nothing
@@ -158,18 +163,22 @@ def _make_parser() -> argparse.ArgumentParser:
     parser.add_argument("--dsn", default=None, help="Postgres DSN (or use FORGE_DSN)")
     parser.add_argument("--handler", default=os.environ.get("FORGE_HANDLER"),
                         help="module:async_callable that processes one job payload")
+    parser.add_argument("--kind", default=None,
+                        help="optional claimed job kind guard (e.g. forge.tool_call)")
     return parser
 
 
 async def _run_once(*, dsn: str, worker_id: str, lease_s: int, handler: Handler,
-                    repo_factory: Callable[[str], Awaitable[Any]] | None = None) -> dict[str, Any]:
+                    repo_factory: Callable[[str], Awaitable[Any]] | None = None,
+                    kind: str | None = None) -> dict[str, Any]:
     if repo_factory is None:
         from forge_repo import ForgeRepo  # lazy: tests need no asyncpg
         async def repo_factory(dsn_: str):
             return await ForgeRepo.connect(dsn_)
     repo = await repo_factory(dsn)
     try:
-        worker = ForgeWorker(repo, handler, worker_id=worker_id, lease_s=lease_s)
+        worker = ForgeWorker(repo, handler, worker_id=worker_id, lease_s=lease_s,
+                             kind=kind)
         result = await worker.run_once()
         if result is None:
             return {"ok": True, "claimed": 0, "finished": 0, "job_id": None}
@@ -196,7 +205,7 @@ def main(argv: list[str] | None = None, *, repo_factory=None, handler: Handler |
             raise WorkerError("E_HANDLER_MISSING", "no handler: pass --handler module:callable")
         summary = asyncio.run(_run_once(dsn=dsn, worker_id=args.worker_id,
                                         lease_s=args.lease_s, handler=resolved,
-                                        repo_factory=repo_factory))
+                                        repo_factory=repo_factory, kind=args.kind))
     except WorkerError as exc:
         print(json.dumps({"ok": False, "code": exc.code, "message": exc.message}),
               file=sys.stderr)

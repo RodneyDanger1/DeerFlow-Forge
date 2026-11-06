@@ -1,4 +1,4 @@
-﻿"""W2-C worker tests: one claim, handler, truthful finish. No DB/network."""
+"""W2-C worker tests: one claim, handler, truthful finish. No DB/network."""
 from __future__ import annotations
 
 import asyncio
@@ -68,6 +68,26 @@ class WorkerTests(unittest.IsolatedAsyncioTestCase):
         stop.set()
         await task
         self.assertEqual(repo.finished, [])
+
+    async def test_kind_mismatch_fails_without_running_handler(self):
+        repo = FakeRepo([{"id": 9, "kind": "other.job", "payload": {}}])
+        seen = []
+        worker = ForgeWorker(repo, lambda payload: _ok(seen, payload),
+                             kind="forge.tool_call")
+        result = await worker.run_once()
+        self.assertFalse(result["ok"])
+        self.assertIn("E_JOB_KIND", result["error"])
+        self.assertEqual(seen, [])
+        self.assertEqual(repo.finished[0]["ok"], False)
+
+    async def test_matching_kind_runs_handler(self):
+        repo = FakeRepo([{"id": 10, "kind": "forge.tool_call", "payload": {"x": 2}}])
+        seen = []
+        worker = ForgeWorker(repo, lambda payload: _ok(seen, payload),
+                             kind="forge.tool_call")
+        result = await worker.run_once()
+        self.assertTrue(result["ok"])
+        self.assertEqual(seen, [{"x": 2}])
 
     async def test_drain_stops_on_empty(self):
         repo = FakeRepo([{"id": 3, "payload": {}}, {"id": 4, "payload": {}}])

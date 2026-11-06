@@ -1,22 +1,20 @@
 # Plan continuation — DeerFlow Forge (2026-11-05)
 
 **Status:** W1, W5, stale in-flight recovery, the registered/version-probed Craft executor, a real
-VectorCraft trace through gateway → PostgreSQL, and the consumer first half (payload → ToolCall →
-gateway; worker success/failure truth) are complete. The next work is wiring the consumer into a real
-worker job and adding verifier/critic/eval evidence rows. **No production Forge DB/service and no
-publish.**
+VectorCraft trace through gateway → PostgreSQL, the consumer, and a real `forge_worker` job handler with
+kind guard are complete. The next work is artifact/gate/critique/eval evidence adapters, PhotoCraft live
+trim, and the service route. **No production Forge DB/service and no publish.**
 
-Verified by command: console **65/65**; Forge local **148 passed / 16 skipped**; staging
-**201 passed / 5 skipped**; gateway **36/36**; SQL **18/18**; browser controls **22/22 live checks**;
+Verified by command: console **65/65**; Forge local **154 passed / 16 skipped**; staging
+**207 passed / 5 skipped**; gateway **36/36**; SQL **18/18**; browser controls **22/22 live checks**;
 keyboard/a11y **8/8**. Receipts: `docs/TRACE/2026-11-05/GATE-FINAL-W2.md`,
 `docs/TRACE/2026-11-05/LIVE-VPS-VERIFICATION.md`, `docs/CAPABILITY-MATRIX.md`.
 
 ## Outcome
 
-Forge can persist and replay a tool call, execute a registered Craft command, hash its artifacts, and
-accept a worker-shaped payload through the consumer while refusing malformed/refused/failed calls.
-The next increment wires that consumer into a real worker job and adds artifact, gate, critique and eval
-evidence rows.
+Forge can persist/replay a tool call, execute a registered Craft command, accept a worker payload through
+the consumer, and run it as a real guarded worker job. The next increment adds artifact, gate, critique
+and eval evidence rows, proves PhotoCraft, and exposes the service route.
 
 ## Current behavior (evidence)
 
@@ -38,11 +36,13 @@ evidence rows.
   `forge_eval`, maps unique conflicts to `E_EVAL_EXISTS`, and maps missing episodes to
   `E_EPISODE_NOT_FOUND`. **Real-PG test covers both arms, duplicate, invalid arm, missing episode.**
 - Service: loopback `/healthz` and create/get episode only; no tool-call or eval route.
-- Worker: `python -m forge_worker --once`; guarded finish. The worker handler contract is satisfied by
-  `ToolCallConsumer`, but no production job kind/route is registered.
+- Worker: `python -m forge_worker --once`; guarded finish and optional `--kind` guard. A wrong-kind job
+  fails with `E_JOB_KIND` before the handler runs. `forge_tool_job:handle` builds the real repo,
+  registry, gateway and consumer from `FORGE_DSN` + `FORGE_WORK_ROOT`; a real job completed and wrote
+  one tool-call row plus 2 artifacts.
 - Consumer: `forge_consumer.ToolCallConsumer` validates `episode_id`/`tool_id`/`cmd_id`/`params`/paths/
   hashes, maps payload to `ToolCall`, executes through the gateway, and raises named `ConsumerError` for
-  refused/failed calls. **7/7 tests; real Craft trace also passes through the consumer.**
+  refused/failed calls. **7/7 tests; live Craft trace also passes through the consumer.**
 - Verifier/critic/eval: verified contracts, no automated pipeline consumer.
 - Console: static viewer; honest “Static blueprint · no live services” and “Simulation…” labels.
 - VPS console: active at `09b20e5` runtime source; 22/22 live checks; CUA native checks.
@@ -74,48 +74,50 @@ evidence rows.
 | Craft registry + real trace | `forge_craft_registry.py` | VPS probe VectorCraft 0.21.1 / PhotoCraft 0.20.2; real gateway trace: 2 artifacts, persisted, replayed without re-execution |
 | W5 eval row writer | `ForgeRepo.record_eval` | baseline+memory rows; duplicate `E_EVAL_EXISTS`; invalid arm `ValueError`; missing episode `E_EPISODE_NOT_FOUND` |
 | Consumer first half | `forge_consumer.py` | 7/7 tests: payload validation, success result, refused/failed errors, worker finish truth; live Craft trace via consumer passes |
-| Full suite | staging | **201 passed, 5 skipped** in 16.30 s |
-| Local suite | `unittest` | **148 passed, 16 skipped** |
+| Worker job + kind guard | `forge_tool_job.py`, `forge_worker.py` | real CLI job: `--kind forge.tool_call` succeeded, 1 tool row, 2 artifacts; wrong kind failed `E_JOB_KIND`, 0 tool rows; 4 config tests + 2 worker tests |
+| Full suite | staging | **207 passed, 5 skipped** in 16.30 s |
+| Local suite | `unittest` | **154 passed, 16 skipped** |
 | VPS console | live deployment | 22/22 checks + CUA evidence |
 | Docs | README, capability matrix, this plan | current, with historical files retained |
 
-## Next: consumer wiring + evidence adapters (decision-complete)
+## Next: evidence adapters + PhotoCraft + service (decision-complete)
 
-**Done first half:** `forge_consumer.py` validates a worker payload, calls the gateway, and returns the
-persisted result or raises a named error; worker success/failure truth is tested. The live Craft trace
-passes through the consumer.
+**Done consumer path:** payload validation → `ToolCall` → gateway → registered Craft executor →
+persisted tool call, invoked by a real `forge_worker --once --kind forge.tool_call` job.
 
 **Remaining:**
-1. Register a real worker job kind (`forge.tool_call`) with a handler factory that reads `FORGE_DSN`,
-   builds `ForgeRepo` + `ForgeGatewayRepo` + `load_verified_registry`, and wraps them in
-   `ToolCallConsumer`; one job payload executes one call.
-2. Add a schedule/daemon entry for `abandon_stale_in_flight` with a chosen deadline.
-3. Add artifact/gate/critique/eval adapters: after success, verifier reads artifact paths/hashes, gate
-   evidence is persisted, critic runs only with an actual model (otherwise `unverified`), and
-   `record_eval` writes rows per arm.
-4. Add service `/v1/tool-calls` only after the worker job exists.
+1. **Artifact/gate/critique/eval adapters:** after a successful tool result, verify each artifact by
+   path/hash; persist gate evidence; critic stays `unverified` without a model; write `record_eval`
+   rows for the configured arms. A failed gate must finish the job failed with a named code.
+2. **PhotoCraft live trim:** run the registered trim on the G0 retouch input; verify PNG dimensions/DPI
+   and hash. Do not claim the command works until this passes.
+3. **Scheduled stale recovery:** choose a deadline and invoke `abandon_stale_in_flight` from a bounded
+   daemon (not an unbounded loop).
+4. **Service `/v1/tool-calls`:** add only after the worker path and evidence adapters exist; loopback-only.
 
-**Tests:** worker job with a scratch DSN executes the real trace, writes one tool-call row and artifacts;
-failed gate → job failed with named code; duplicate payload → replay not re-execution; malformed payload →
-job failed `E_REQUEST_INVALID`. **Rollback:** remove job kind/consumer; gateway/executor stay.
+**Tests:** worker job writes artifact/gate/critique/eval rows; failed gate → job failed; PhotoCraft trim
+produces a valid PNG; duplicate payload replays without re-execution; malformed payload fails
+`E_REQUEST_INVALID`. **Rollback:** remove adapters/job handler; gateway/executor stay.
 
 **Out of scope:** production service, TLS/auth, DeerFlow registration, publish, autonomous promotion.
 
 ## Remaining sequence
 
-1. Consumer wiring + artifact/gate/critique/eval evidence adapters.
-2. Service `/v1/tool-calls` after the consumer has a real caller.
-3. W7 clean-env dependencies; W8 systemd/TLS/auth/migrations/backup-restore.
-4. DeerFlow MCP registration, then W4-B learning.
+1. Evidence adapters + PhotoCraft live trim.
+2. Service `/v1/tool-calls` after the worker path is complete.
+3. Scheduled stale recovery.
+4. W7 clean-env dependencies; W8 systemd/TLS/auth/migrations/backup-restore.
+5. DeerFlow MCP registration, then W4-B learning.
 
 ## Blockers / not claimed
 
 - No production `forge` DB, service unit, TLS/auth, deploy, or publish.
-- Consumer class exists, but **no production worker job kind/route** invokes it.
+- Worker handler is selected by CLI (`--handler`), not a code-level kind→handler registry; one handler is
+  configured per worker invocation.
 - No verifier/critic/eval adapter writes rows after a tool call.
 - `forge_eval` rows have no route/worker caller yet.
+- PhotoCraft registry registered/probed but no live PhotoCraft command proven yet.
 - Stale in-flight recovery is manual (no scheduled daemon).
-- PhotoCraft registry registered but no live PhotoCraft command proven yet.
 - No DeerFlow MCP registration; no native GUI/CUA bridge beyond the tested Chrome window.
 - 5 staging skips (4 services + opt-in live Craft off by default); vision accuracy and learning above L0
   unmeasured.

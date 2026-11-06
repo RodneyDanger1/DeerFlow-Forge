@@ -28,14 +28,15 @@ These are commands that were run in this checkout/staging, not architectural int
 | Visual smoke | `ok:true`, zero failures; all five sections non-empty |
 | Playwright controls | **18/18** (tabs, five model radios, route run completes, sandbox `runner.py`, Copy→`Copied`, Download event, mobile 390×844, 34 source options, zero overflow, zero console errors) |
 | Keyboard/a11y | **8/8** (one h1, all controls named, 3 landmarks, 12/12 visible Tab stops, ≥40 px tap targets, zero runtime errors) |
-| Forge local tests | **148 passed, 16 skipped**, 7.56 s |
-| Forge staging suite | **201 passed, 5 skipped**, scratch PostgreSQL 16 + G0 bundle, 16.30 s |
+| Forge local tests | **154 passed, 16 skipped**, 7.56 s |
+| Forge staging suite | **207 passed, 5 skipped**, scratch PostgreSQL 16 + G0 bundle, 16.30 s |
 | Forge gateway | 36/36; policy + async idempotency + replay |
 | Persisted tool calls | **5 real-PostgreSQL tests**: success→replay, in-flight duplicate refusal, executor-crash failed row, stale recovery→replay, fresh in-flight untouched |
 | Process executor | **8/8 tests**: absolute binary, artifact hash, timeout kill, missing artifact, typed params/work-root expansion, `--version` probe |
 | Craft registry | VectorCraft **0.21.1** and PhotoCraft **0.20.2** bound to absolute paths; VPS version probe passes |
 | Live Craft trace | Real VectorCraft trace through consumer → gateway → PostgreSQL: exit 0, 2 artifacts (SVG 6,051 B; PDF 13,610 B), persisted and replayed without re-execution |
-| Consumer seam (first half) | **7/7 tests**: payload validation, gateway success/refused/failed mapping, worker finish truth; live Craft trace through consumer passes |
+| Consumer seam | **7/7 tests**: payload validation, gateway success/refused/failed mapping, worker finish truth; live Craft trace through consumer passes |
+| Worker job + kind guard | Real `forge_worker --once --kind forge.tool_call` job: 1 tool row, 2 artifacts; wrong-kind job failed `E_JOB_KIND` with 0 tool rows |
 | Eval persistence | **real-PostgreSQL test**: baseline+memory rows, duplicate→`E_EVAL_EXISTS`, missing episode→`E_EPISODE_NOT_FOUND` |
 | Forge SQL | 18/18 assertions + `SKIP LOCKED`; real Postgres |
 | G0 provenance | independently reproduced byte-identically; 22/22 hashes; 9/9 applicable gates |
@@ -205,9 +206,10 @@ The decision-complete plan is [`docs/PLAN-CONTINUATION.md`](docs/PLAN-CONTINUATI
    shell in an explicit work root, kills on timeout, captures bounded stderr and hashes artifacts.
    `forge_craft_registry` binds VectorCraft 0.21.1/PhotoCraft 0.20.2 and probes versions. A real
    VectorCraft trace through the gateway persisted 2 artifacts and replayed without re-execution.
-4. **Consumer seam — first half DONE.** `ToolCallConsumer` validates worker payloads → `ToolCall` →
-   gateway and raises named errors for refused/failed calls; worker success/failure truth is tested.
-   **Next:** register a real worker job kind and persist artifact/gate/critique/eval evidence.
+4. **Consumer + worker job (DONE).** `ToolCallConsumer` validates worker payloads → `ToolCall` →
+   gateway; `forge_tool_job:handle` builds the real repo/registry/gateway and the worker enforces
+   `--kind`. Real job wrote one tool-call row and 2 artifacts; wrong kind failed safely.
+   **Next:** artifact/gate/critique/eval adapters, PhotoCraft live trim, then service route.
 5. **Production hardening.** systemd, TLS/auth, migration/rollback, backup/restore drill, supervised
    reaper, DeerFlow registration.
 6. **Learning.** Only after 1–5: episode retrieval, A/B, promotion/rollback; otherwise remain L0.
