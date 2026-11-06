@@ -28,10 +28,11 @@ These are commands that were run in this checkout/staging, not architectural int
 | Visual smoke | `ok:true`, zero failures; all five sections non-empty |
 | Playwright controls | **18/18** (tabs, five model radios, route run completes, sandbox `runner.py`, Copy→`Copied`, Download event, mobile 390×844, 34 source options, zero overflow, zero console errors) |
 | Keyboard/a11y | **8/8** (one h1, all controls named, 3 landmarks, 12/12 visible Tab stops, ≥40 px tap targets, zero runtime errors) |
-| Forge local tests | **123 passed, 13 skipped**, 6.29 s |
-| Forge staging suite | **177 passed, 4 skipped**, scratch PostgreSQL 16 + G0 bundle, 14.42 s |
+| Forge local tests | **132 passed, 15 skipped**, 7.56 s |
+| Forge staging suite | **186 passed, 4 skipped**, scratch PostgreSQL 16 + G0 bundle, 16.30 s |
 | Forge gateway | 36/36; policy + async idempotency + replay |
-| Persisted tool calls | **3 real-PostgreSQL tests**: success→replay one row, in-flight duplicate refusal, executor crash→failed row replayed |
+| Persisted tool calls | **5 real-PostgreSQL tests**: success→replay, in-flight duplicate refusal, executor-crash failed row, stale recovery→replay, fresh in-flight untouched |
+| Process executor | **7/7 tests**: absolute binary, artifact hash, timeout kill, missing artifact failure, named registration refusals |
 | Eval persistence | **real-PostgreSQL test**: baseline+memory rows, duplicate→`E_EVAL_EXISTS`, missing episode→`E_EPISODE_NOT_FOUND` |
 | Forge SQL | 18/18 assertions + `SKIP LOCKED`; real Postgres |
 | G0 provenance | independently reproduced byte-identically; 22/22 hashes; 9/9 applicable gates |
@@ -197,7 +198,9 @@ The decision-complete plan is [`docs/PLAN-CONTINUATION.md`](docs/PLAN-CONTINUATI
    before execution and replays terminal rows. Tested against real PostgreSQL.
 2. **W5 — eval-row persistence (DONE at repository level).** `ForgeRepo.record_eval()` writes one
    immutable row per episode/arm and refuses duplicates; **no consumer/route calls it yet**.
-3. **Executor seam (next).** Add a registered, absolute-path Craft executor behind `Executor`; no fake success.
+3. **Executor seam — first half DONE.** `ProcessExecutor` validates absolute binaries, runs without a
+   shell in an explicit work root, kills on timeout, captures bounded stderr and hashes artifacts.
+   **Next:** a Craft command registry with `--version` probes and real trace/retouch commands.
 4. **Consumer seam.** Wire gateway/verifier/critic/eval into a worker job or service route with evidence rows.
 5. **Production hardening.** systemd, TLS/auth, migration/rollback, backup/restore drill, supervised
    reaper, DeerFlow registration.

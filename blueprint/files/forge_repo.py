@@ -254,3 +254,36 @@ class ForgeGatewayRepo:
                 json.dumps(payload), result.duration_ms, list(result.argv))
             if tag != "UPDATE 1":
                 raise RepoShapeError(f"tool-call finish updated {tag!r}, expected 'UPDATE 1'")
+
+    async def abandon_stale_in_flight(self, *, older_than_s: int,
+                                      limit: int = 100) -> list[str]:
+        """Mark old in-flight rows failed so a crashed executor cannot block a key forever.
+
+        This is deliberately operator-run. It does not re-execute anything; a later
+        call for the key replays the recorded ``E_IDEMPOTENCY_STALE`` failure.
+        """
+        if (isinstance(older_than_s, bool) or not isinstance(older_than_s, int)
+                or not 1 <= older_than_s <= 604800):
+            raise ValueError("E_PARAM_REJECTED: older_than_s must be 1..604800")
+        if isinstance(limit, bool) or not isinstance(limit, int) or not 1 <= limit <= 1000:
+            raise ValueError("E_PARAM_REJECTED: limit must be 1..1000")
+        async with self.pool.acquire() as conn:
+            await conn.execute("SET search_path = forge, public")
+            rows = await conn.fetch(
+                """UPDATE forge_tool_call
+                      SET state='failed',
+                          result=jsonb_build_object(
+                              'message', 'E_IDEMPOTENCY_STALE',
+                              'artifacts', '[]'::jsonb),
+                          replayed=false,
+                          finished_at=now()
+                    WHERE idempotency_key IN (
+                        SELECT idempotency_key FROM forge_tool_call
+                         WHERE state='in_flight'
+                           AND created_at < now() - ($1 * interval '1 second')
+                         ORDER BY created_at
+                         FOR UPDATE SKIP LOCKED
+                         LIMIT $2)
+                    RETURNING idempotency_key""",
+                older_than_s, limit)
+            return [str(row["idempotency_key"]) for row in rows]

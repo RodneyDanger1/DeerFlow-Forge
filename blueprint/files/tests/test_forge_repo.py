@@ -152,6 +152,38 @@ class GatewayRepoDBTests(unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         await self.repo.close()
 
+    async def test_stale_in_flight_is_abandoned_then_replayed_as_failed(self):
+        key = idempotency_key(self.call.episode_id, self.call.tool_id,
+                              self.call.params, self.call.input_hashes)
+        self.assertIsNone(await self.gateway_repo.begin(key, self.call))
+        await self.repo.pool.execute(
+            "UPDATE forge.forge_tool_call SET created_at=now() - interval '1 hour' "
+            "WHERE idempotency_key=$1", key)
+        abandoned = await self.gateway_repo.abandon_stale_in_flight(
+            older_than_s=60, limit=10)
+        self.assertIn(key, abandoned)
+        row = await self.repo.pool.fetchrow(
+            "SELECT state, result::text FROM forge.forge_tool_call "
+            "WHERE idempotency_key=$1", key)
+        self.assertEqual(row["state"], "failed")
+        self.assertIn("E_IDEMPOTENCY_STALE", row["result"])
+        self.assertEqual(await self.gateway_repo.abandon_stale_in_flight(
+            older_than_s=60, limit=10), [])
+        replay = await self.gateway.execute(self.call, "tok-op")
+        self.assertEqual(replay.state, "failed")
+        self.assertTrue(replay.replayed)
+        self.assertEqual(self.executor.calls, 0)
+
+    async def test_stale_abandonment_does_not_touch_fresh_in_flight(self):
+        fresh = ToolCall(episode_id=self.episode["id"], tool_id="craft.run",
+                         cmd_id="imageTrace.make", params={"palette": 8})
+        fresh_key = idempotency_key(fresh.episode_id, fresh.tool_id,
+                                    fresh.params, fresh.input_hashes)
+        self.assertIsNone(await self.gateway_repo.begin(fresh_key, fresh))
+        self.assertNotIn(fresh_key, await self.gateway_repo.abandon_stale_in_flight(
+            older_than_s=60, limit=10))
+        self.assertEqual((await self.gateway_repo.find(fresh_key)).state, "in_flight")
+
     async def test_execute_then_replay_persists_one_row(self):
         first = await self.gateway.execute(self.call, "tok-op")
         second = await self.gateway.execute(self.call, "tok-op")

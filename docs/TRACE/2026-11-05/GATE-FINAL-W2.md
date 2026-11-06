@@ -101,15 +101,19 @@ prompt behaviour for clipboard is not measured; the Copy control was observed re
 - Craft execution through the Forge service — separate seam, not wired.
 - Deploy/publish, DeerFlow MCP registration, critic vision accuracy, learning above L0.
 
-## Update after this gate — W1/W5 closed
+## Update after this gate — W1/W5, stale recovery, process executor
 
-This report predates W1/W5. Current state:
+This report predates these increments. Current state:
 
 - W1 (tool-call idempotency persistence) is **closed**: async gateway + `ForgeGatewayRepo` insert
   `in_flight` before execution, replay terminal rows, and refuse concurrent in-flight duplicates.
-  Staging includes 3 additional real-PostgreSQL tests.
+  Staging includes 5 additional real-PostgreSQL tests (3 W1 + 2 stale recovery).
 - W5 (eval-row persistence) is **closed at repository level**: `ForgeRepo.record_eval()` writes one
   immutable row per episode/arm; no consumer/route calls it yet.
-- Current suites: **177 passed / 4 skipped** staging; **123 passed / 13 skipped** local.
+- Stale in-flight recovery is **manual**: `abandon_stale_in_flight(older_than_s, limit)` marks old rows
+  failed with `E_IDEMPOTENCY_STALE`; later calls replay failure; fresh rows untouched.
+- Process executor first half is **complete**: 7/7 tests for absolute binaries, no shell, work root,
+  timeout kill, artifact hashing and registration refusals. No Craft registry yet.
+- Current suites: **186 passed / 4 skipped** staging; **132 passed / 15 skipped** local.
 - Historical entries above are retained; current truth is `docs/PLAN-CONTINUATION.md` and
   `docs/CAPABILITY-MATRIX.md`.
