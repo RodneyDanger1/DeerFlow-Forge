@@ -18,7 +18,7 @@ from __future__ import annotations
 import hashlib
 import json
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
 from typing import Any, Iterable, Literal, Protocol, Sequence
 
@@ -64,6 +64,7 @@ RETRYABLE_REFUSALS: frozenset[str] = frozenset({
     "E_ARTIFACT_MISSING", "E_ARTIFACT_EMPTY", "E_DOCUMENT_STATE",
     "E_GATE_FAILED", "E_GATE_MISSING", "E_GATE_VACUOUS", "E_VISION_UNAVAILABLE",
     "E_CRITIQUE_UNGROUNDED", "E_TIMEOUT", "E_PARAM_REJECTED", "E_MEMORY_CONFLICT",
+    "E_IDEMPOTENCY_IN_FLIGHT",
 })
 
 
@@ -93,8 +94,8 @@ def idempotency_key(episode_id: str, tool_id: str, params: dict[str, Any],
                     input_hashes: Sequence[str] = ()) -> str:
     """Stable key. Same logical call -> same key, regardless of dict order."""
     material = canonical_json({
-        "episode_id": episode_id,
-        "tool_id": tool_id,
+        "episode_id": str(episode_id),
+        "tool_id": str(tool_id),
         "params": params,
         "input_hashes": list(input_hashes),
         "schema": "forge-idem/1",
@@ -226,12 +227,18 @@ class ExecutionOutcome:
 @dataclass
 class ToolResult:
     idempotency_key: str
-    state: Literal["succeeded", "failed", "refused"]
+    state: Literal["in_flight", "succeeded", "failed", "refused"]
     replayed: bool = False
     exit_code: int | None = None
     refusal_code: str | None = None
     artifacts: tuple[dict[str, Any], ...] = ()
     message: str = ""
+    episode_id: str = ""
+    tool_id: str = ""
+    cmd_id: str | None = None
+    params: dict[str, Any] = field(default_factory=dict)
+    argv: tuple[str, ...] = ()
+    duration_ms: int | None = None
 
 
 class Executor(Protocol):
@@ -239,21 +246,41 @@ class Executor(Protocol):
 
 
 class Repo(Protocol):
-    def find(self, key: str) -> ToolResult | None: ...
-    def store(self, key: str, result: ToolResult) -> None: ...
+    """Persisted tool-call repository.
+
+    ``begin`` must insert an in-flight row atomically before the executor runs.
+    It returns an existing terminal result for a duplicate key, or ``None`` when
+    the caller now owns the in-flight row. It raises ``E_IDEMPOTENCY_IN_FLIGHT``
+    when another caller owns the row.
+    """
+
+    async def find(self, key: str) -> ToolResult | None: ...
+    async def begin(self, key: str, call: ToolCall) -> ToolResult | None: ...
+    async def store(self, key: str, result: ToolResult) -> None: ...
 
 
 class InMemoryRepo:
-    """Test double for the forge_tool_call table (unique key semantics)."""
+    """Classified test double for the forge_tool_call table (unique-key semantics)."""
 
     def __init__(self) -> None:
         self.rows: dict[str, ToolResult] = {}
 
-    def find(self, key: str) -> ToolResult | None:
+    async def find(self, key: str) -> ToolResult | None:
         return self.rows.get(key)
 
-    def store(self, key: str, result: ToolResult) -> None:
+    async def begin(self, key: str, call: ToolCall) -> ToolResult | None:
         if key in self.rows:
+            row = self.rows[key]
+            if row.state == "in_flight":
+                raise PolicyError("E_IDEMPOTENCY_IN_FLIGHT", key, terminal=False)
+            return row
+        self.rows[key] = ToolResult(
+            idempotency_key=key, state="in_flight", episode_id=call.episode_id,
+            tool_id=call.tool_id, cmd_id=call.cmd_id, params=dict(call.params))
+        return None
+
+    async def store(self, key: str, result: ToolResult) -> None:
+        if key not in self.rows:
             raise PolicyError("E_IDEMPOTENCY_CONFLICT", key)
         self.rows[key] = result
 
@@ -272,14 +299,23 @@ class Gateway:
         except KeyError:
             raise PolicyError("E_COMMAND_UNKNOWN", f"tool {tool_id}") from None
 
-    def execute(self, call: ToolCall, token: str) -> ToolResult:
+    @staticmethod
+    def _replay(prior: ToolResult) -> ToolResult:
+        if prior.state == "in_flight":
+            raise PolicyError("E_IDEMPOTENCY_IN_FLIGHT", prior.idempotency_key,
+                              terminal=False)
+        return replace(prior, replayed=True)
+
+    async def execute(self, call: ToolCall, token: str) -> ToolResult:
         spec = self.spec(call.tool_id)
+        key = idempotency_key(call.episode_id, call.tool_id, call.params, call.input_hashes)
+        context = {"idempotency_key": key, "episode_id": str(call.episode_id),
+                   "tool_id": call.tool_id, "cmd_id": call.cmd_id,
+                   "params": dict(call.params)}
         role = self._roles.get(token)
         if role is None or role not in spec.allowed_roles:
             return ToolResult(
-                idempotency_key=idempotency_key(call.episode_id, call.tool_id,
-                                                call.params, call.input_hashes),
-                state="refused", refusal_code="E_ROLE_DENIED",
+                **context, state="refused", refusal_code="E_ROLE_DENIED",
                 message=f"role {role!r} may not call {call.tool_id}")
 
         if call.cmd_id is not None and call.cmd_id not in spec.allowed_cmds:
@@ -288,23 +324,37 @@ class Gateway:
         for path in call.paths:
             resolve_within(path, spec.roots)   # raises E_ROOT_DENIED before any effect
 
-        key = idempotency_key(call.episode_id, call.tool_id, call.params, call.input_hashes)
         if not validate_key(key):
             raise PolicyError("E_KEY_SHAPE", key)
-        prior = self._repo.find(key)
-        if prior is not None:
-            return ToolResult(**{**prior.__dict__, "replayed": True})
 
-        outcome = self._executor.run(spec, call)
+        prior = await self._repo.find(key)
+        if prior is not None:
+            return self._replay(prior)
+
+        # Atomic pre-write: a concurrent duplicate sees in_flight and must not execute.
+        existing = await self._repo.begin(key, call)
+        if existing is not None:
+            return self._replay(existing)
+
+        try:
+            outcome = self._executor.run(spec, call)
+        except Exception as exc:
+            failed = ToolResult(**context, state="failed",
+                                message=f"{type(exc).__name__}: {exc}")
+            await self._repo.store(key, failed)
+            raise
         if outcome.refusal_code:
-            result = ToolResult(idempotency_key=key, state="refused",
+            result = ToolResult(**context, state="refused",
                                 refusal_code=outcome.refusal_code,
-                                message=outcome.message)
+                                message=outcome.message, argv=outcome.argv,
+                                duration_ms=outcome.duration_ms)
         elif outcome.exit_code == 0:
-            result = ToolResult(idempotency_key=key, state="succeeded",
-                                exit_code=0, artifacts=outcome.artifacts)
+            result = ToolResult(**context, state="succeeded", exit_code=0,
+                                artifacts=outcome.artifacts, argv=outcome.argv,
+                                duration_ms=outcome.duration_ms)
         else:
-            result = ToolResult(idempotency_key=key, state="failed",
-                                exit_code=outcome.exit_code, message=outcome.message)
-        self._repo.store(key, result)
+            result = ToolResult(**context, state="failed",
+                                exit_code=outcome.exit_code, message=outcome.message,
+                                argv=outcome.argv, duration_ms=outcome.duration_ms)
+        await self._repo.store(key, result)
         return result

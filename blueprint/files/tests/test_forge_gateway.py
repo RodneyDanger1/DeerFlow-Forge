@@ -170,8 +170,8 @@ class RefusalTests(unittest.TestCase):
         self.assertTrue(is_terminal_refusal("E_SOMETHING_NEW"))
 
 
-class GatewayTests(unittest.TestCase):
-    def setUp(self):
+class GatewayTests(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
         self.repo = InMemoryRepo()
         self.executor = FakeExecutor()
         self.gw = Gateway([SPEC], self.executor, self.repo,
@@ -180,75 +180,117 @@ class GatewayTests(unittest.TestCase):
                              cmd_id="imageTrace.make", params={"palette": 6},
                              paths=("/tmp/forge-work/out.svg",))
 
-    def test_success_then_replay_does_not_reexecute(self):
-        r1 = self.gw.execute(self.call, "tok-op")
-        r2 = self.gw.execute(self.call, "tok-op")
+    async def test_success_then_replay_does_not_reexecute(self):
+        r1 = await self.gw.execute(self.call, "tok-op")
+        r2 = await self.gw.execute(self.call, "tok-op")
         self.assertEqual(r1.state, "succeeded")
         self.assertFalse(r1.replayed)
         self.assertTrue(r2.replayed)
         self.assertEqual(r1.idempotency_key, r2.idempotency_key)
         self.assertEqual(self.executor.calls, 1)
 
-    def test_different_params_produce_new_call(self):
-        self.gw.execute(self.call, "tok-op")
+    async def test_different_params_produce_new_call(self):
+        await self.gw.execute(self.call, "tok-op")
         other = ToolCall(episode_id="ep1", tool_id="craft.run",
                          cmd_id="imageTrace.make", params={"palette": 8})
-        self.gw.execute(other, "tok-op")
+        await self.gw.execute(other, "tok-op")
         self.assertEqual(self.executor.calls, 2)
 
-    def test_role_denied_is_refusal_not_exception(self):
-        result = self.gw.execute(self.call, "tok-critic")
+    async def test_role_denied_is_refusal_not_exception(self):
+        result = await self.gw.execute(self.call, "tok-critic")
         self.assertEqual(result.state, "refused")
         self.assertEqual(result.refusal_code, "E_ROLE_DENIED")
         self.assertEqual(self.executor.calls, 0)
 
-    def test_unknown_token_denied(self):
-        result = self.gw.execute(self.call, "nope")
+    async def test_unknown_token_denied(self):
+        result = await self.gw.execute(self.call, "nope")
         self.assertEqual(result.refusal_code, "E_ROLE_DENIED")
 
-    def test_cmd_not_allowlisted_fails_closed(self):
+    async def test_cmd_not_allowlisted_fails_closed(self):
         bad = ToolCall(episode_id="ep1", tool_id="craft.run",
                        cmd_id="file.delete", params={})
         with self.assertRaises(PolicyError) as caught:
-            self.gw.execute(bad, "tok-op")
+            await self.gw.execute(bad, "tok-op")
         self.assertEqual(caught.exception.code, "E_COMMAND_UNKNOWN")
         self.assertEqual(self.executor.calls, 0)
 
-    def test_unknown_tool_fails_closed(self):
+    async def test_unknown_tool_fails_closed(self):
         bad = ToolCall(episode_id="ep1", tool_id="craft.rm", cmd_id=None, params={})
         with self.assertRaises(PolicyError) as caught:
-            self.gw.execute(bad, "tok-op")
+            await self.gw.execute(bad, "tok-op")
         self.assertEqual(caught.exception.code, "E_COMMAND_UNKNOWN")
 
-    def test_root_violation_refused_before_side_effect(self):
+    async def test_root_violation_refused_before_side_effect(self):
         bad = ToolCall(episode_id="ep1", tool_id="craft.run",
                        cmd_id="imageTrace.make", params={},
                        paths=("/etc/passwd",))
         with self.assertRaises(PolicyError) as caught:
-            self.gw.execute(bad, "tok-op")
+            await self.gw.execute(bad, "tok-op")
         self.assertEqual(caught.exception.code, "E_ROOT_DENIED")
         self.assertEqual(self.executor.calls, 0)
         self.assertEqual(self.repo.rows, {})
 
-    def test_executor_refusal_is_stored_and_replayed(self):
+    async def test_executor_refusal_is_stored_and_replayed(self):
         refusing = FakeExecutor(ExecutionOutcome(exit_code=127, duration_ms=1,
                                                  argv=("fake-cli",),
                                                  refusal_code="E_COMMAND_UNKNOWN",
                                                  message="vendor binary not installed"))
         gw = Gateway([SPEC], refusing, self.repo, roles={"tok-op": "vector_operator"})
-        r1 = gw.execute(self.call, "tok-op")
-        r2 = gw.execute(self.call, "tok-op")
+        r1 = await gw.execute(self.call, "tok-op")
+        r2 = await gw.execute(self.call, "tok-op")
         self.assertEqual((r1.state, r1.refusal_code), ("refused", "E_COMMAND_UNKNOWN"))
         self.assertTrue(r2.replayed)
         self.assertEqual(refusing.calls, 1)
 
-    def test_failed_exit_is_failed_not_succeeded(self):
+    async def test_failed_exit_is_failed_not_succeeded(self):
         failing = FakeExecutor(ExecutionOutcome(exit_code=1, duration_ms=2,
                                                 argv=("fake-cli",), message="boom"))
         gw = Gateway([SPEC], failing, self.repo, roles={"tok-op": "vector_operator"})
-        result = gw.execute(self.call, "tok-op")
+        result = await gw.execute(self.call, "tok-op")
         self.assertEqual(result.state, "failed")
         self.assertEqual(result.exit_code, 1)
+
+
+    async def test_in_flight_duplicate_is_refused_without_execution(self):
+        key = idempotency_key(self.call.episode_id, self.call.tool_id,
+                              self.call.params, self.call.input_hashes)
+        await self.repo.begin(key, self.call)
+        with self.assertRaises(PolicyError) as caught:
+            await self.gw.execute(self.call, "tok-op")
+        self.assertEqual(caught.exception.code, "E_IDEMPOTENCY_IN_FLIGHT")
+        self.assertFalse(caught.exception.terminal)
+        self.assertEqual(self.executor.calls, 0)
+
+    async def test_executor_exception_is_persisted_as_failed(self):
+        class BoomExecutor:
+            def __init__(self):
+                self.calls = 0
+            def run(self, spec, call):
+                self.calls += 1
+                raise RuntimeError("boom")
+        boom = BoomExecutor()
+        gw = Gateway([SPEC], boom, self.repo, roles={"tok-op": "vector_operator"})
+        with self.assertRaises(RuntimeError):
+            await gw.execute(self.call, "tok-op")
+        key = idempotency_key(self.call.episode_id, self.call.tool_id,
+                              self.call.params, self.call.input_hashes)
+        row = await self.repo.find(key)
+        self.assertEqual(row.state, "failed")
+        self.assertIn("RuntimeError: boom", row.message)
+        self.assertEqual(boom.calls, 1)
+        replay = await gw.execute(self.call, "tok-op")
+        self.assertTrue(replay.replayed)
+        self.assertEqual(boom.calls, 1)
+
+    async def test_replay_carries_persisted_call_context(self):
+        first = await self.gw.execute(self.call, "tok-op")
+        replay = await self.gw.execute(self.call, "tok-op")
+        self.assertEqual(replay.idempotency_key, first.idempotency_key)
+        self.assertEqual(replay.episode_id, "ep1")
+        self.assertEqual(replay.tool_id, "craft.run")
+        self.assertEqual(replay.params, {"palette": 6})
+        self.assertEqual(replay.argv, ("fake-cli",))
+        self.assertEqual(replay.duration_ms, 12)
 
 
 if __name__ == "__main__":

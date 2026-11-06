@@ -7,7 +7,10 @@ import os
 import unittest
 import uuid
 
-from forge_repo import ForgeRepo, RepoShapeError
+from forge_gateway import (
+    ExecutionOutcome, Gateway, PolicyError, ToolCall, ToolSpec, idempotency_key,
+)
+from forge_repo import ForgeGatewayRepo, ForgeRepo, RepoShapeError
 
 DSN = os.environ.get("FORGE_TEST_DSN")
 
@@ -61,6 +64,37 @@ class RepoTests(unittest.IsolatedAsyncioTestCase):
     async def test_unknown_episode_is_none(self):
         self.assertIsNone(await self.repo.get_episode(str(uuid.uuid4())))
 
+    async def test_eval_rows_are_immutable_per_arm(self):
+        episode = await self.repo.create_episode(
+            idempotency_key=f"eval-{self.run_id}", account_id=1, brief="eval",
+            task_family="ai_badge_trace")
+        base = await self.repo.record_eval(
+            episode_id=str(episode["id"]), arm="baseline",
+            technical={"n": 8, "passed": 7, "wilson_lower": 0.5291},
+            verdict="unverified", human={"score": 3}, reviewer="lead")
+        self.assertEqual(base["arm"], "baseline")
+        self.assertEqual(base["technical"]["n"], 8)
+        self.assertEqual(base["human"], {"score": 3})
+        memory = await self.repo.record_eval(
+            episode_id=str(episode["id"]), arm="memory",
+            technical={"n": 8, "passed": 8, "wilson_lower": 0.6306},
+            verdict="needs_human")
+        self.assertEqual(memory["arm"], "memory")
+        with self.assertRaises(PolicyError) as caught:
+            await self.repo.record_eval(
+                episode_id=str(episode["id"]), arm="baseline",
+                technical={}, verdict="pass")
+        self.assertEqual(caught.exception.code, "E_EVAL_EXISTS")
+        with self.assertRaises(ValueError):
+            await self.repo.record_eval(
+                episode_id=str(episode["id"]), arm="other",
+                technical={}, verdict="pass")
+        with self.assertRaises(PolicyError) as caught:
+            await self.repo.record_eval(
+                episode_id=str(uuid.uuid4()), arm="baseline",
+                technical={}, verdict="pass")
+        self.assertEqual(caught.exception.code, "E_EPISODE_NOT_FOUND")
+
     async def test_transition_appends_exactly_one_event(self):
         """W3: the SQL transition function owns the event append; repo must not double-write."""
         episode = await self.repo.create_episode(
@@ -78,6 +112,96 @@ class RepoTests(unittest.IsolatedAsyncioTestCase):
         payload = json.loads(payload)
         self.assertEqual(payload["from"], "intake")
         self.assertEqual(payload["to"], "briefed")
+
+
+class FakeExecutor:
+    """Permitted test double for the external CLI."""
+
+    def __init__(self, outcome=None, error=None):
+        self.calls = 0
+        self.outcome = outcome or ExecutionOutcome(
+            exit_code=0, duration_ms=12, argv=("fake-cli", "--trace"),
+            artifacts=({"path": "build/x.png", "sha256": "a" * 64, "bytes": 10},))
+        self.error = error
+
+    def run(self, spec, call):
+        self.calls += 1
+        if self.error is not None:
+            raise self.error
+        return self.outcome
+
+
+SPEC = ToolSpec(tool_id="craft.run", allowed_roles=("operator",),
+                allowed_cmds=("imageTrace.make",), roots=())
+
+
+@unittest.skipUnless(DSN, "FORGE_TEST_DSN not set")
+class GatewayRepoDBTests(unittest.IsolatedAsyncioTestCase):
+    async def asyncSetUp(self):
+        self.repo = await ForgeRepo.connect(DSN)
+        self.episode = await self.repo.create_episode(
+            idempotency_key=f"gw-{uuid.uuid4().hex}", account_id=1,
+            brief="gateway repo test", task_family="ai_badge_trace")
+        self.gateway_repo = ForgeGatewayRepo(self.repo.pool)
+        self.executor = FakeExecutor()
+        self.gateway = Gateway([SPEC], self.executor, self.gateway_repo,
+                               roles={"tok-op": "operator"})
+        self.call = ToolCall(episode_id=self.episode["id"], tool_id="craft.run",
+                             cmd_id="imageTrace.make", params={"palette": 6})
+
+    async def asyncTearDown(self):
+        await self.repo.close()
+
+    async def test_execute_then_replay_persists_one_row(self):
+        first = await self.gateway.execute(self.call, "tok-op")
+        second = await self.gateway.execute(self.call, "tok-op")
+        self.assertEqual(first.state, "succeeded")
+        self.assertFalse(first.replayed)
+        self.assertTrue(second.replayed)
+        self.assertEqual(self.executor.calls, 1)
+        row = await self.repo.pool.fetchrow(
+            "SELECT state, episode_id::text, tool_id, cmd_id, params::text, argv, "
+            "duration_ms, result::text FROM forge.forge_tool_call "
+            "WHERE idempotency_key=$1", first.idempotency_key)
+        self.assertEqual(row["state"], "succeeded")
+        self.assertEqual(row["episode_id"], str(self.episode["id"]))
+        self.assertEqual(row["tool_id"], "craft.run")
+        self.assertEqual(row["cmd_id"], "imageTrace.make")
+        self.assertIn('"palette": 6', row["params"])
+        self.assertEqual(row["argv"], ["fake-cli", "--trace"])
+        self.assertEqual(row["duration_ms"], 12)
+        count = await self.repo.pool.fetchval(
+            "SELECT count(*) FROM forge.forge_tool_call WHERE episode_id=$1",
+            self.episode["id"])
+        self.assertEqual(count, 1)
+
+    async def test_in_flight_duplicate_refuses_without_execution(self):
+        key = idempotency_key(self.call.episode_id, self.call.tool_id,
+                              self.call.params, self.call.input_hashes)
+        self.assertIsNone(await self.gateway_repo.begin(key, self.call))
+        with self.assertRaises(PolicyError) as caught:
+            await self.gateway.execute(self.call, "tok-op")
+        self.assertEqual(caught.exception.code, "E_IDEMPOTENCY_IN_FLIGHT")
+        self.assertFalse(caught.exception.terminal)
+        self.assertEqual(self.executor.calls, 0)
+
+    async def test_executor_exception_is_persisted_failed_and_replayed(self):
+        failing = FakeExecutor(error=RuntimeError("driver crashed"))
+        gateway = Gateway([SPEC], failing, self.gateway_repo,
+                          roles={"tok-op": "operator"})
+        with self.assertRaises(RuntimeError):
+            await gateway.execute(self.call, "tok-op")
+        key = idempotency_key(self.call.episode_id, self.call.tool_id,
+                              self.call.params, self.call.input_hashes)
+        row = await self.repo.pool.fetchrow(
+            "SELECT state, result::text FROM forge.forge_tool_call "
+            "WHERE idempotency_key=$1", key)
+        self.assertEqual(row["state"], "failed")
+        self.assertIn("RuntimeError: driver crashed", row["result"])
+        replay = await gateway.execute(self.call, "tok-op")
+        self.assertEqual(replay.state, "failed")
+        self.assertTrue(replay.replayed)
+        self.assertEqual(failing.calls, 1)
 
 
 class RowShapeUnitTests(unittest.TestCase):

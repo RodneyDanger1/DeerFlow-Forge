@@ -28,9 +28,11 @@ These are commands that were run in this checkout/staging, not architectural int
 | Visual smoke | `ok:true`, zero failures; all five sections non-empty |
 | Playwright controls | **18/18** (tabs, five model radios, route run completes, sandbox `runner.py`, Copy→`Copied`, Download event, mobile 390×844, 34 source options, zero overflow, zero console errors) |
 | Keyboard/a11y | **8/8** (one h1, all controls named, 3 landmarks, 12/12 visible Tab stops, ≥40 px tap targets, zero runtime errors) |
-| Forge local tests | **116 passed, 9 skipped**, 6.51 s |
-| Forge staging suite | **170 passed, 4 skipped**, scratch PostgreSQL 16 + G0 bundle, 16.03 s |
-| Forge gateway | 33/33; role/root/allowlist/replay/verdict tests |
+| Forge local tests | **123 passed, 13 skipped**, 6.29 s |
+| Forge staging suite | **177 passed, 4 skipped**, scratch PostgreSQL 16 + G0 bundle, 14.42 s |
+| Forge gateway | 36/36; policy + async idempotency + replay |
+| Persisted tool calls | **3 real-PostgreSQL tests**: success→replay one row, in-flight duplicate refusal, executor crash→failed row replayed |
+| Eval persistence | **real-PostgreSQL test**: baseline+memory rows, duplicate→`E_EVAL_EXISTS`, missing episode→`E_EPISODE_NOT_FOUND` |
 | Forge SQL | 18/18 assertions + `SKIP LOCKED`; real Postgres |
 | G0 provenance | independently reproduced byte-identically; 22/22 hashes; 9/9 applicable gates |
 | **Live VPS console** | `09b20e5` built/deployed at `/opt/deerflow-forge`; unit active on `127.0.0.1:8091`; **22/22** live black-box checks (tabs, five routes, fault path, deep-links, 34 sources, copy/download, keyboard, reload×3, mobile) |
@@ -62,8 +64,9 @@ Console (static React viewer) ── no HTTP calls ──► blueprint data in s
 │        ▲                                                       │
 │ forge_worker.py  python -m forge_worker --once (queue/reaper)  │
 │                                                                │
-│ forge_gateway.py  policy + InMemoryRepo + injected Executor    │
-│        │ NO Postgres adapter (W1)   NO real Craft executor     │
+│ forge_gateway.py  async policy + persisted Repo + injected Executor │
+│        │ ForgeGatewayRepo: in_flight/terminal/replay   │
+│        │ NO real Craft executor                          │
 │        ▼                                                       │
 │ forge_verifier.py / forge_critic.py / forge_eval.py            │
 │        └── pure contract libraries; no route/worker consumer   │
@@ -82,6 +85,9 @@ DeerFlow runtime ── designed front door; MCP registration not applied
   guarded, and reaps expired leases through `ForgeRepo`.
 - **Gateway → policy:** registry, role allowlist, root containment, idempotency key, verdict ladder and
   `InMemoryRepo` are tested as a unit.
+- **Gateway → PostgreSQL:** `ForgeGatewayRepo` writes `forge_tool_call` atomically: an `in_flight`
+  row before execution, a terminal row after, and duplicate keys replay the persisted result without
+  calling the executor. A concurrent in-flight duplicate raises `E_IDEMPOTENCY_IN_FLIGHT`.
 - **Verifier/critic/eval → tests:** artifact hash/format/dimensions/DPI, blind-critic schema, and Wilson
   promotion decisions are covered by tests.
 - **G0 artifacts → local evidence:** trace/retouch artifacts and gate reports are verified locally.
@@ -90,7 +96,7 @@ DeerFlow runtime ── designed front door; MCP registration not applied
 
 | Seam | Evidence | Consequence |
 |---|---|---|
-| Gateway → Postgres `Repo` | `forge_gateway.py` `Repo` is sync and returns only `ToolResult`; `forge_tool_call` needs `episode_id`, `tool_id`, `params` | tool-call idempotency is in-memory only; **W1 blocked pending API decision** |
+| Gateway → service/worker caller | no route or job calls `Gateway.execute` | gateway is library-level; not an automated pipeline |
 | Gateway → real Craft executor | `Executor` is injected; no production executor module | gateway cannot execute Craft commands |
 | Verifier/critic/eval → service/worker | contract modules have no route, queue consumer or repo writer | verification/critique/eval are callable libraries, not an automated pipeline |
 | Console → agent/service | console has no API client or agent loop | UI is a viewer only |
@@ -186,12 +192,13 @@ printed by the daemon.
 
 The decision-complete plan is [`docs/PLAN-CONTINUATION.md`](docs/PLAN-CONTINUATION.md). Short form:
 
-1. **W1 — tool-call idempotency persistence (next).** Decide the API change: extend `ToolResult` with
-   episode/tool/params and make `Gateway`/`Repo` async, then add `ForgeGatewayRepo` and a real-DB
-   duplicate-call test. Rejected alternative: a sync adapter over the async pool.
-2. **W5 — eval persistence.** `forge_eval.py` returns a proposal but writes no `forge_eval` row.
-3. **Executor seam.** Add a registered, absolute-path Craft executor behind `Executor`; no fake success.
-4. **Consumer seam.** Wire verifier/critic/eval into a worker job or service route with evidence rows.
+1. **W1 — tool-call idempotency persistence (DONE).** `ToolResult` carries episode/tool/params/argv/
+   duration; `Gateway.execute` and `Repo` are async; `ForgeGatewayRepo` writes an `in_flight` row
+   before execution and replays terminal rows. Tested against real PostgreSQL.
+2. **W5 — eval-row persistence (DONE at repository level).** `ForgeRepo.record_eval()` writes one
+   immutable row per episode/arm and refuses duplicates; **no consumer/route calls it yet**.
+3. **Executor seam (next).** Add a registered, absolute-path Craft executor behind `Executor`; no fake success.
+4. **Consumer seam.** Wire gateway/verifier/critic/eval into a worker job or service route with evidence rows.
 5. **Production hardening.** systemd, TLS/auth, migration/rollback, backup/restore drill, supervised
    reaper, DeerFlow registration.
 6. **Learning.** Only after 1–5: episode retrieval, A/B, promotion/rollback; otherwise remain L0.

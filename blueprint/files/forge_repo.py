@@ -11,6 +11,8 @@ from typing import Any
 
 import asyncpg
 
+from forge_gateway import PolicyError, ToolCall, ToolResult
+
 
 class RepoShapeError(RuntimeError):
     """A row came back that cannot be mapped to the service contract."""
@@ -31,7 +33,7 @@ class ForgeRepo:
             return None  # PL/pgSQL composite NULL reaches asyncpg as all-NULL row
         if data.get("id") is None:
             raise RepoShapeError(f"row is missing id; keys={sorted(data)}")
-        for key in ("payload", "result", "budget", "params"):
+        for key in ("payload", "result", "budget", "params", "technical", "human"):
             if isinstance(data.get(key), str):
                 try:
                     data[key] = json.loads(data[key])
@@ -79,6 +81,40 @@ class ForgeRepo:
             row = await conn.fetchrow(
                 "SELECT * FROM forge_episode WHERE idempotency_key=$1", key)
             return self._row(row)
+
+    async def record_eval(self, *, episode_id: str, arm: str,
+                          technical: dict[str, Any], verdict: str,
+                          human: dict[str, Any] | None = None,
+                          reviewer: str | None = None) -> dict[str, Any]:
+        """Persist one immutable eval row per (episode, arm)."""
+        if not isinstance(episode_id, str) or not episode_id.strip():
+            raise ValueError("E_EVAL_INVALID: episode_id is required")
+        if arm not in ("baseline", "memory"):
+            raise ValueError("E_EVAL_INVALID: arm must be baseline or memory")
+        if not isinstance(technical, dict):
+            raise ValueError("E_EVAL_INVALID: technical must be an object")
+        if verdict not in ("pass", "fail", "needs_human", "unverified"):
+            raise ValueError("E_EVAL_INVALID: verdict is not a known value")
+        if human is not None and not isinstance(human, dict):
+            raise ValueError("E_EVAL_INVALID: human must be an object or null")
+        if reviewer is not None and (not isinstance(reviewer, str)
+                                     or not reviewer.strip() or len(reviewer) > 200):
+            raise ValueError("E_EVAL_INVALID: reviewer must be 1..200 chars or null")
+        try:
+            async with self.pool.acquire() as conn:
+                await conn.execute("SET search_path = forge, public")
+                row = await conn.fetchrow(
+                    """INSERT INTO forge_eval
+                           (episode_id, arm, technical, human, verdict, reviewer)
+                       VALUES ($1, $2, $3::jsonb, $4::jsonb, $5, $6)
+                       RETURNING *""",
+                    episode_id, arm, json.dumps(technical),
+                    None if human is None else json.dumps(human), verdict, reviewer)
+                return self._row(row)
+        except asyncpg.UniqueViolationError as exc:
+            raise PolicyError("E_EVAL_EXISTS", f"{episode_id}/{arm}") from exc
+        except asyncpg.ForeignKeyViolationError as exc:
+            raise PolicyError("E_EPISODE_NOT_FOUND", episode_id) from exc
 
     async def transition(self, episode_id: str, target: str, *, verdict: str | None = None,
                          reasons: list[str] | None = None) -> dict[str, Any]:
@@ -138,3 +174,83 @@ class ForgeRepo:
                       AND lease_until < now()
                     RETURNING id, state""")
             return len(rows)
+
+
+class ForgeGatewayRepo:
+    """Asyncpg adapter for the gateway's ``Repo`` protocol.
+
+    The in-flight insert happens before the executor runs, so a crash leaves a
+    row that refuses later duplicates instead of re-executing the tool. A
+    terminal row is replayed with its persisted result.
+    """
+
+    def __init__(self, pool: asyncpg.Pool) -> None:
+        self.pool = pool
+
+    @staticmethod
+    def _map(row) -> ToolResult | None:
+        data = ForgeRepo._row(row)
+        if data is None:
+            return None
+        payload = data.get("result") or {}
+        if not isinstance(payload, dict):
+            raise RepoShapeError("forge_tool_call.result is not an object")
+        return ToolResult(
+            idempotency_key=str(data["idempotency_key"]),
+            state=data["state"],
+            replayed=bool(data.get("replayed", False)),
+            exit_code=data.get("exit_code"),
+            refusal_code=data.get("refusal_code"),
+            artifacts=tuple(payload.get("artifacts") or ()),
+            message=str(payload.get("message") or ""),
+            episode_id=str(data["episode_id"]),
+            tool_id=str(data["tool_id"]),
+            cmd_id=data.get("cmd_id"),
+            params=data.get("params") or {},
+            argv=tuple(data.get("argv") or ()),
+            duration_ms=data.get("duration_ms"),
+        )
+
+    async def find(self, key: str) -> ToolResult | None:
+        async with self.pool.acquire() as conn:
+            await conn.execute("SET search_path = forge, public")
+            row = await conn.fetchrow(
+                "SELECT * FROM forge_tool_call WHERE idempotency_key=$1", key)
+            return self._map(row)
+
+    async def begin(self, key: str, call: ToolCall) -> ToolResult | None:
+        async with self.pool.acquire() as conn:
+            await conn.execute("SET search_path = forge, public")
+            row = await conn.fetchrow(
+                """INSERT INTO forge_tool_call
+                       (episode_id, tool_id, cmd_id, params, idempotency_key, state)
+                   VALUES ($1, $2, $3, $4::jsonb, $5, 'in_flight')
+                   ON CONFLICT (idempotency_key) DO NOTHING
+                   RETURNING *""",
+                call.episode_id, call.tool_id, call.cmd_id,
+                json.dumps(call.params), key)
+            if row is not None:
+                return None
+            existing = await conn.fetchrow(
+                "SELECT * FROM forge_tool_call WHERE idempotency_key=$1", key)
+            if existing is None:
+                raise RepoShapeError("idempotency conflict without a stored row")
+            mapped = self._map(existing)
+            if mapped is not None and mapped.state == "in_flight":
+                raise PolicyError("E_IDEMPOTENCY_IN_FLIGHT", key, terminal=False)
+            return mapped
+
+    async def store(self, key: str, result: ToolResult) -> None:
+        payload = {"artifacts": list(result.artifacts), "message": result.message}
+        async with self.pool.acquire() as conn:
+            await conn.execute("SET search_path = forge, public")
+            tag = await conn.execute(
+                """UPDATE forge_tool_call
+                      SET state=$2, refusal_code=$3, exit_code=$4,
+                          result=$5::jsonb, duration_ms=$6, argv=$7,
+                          replayed=false, finished_at=now()
+                    WHERE idempotency_key=$1""",
+                key, result.state, result.refusal_code, result.exit_code,
+                json.dumps(payload), result.duration_ms, list(result.argv))
+            if tag != "UPDATE 1":
+                raise RepoShapeError(f"tool-call finish updated {tag!r}, expected 'UPDATE 1'")
