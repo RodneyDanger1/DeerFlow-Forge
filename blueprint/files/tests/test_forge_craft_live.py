@@ -7,8 +7,9 @@ import tempfile
 import unittest
 import uuid
 
+from forge_consumer import ToolCallConsumer
 from forge_craft_registry import VECTOR_KEY, load_verified_registry
-from forge_gateway import Gateway, ToolCall, ToolSpec
+from forge_gateway import Gateway, ToolSpec
 from forge_repo import ForgeGatewayRepo, ForgeRepo
 
 DSN = os.environ.get("FORGE_TEST_DSN")
@@ -44,22 +45,24 @@ class LiveCraftGatewayTests(unittest.IsolatedAsyncioTestCase):
                         allowed_cmds=(VECTOR_KEY[1],), roots=(self.work.name,))
         self.gateway = Gateway([spec], self.executor, ForgeGatewayRepo(self.repo.pool),
                                roles={"tok": "operator"})
-        self.call = ToolCall(
-            episode_id=str(self.episode["id"]), tool_id=VECTOR_KEY[0],
-            cmd_id=VECTOR_KEY[1],
-            params={"input_png": INPUT,
-                    "trace_params_json": json.dumps(TRACE_PARAMS)})
+        self.consumer = ToolCallConsumer(self.gateway, "tok")
+        self.payload = {
+            "episode_id": str(self.episode["id"]), "tool_id": VECTOR_KEY[0],
+            "cmd_id": VECTOR_KEY[1],
+            "params": {"input_png": INPUT,
+                       "trace_params_json": json.dumps(TRACE_PARAMS)},
+        }
 
     async def asyncTearDown(self):
         self.work.cleanup()
         await self.repo.close()
 
     async def test_real_trace_is_persisted_and_replayed(self):
-        first = await self.gateway.execute(self.call, "tok")
+        first = await self.consumer(self.payload)
         self.assertEqual(first.state, "succeeded")
         self.assertEqual(len(first.artifacts), 2)
         self.assertEqual(self.executor.calls, 1)
-        second = await self.gateway.execute(self.call, "tok")
+        second = await self.consumer(self.payload)
         self.assertTrue(second.replayed)
         self.assertEqual(self.executor.calls, 1)
         row = await self.repo.pool.fetchrow(

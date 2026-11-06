@@ -1,21 +1,22 @@
 # Plan continuation — DeerFlow Forge (2026-11-05)
 
-**Status:** W1, W5, stale in-flight recovery, the registered/version-probed Craft executor, and a real
-VectorCraft trace through gateway → PostgreSQL are complete. The next implementation is the consumer
-seam: worker/service → gateway → verifier/critic/eval with persisted evidence. **No production Forge
-DB/service, no worker consumer, and no publish.**
+**Status:** W1, W5, stale in-flight recovery, the registered/version-probed Craft executor, a real
+VectorCraft trace through gateway → PostgreSQL, and the consumer first half (payload → ToolCall →
+gateway; worker success/failure truth) are complete. The next work is wiring the consumer into a real
+worker job and adding verifier/critic/eval evidence rows. **No production Forge DB/service and no
+publish.**
 
-Verified by command: console **65/65**; Forge local **141 passed / 16 skipped**; staging
-**194 passed / 5 skipped**; gateway **36/36**; SQL **18/18**; browser controls **22/22 live checks**;
+Verified by command: console **65/65**; Forge local **148 passed / 16 skipped**; staging
+**201 passed / 5 skipped**; gateway **36/36**; SQL **18/18**; browser controls **22/22 live checks**;
 keyboard/a11y **8/8**. Receipts: `docs/TRACE/2026-11-05/GATE-FINAL-W2.md`,
 `docs/TRACE/2026-11-05/LIVE-VPS-VERIFICATION.md`, `docs/CAPABILITY-MATRIX.md`.
 
 ## Outcome
 
-Forge can now persist a tool call before it executes and replay the stored result after a restart,
-without re-executing the executor. It can also record one immutable evaluation row per episode and arm.
-The next increment makes those libraries part of an actual pipeline: a registered Craft executor and a
-worker/service consumer that writes artifacts, gates, critiques and evals.
+Forge can persist and replay a tool call, execute a registered Craft command, hash its artifacts, and
+accept a worker-shaped payload through the consumer while refusing malformed/refused/failed calls.
+The next increment wires that consumer into a real worker job and adds artifact, gate, critique and eval
+evidence rows.
 
 ## Current behavior (evidence)
 
@@ -37,7 +38,11 @@ worker/service consumer that writes artifacts, gates, critiques and evals.
   `forge_eval`, maps unique conflicts to `E_EVAL_EXISTS`, and maps missing episodes to
   `E_EPISODE_NOT_FOUND`. **Real-PG test covers both arms, duplicate, invalid arm, missing episode.**
 - Service: loopback `/healthz` and create/get episode only; no tool-call or eval route.
-- Worker: `python -m forge_worker --once`; guarded finish; no gateway/verifier consumer.
+- Worker: `python -m forge_worker --once`; guarded finish. The worker handler contract is satisfied by
+  `ToolCallConsumer`, but no production job kind/route is registered.
+- Consumer: `forge_consumer.ToolCallConsumer` validates `episode_id`/`tool_id`/`cmd_id`/`params`/paths/
+  hashes, maps payload to `ToolCall`, executes through the gateway, and raises named `ConsumerError` for
+  refused/failed calls. **7/7 tests; real Craft trace also passes through the consumer.**
 - Verifier/critic/eval: verified contracts, no automated pipeline consumer.
 - Console: static viewer; honest “Static blueprint · no live services” and “Simulation…” labels.
 - VPS console: active at `09b20e5` runtime source; 22/22 live checks; CUA native checks.
@@ -68,42 +73,46 @@ worker/service consumer that writes artifacts, gates, critiques and evals.
 | Process executor | `forge_executor.py` | 8/8 tests: absolute binary, hash, timeout kill, missing artifact, token expansion, version probe, registration refusal |
 | Craft registry + real trace | `forge_craft_registry.py` | VPS probe VectorCraft 0.21.1 / PhotoCraft 0.20.2; real gateway trace: 2 artifacts, persisted, replayed without re-execution |
 | W5 eval row writer | `ForgeRepo.record_eval` | baseline+memory rows; duplicate `E_EVAL_EXISTS`; invalid arm `ValueError`; missing episode `E_EPISODE_NOT_FOUND` |
-| Full suite | staging | **194 passed, 5 skipped** in 16.30 s |
-| Local suite | `unittest` | **141 passed, 16 skipped** |
+| Consumer first half | `forge_consumer.py` | 7/7 tests: payload validation, success result, refused/failed errors, worker finish truth; live Craft trace via consumer passes |
+| Full suite | staging | **201 passed, 5 skipped** in 16.30 s |
+| Local suite | `unittest` | **148 passed, 16 skipped** |
 | VPS console | live deployment | 22/22 checks + CUA evidence |
 | Docs | README, capability matrix, this plan | current, with historical files retained |
 
-## Next: consumer seam (decision-complete)
+## Next: consumer wiring + evidence adapters (decision-complete)
 
-**Outcome:** one worker job accepts a tool-call payload, executes it through the registered Craft
-executor, records the persisted tool call, then writes artifact/gate/critique/eval evidence. A failed
-gate must finish the job as a named refusal, not success.
+**Done first half:** `forge_consumer.py` validates a worker payload, calls the gateway, and returns the
+persisted result or raises a named error; worker success/failure truth is tested. The live Craft trace
+passes through the consumer.
 
-**Files:** new `forge_consumer.py` (payload validation → `ToolCall` → gateway); worker handler test;
-real-DB test that invokes the consumer with an injected gateway first, then the real VectorCraft trace;
-verifier/critic/eval adapters after the executor path is stable.
+**Remaining:**
+1. Register a real worker job kind (`forge.tool_call`) with a handler factory that reads `FORGE_DSN`,
+   builds `ForgeRepo` + `ForgeGatewayRepo` + `load_verified_registry`, and wraps them in
+   `ToolCallConsumer`; one job payload executes one call.
+2. Add a schedule/daemon entry for `abandon_stale_in_flight` with a chosen deadline.
+3. Add artifact/gate/critique/eval adapters: after success, verifier reads artifact paths/hashes, gate
+   evidence is persisted, critic runs only with an actual model (otherwise `unverified`), and
+   `record_eval` writes rows per arm.
+4. Add service `/v1/tool-calls` only after the worker job exists.
 
-**Rules:** no fake success; verify each artifact by path/hash; a process exit 0 with no required artifact
-is failure; gate failures are named; eval rows are written once per `(episode, arm)`; no publish.
-
-**Tests:** (1) malformed payload → named `E_PARAM_REJECTED`; (2) gateway success → persisted row and
-worker finish; (3) gateway refusal/failed → worker failure, never success; (4) real trace on scratch input
-produces 2 artifacts and one tool-call row. **Rollback:** remove consumer; executor/gateway stay.
+**Tests:** worker job with a scratch DSN executes the real trace, writes one tool-call row and artifacts;
+failed gate → job failed with named code; duplicate payload → replay not re-execution; malformed payload →
+job failed `E_REQUEST_INVALID`. **Rollback:** remove job kind/consumer; gateway/executor stay.
 
 **Out of scope:** production service, TLS/auth, DeerFlow registration, publish, autonomous promotion.
 
 ## Remaining sequence
 
-1. Consumer seam: worker → gateway → verifier/critic/eval → persisted evidence.
-2. Service `/v1/tool-calls` only after the consumer has a real caller.
+1. Consumer wiring + artifact/gate/critique/eval evidence adapters.
+2. Service `/v1/tool-calls` after the consumer has a real caller.
 3. W7 clean-env dependencies; W8 systemd/TLS/auth/migrations/backup-restore.
 4. DeerFlow MCP registration, then W4-B learning.
 
 ## Blockers / not claimed
 
 - No production `forge` DB, service unit, TLS/auth, deploy, or publish.
-- No worker/service consumer; gateway + executor remain library-level.
-- No verifier/critic/eval consumer; they are libraries.
+- Consumer class exists, but **no production worker job kind/route** invokes it.
+- No verifier/critic/eval adapter writes rows after a tool call.
 - `forge_eval` rows have no route/worker caller yet.
 - Stale in-flight recovery is manual (no scheduled daemon).
 - PhotoCraft registry registered but no live PhotoCraft command proven yet.
