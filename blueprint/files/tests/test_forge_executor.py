@@ -14,6 +14,9 @@ from forge_gateway import PolicyError, ToolCall, ToolSpec
 FIXTURE = """
 import json, pathlib, sys, time
 args = sys.argv[1:]
+if "--version" in args:
+    print("fixture-cli 1.2.3")
+    raise SystemExit(0)
 if "--sleep" in args:
     time.sleep(5)
 if "--fail" in args:
@@ -105,6 +108,30 @@ class ProcessExecutorTests(unittest.TestCase):
             ProcessExecutor({("tool.run", "run"): self.command(
                 artifact_globs=("../escape.txt",))}, work_root=self.root)
         self.assertIn("E_ROOT_DENIED", str(caught.exception))
+
+    def test_typed_params_and_work_root_expand(self):
+        command = self.command(args_template=(
+            "--payload", "{params_json}",
+            "--input", "{param:input_png}",
+            "--root", "{work_root}"))
+        executor = ProcessExecutor({("tool.run", "run"): command},
+                                   work_root=self.root)
+        call = ToolCall(episode_id="ep", tool_id="tool.run", cmd_id="run",
+                        params={"text": "hello", "input_png": "/tmp/input.png"})
+        argv = executor._argv(command, call)
+        self.assertIn("/tmp/input.png", argv)
+        self.assertIn(str(self.root.resolve()), argv)
+        with self.assertRaises(PolicyError) as caught:
+            executor._argv(command, self.call)  # missing input_png
+        self.assertEqual(caught.exception.code, "E_PARAM_REJECTED")
+
+    def test_version_probe_returns_bounded_version(self):
+        command = self.command(version_args=(str(self.script), "--version"))
+        executor = ProcessExecutor({("tool.run", "run"): command},
+                                   work_root=self.root)
+        probes = executor.probe_binaries()
+        self.assertTrue(probes[("tool.run", "run")]["ok"])
+        self.assertEqual(probes[("tool.run", "run")]["version"], "fixture-cli 1.2.3")
 
 
 if __name__ == "__main__":

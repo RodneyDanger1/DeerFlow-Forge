@@ -114,6 +114,10 @@ This report predates these increments. Current state:
   failed with `E_IDEMPOTENCY_STALE`; later calls replay failure; fresh rows untouched.
 - Process executor first half is **complete**: 7/7 tests for absolute binaries, no shell, work root,
   timeout kill, artifact hashing and registration refusals. No Craft registry yet.
-- Current suites: **186 passed / 4 skipped** staging; **132 passed / 15 skipped** local.
+- Process executor + Craft registry: registered VectorCraft 0.21.1 and PhotoCraft 0.20.2; VPS version
+  probe passes; a real VectorCraft trace through gateway → PostgreSQL produced 2 artifacts and replayed
+  without re-execution (opt-in live test).
+- Current suites: **194 passed / 5 skipped** staging; **141 passed / 16 skipped** local; the 5th skip is
+  the opt-in live Craft test.
 - Historical entries above are retained; current truth is `docs/PLAN-CONTINUATION.md` and
   `docs/CAPABILITY-MATRIX.md`.

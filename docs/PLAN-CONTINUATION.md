@@ -1,12 +1,12 @@
 # Plan continuation — DeerFlow Forge (2026-11-05)
 
-**Status:** W1 (tool-call idempotency persistence), W5 (eval-row persistence), stale in-flight
-recovery, and the first half of the executor seam (registered process executor) are implemented and
-tested. The console is **deployed and live on the VPS**, with 22/22 live black-box checks and CUA native
-evidence. **No production Forge DB/service, no Craft registry, and no consumer pipeline yet.**
+**Status:** W1, W5, stale in-flight recovery, the registered/version-probed Craft executor, and a real
+VectorCraft trace through gateway → PostgreSQL are complete. The next implementation is the consumer
+seam: worker/service → gateway → verifier/critic/eval with persisted evidence. **No production Forge
+DB/service, no worker consumer, and no publish.**
 
-Verified by command: console **65/65**; Forge local **132 passed / 15 skipped**; staging
-**186 passed / 4 skipped**; gateway **36/36**; SQL **18/18**; browser controls **22/22 live checks**;
+Verified by command: console **65/65**; Forge local **141 passed / 16 skipped**; staging
+**194 passed / 5 skipped**; gateway **36/36**; SQL **18/18**; browser controls **22/22 live checks**;
 keyboard/a11y **8/8**. Receipts: `docs/TRACE/2026-11-05/GATE-FINAL-W2.md`,
 `docs/TRACE/2026-11-05/LIVE-VPS-VERIFICATION.md`, `docs/CAPABILITY-MATRIX.md`.
 
@@ -27,8 +27,12 @@ worker/service consumer that writes artifacts, gates, critiques and evals.
   recovery; it marks old in-flight rows failed and later calls replay `E_IDEMPOTENCY_STALE`. It is not
   an automatic daemon.
 - Executor: `forge_executor.ProcessExecutor` validates absolute binaries at registration, builds argv
-  without a shell, runs in an explicit work root with a bounded timeout, captures bounded stderr,
-  hashes artifacts, and fails on required-missing artifacts. **7/7 tests.**
+  without a shell, runs in an explicit work root with bounded timeout, captures bounded stderr, hashes
+  artifacts, and fails on required-missing artifacts. **8/8 tests.**
+- Craft registry: `forge_craft_registry` binds the measured VectorCraft 0.21.1 and PhotoCraft 0.20.2
+  command lines to absolute binaries, probes `--version`, and refuses drift/missing binaries. **The real
+  VPS probe passes; a real VectorCraft trace through the gateway produced 2 artifacts and replayed from
+  PostgreSQL without re-execution.**
 - Evaluation persistence: `ForgeRepo.record_eval()` validates arm/verdict/human/reviewer, inserts into
   `forge_eval`, maps unique conflicts to `E_EVAL_EXISTS`, and maps missing episodes to
   `E_EPISODE_NOT_FOUND`. **Real-PG test covers both arms, duplicate, invalid arm, missing episode.**
@@ -47,8 +51,8 @@ worker/service consumer that writes artifacts, gates, critiques and evals.
 3. **Stale in-flight recovery is explicit, not automatic.** `abandon_stale_in_flight(older_than_s,
    limit)` marks old in-flight rows failed with `E_IDEMPOTENCY_STALE`; it never re-executes. A later
    daemon may call it on a schedule after the owner chooses a deadline.
-4. **Process executor owns work-root execution** and hashes artifacts after success. It is registered
-   by `(tool_id, cmd_id)` and does not know Craft semantics; a Craft registry is still required.
+4. **Process executor and Craft registry own work-root execution.** The registry is data plus version
+   evidence; the executor hashes artifacts after success and refuses absent/drifted binaries.
 5. **Service remains loopback-only.** No auth/TLS claim until W8.
 6. **Console remains a viewer.** No fake run/backend control.
 7. **No learning claim.** L0 remains until retrieval/A-B/promotion/rollback exist.
@@ -61,52 +65,48 @@ worker/service consumer that writes artifacts, gates, critiques and evals.
 | W1 atomic in-flight before executor | `ForgeGatewayRepo.begin` | unique-key `ON CONFLICT DO NOTHING`; row inspected after execute |
 | W1 replay context | `ToolResult` episode/tool/cmd/params/argv/duration | replay assertions |
 | Stale in-flight recovery | `ForgeGatewayRepo.abandon_stale_in_flight` | 2 real-PG tests: old row→failed/replay; fresh row untouched |
-| Process executor (first half) | `forge_executor.py` | 7/7 tests: absolute binary, hash, timeout kill, missing artifact, unknown command, registration refusal |
+| Process executor | `forge_executor.py` | 8/8 tests: absolute binary, hash, timeout kill, missing artifact, token expansion, version probe, registration refusal |
+| Craft registry + real trace | `forge_craft_registry.py` | VPS probe VectorCraft 0.21.1 / PhotoCraft 0.20.2; real gateway trace: 2 artifacts, persisted, replayed without re-execution |
 | W5 eval row writer | `ForgeRepo.record_eval` | baseline+memory rows; duplicate `E_EVAL_EXISTS`; invalid arm `ValueError`; missing episode `E_EPISODE_NOT_FOUND` |
-| Full suite | staging | **186 passed, 4 skipped** in 16.30 s |
-| Local suite | `unittest` | **132 passed, 15 skipped** |
+| Full suite | staging | **194 passed, 5 skipped** in 16.30 s |
+| Local suite | `unittest` | **141 passed, 16 skipped** |
 | VPS console | live deployment | 22/22 checks + CUA evidence |
 | Docs | README, capability matrix, this plan | current, with historical files retained |
 
-## Next: Craft registry (second half of executor seam)
+## Next: consumer seam (decision-complete)
 
-**Outcome:** one real Craft tool call runs on a copy through an absolute-path binary, produces a real
-artifact, and returns a persisted `ToolResult`; an absent engine refuses by name.
+**Outcome:** one worker job accepts a tool-call payload, executes it through the registered Craft
+executor, records the persisted tool call, then writes artifact/gate/critique/eval evidence. A failed
+gate must finish the job as a named refusal, not success.
 
-**Done first half:** `forge_executor.py` provides absolute-binary validation, argv templates, timeout,
-bounded output, artifact hashing and named refusals; 7/7 tests.
+**Files:** new `forge_consumer.py` (payload validation → `ToolCall` → gateway); worker handler test;
+real-DB test that invokes the consumer with an injected gateway first, then the real VectorCraft trace;
+verifier/critic/eval adapters after the executor path is stable.
 
-**Remaining files:** a Craft command registry (tool/cmd → absolute binary + argv template + artifact
-globs), a `--version` probe for each registered binary, and one worker job kind.
+**Rules:** no fake success; verify each artifact by path/hash; a process exit 0 with no required artifact
+is failure; gate failures are named; eval rows are written once per `(episode, arm)`; no publish.
 
-**Rules:** no bare names/PATH shims; explicit roots; copy inputs into a scratch directory; absent
-DesignCraft/EffectCraft/FilmCraft refuses by name; no model-reported success.
+**Tests:** (1) malformed payload → named `E_PARAM_REJECTED`; (2) gateway success → persisted row and
+worker finish; (3) gateway refusal/failed → worker failure, never success; (4) real trace on scratch input
+produces 2 artifacts and one tool-call row. **Rollback:** remove consumer; executor/gateway stay.
 
-**Tests:** a real VectorCraft/PhotoCraft trace command in a scratch directory; absent engine →
-`E_TOOL_NOT_INSTALLED`; timeout → killed process; artifact SHA recorded. **Rollback:** remove registry;
-generic executor stays.
-
-**Out of scope:** production DB/service, publish, DeerFlow, autonomous promotion.
-
-## Next: consumer seam
-
-Wire gateway → executor → verifier/critic/eval in one worker job, persisting `forge_tool_call`, artifact,
-gate/critique and eval rows. Acceptance: one job produces evidence rows with hashes, and a failed gate
-produces a named refusal—not a success. Do not claim this until the Craft registry is real.
+**Out of scope:** production service, TLS/auth, DeerFlow registration, publish, autonomous promotion.
 
 ## Remaining sequence
 
-1. Craft registry + version probe (second half of executor seam).
-2. Consumer seam: worker job → gateway → verifier/critic/eval → persisted rows.
+1. Consumer seam: worker → gateway → verifier/critic/eval → persisted evidence.
+2. Service `/v1/tool-calls` only after the consumer has a real caller.
 3. W7 clean-env dependencies; W8 systemd/TLS/auth/migrations/backup-restore.
 4. DeerFlow MCP registration, then W4-B learning.
 
 ## Blockers / not claimed
 
 - No production `forge` DB, service unit, TLS/auth, deploy, or publish.
-- Generic process executor exists, but **no Craft registry**; Craft cannot execute through it yet.
+- No worker/service consumer; gateway + executor remain library-level.
 - No verifier/critic/eval consumer; they are libraries.
 - `forge_eval` rows have no route/worker caller yet.
 - Stale in-flight recovery is manual (no scheduled daemon).
+- PhotoCraft registry registered but no live PhotoCraft command proven yet.
 - No DeerFlow MCP registration; no native GUI/CUA bridge beyond the tested Chrome window.
-- 4 staging skips require their named services; vision accuracy and learning above L0 unmeasured.
+- 5 staging skips (4 services + opt-in live Craft off by default); vision accuracy and learning above L0
+  unmeasured.

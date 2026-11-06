@@ -14,7 +14,8 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Live VPS console | **CAN** | HEAD `09b20e5` at `/opt/deerflow-forge`, unit active on 8091, 22/22 live black-box checks; CUA native launch/nav/run/copy | no production Forge service |
 | Forge gateway policy | **CAN** | 36/36 tests: allowlist, roots, replay, refusals, verdict ladder; async execute | executor is injected |
 | Persisted tool calls | **CAN** | 5 real-PG tests: in_flight before execution, terminal replay, in-flight refusal, executor-crash failed row, stale recovery→replay | stale recovery is manual, not a daemon |
-| Process executor | **CAN** | 7/7 tests: absolute binary, no shell, work root, timeout kill, bounded stderr, SHA artifacts, missing-artifact failure | no Craft command registry/version probe yet |
+| Process executor | **CAN** | 8/8 tests: absolute binary, no shell, work root, timeout kill, bounded stderr, SHA artifacts, missing-artifact failure, typed params/version probe | no consumer yet |
+| Craft registry + live trace | **CAN** | VectorCraft 0.21.1 / PhotoCraft 0.20.2 absolute binding + VPS version probe; real VectorCraft trace through gateway produced SVG 6,051 B + PDF 13,610 B, persisted and replayed | PhotoCraft command not yet executed; no worker consumer |
 | Forge DDL | **CAN** | 13 tables/36 edges; apply-twice on scratch PostgreSQL 16 | scratch only; no migration/rollback drill |
 | SQL invariants | **CAN** | 18/18 assertions; `SKIP LOCKED` 9 ms | 4 DB-dependent tests remain skipped without DSN |
 | Repository | **CAN** | real-Postgres tests; episodes, jobs, lease abandon, exactly-one transition event, eval rows; expired lease requeues or abandons | no production DB/role |
@@ -27,7 +28,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Skill guidance | **CAN** | 39 skills, prior 39/39 validation; W1-C guidance only | not runtime enforcement |
 | Research corpus | **CAN** | 179 source files, 400 answers, 6 examples, 8 system diagrams + integration map | 189-file desktop package includes **6 skills** (`agent-learning-loop`, `craft-agent-operator`, `forge-harness-architect`, `harness-code-adapter`, `research-corpus-navigator`, `visual-verification-critic`) |
 | Live Forge HTTP/worker | **CAN** | VPS service against scratch PostgreSQL: health 13 tables, `201`, `200 replayed:true`, `400`, `404`; live worker claimed/finished one job, empty queue `claimed:0` | temporary scratch DB/process, not production |
-| Local Forge e2e | **CAN** | full staging suite **186 pass/4 skip** with scratch PG + G0 (16.30 s); local Forge-only **132 pass/15 skip** | not production |
+| Local Forge e2e | **CAN** | full staging suite **194 pass/5 skip** with scratch PG + G0 (16.30 s); local Forge-only **141 pass/16 skip** | not production |
 
 ## 2. What it cannot do (do not claim)
 
@@ -61,7 +62,7 @@ UNVERIFIED. This file is the current capability answer; dated `execution-wave/*`
 | Old claim | Current truth | Evidence |
 |---|---|---|
 | 207 JS tests (205/2) | **65/65** | `npm.cmd test` |
-| 31 pipeline tests | **186 pass/4 skip** current staging suite; **132 pass/15 skip** local Forge-only | scratch PG + G0 + `pytest`; see `GATE-FINAL-W2.md` |
+| 31 pipeline tests | **194 pass/5 skip** current staging suite; **141 pass/16 skip** local Forge-only | scratch PG + G0 + `pytest`; see `GATE-FINAL-W2.md` |
 | 131-file package | **179 source / 189 desktop package** | filesystem count |
 | Live VPS effect/publish E2E | **HISTORICAL, not reproducible** | EffectCraft absent; no production deploy/publish |
 | DeerFlow loads Forge tools | **UNVERIFIED/HISTORICAL** | registration not applied |
